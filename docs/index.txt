@@ -57,8 +57,9 @@ Generating actions is probably best done in a separate signal::
 To generate an action anywhere in your code, simply import the action signal and send it with your actor, verb, and target::
 
     from actstream import action
-        action.send(request.user, verb='reached level 10')
-        action.send(request.user, verb='joined', target=group) 
+    
+    action.send(request.user, verb='reached level 10')
+    action.send(request.user, verb='joined', target=group) 
 
 Following Actors
 =================
@@ -66,6 +67,7 @@ Following Actors
 Generating the link between a ``User`` and any particular ``Actor`` is as easy as calling a function::
 
     from actstream import follow
+    
     follow(request.user, group)
    
 You can also just make a ``GET`` request to the ``actstream_follow`` view::
