@@ -21,71 +21,72 @@ Install
 ========
 
 Add ``actstream`` to your ``INSTALLED_APPS``::
-
-   INSTALLED_APPS = (
-   ...
-   'actstream',
-   ...
-   )
+    
+    INSTALLED_APPS = (
+        ...
+        'actstream',
+        ...
+    )
    
 Add the activity urls::
 
-   urlpatterns = patterns('',
-      ...
-      ('^activity/', include('actstream.urls')),
-      ...
-   )
+    urlpatterns = patterns('',
+        ...
+        ('^activity/', include('actstream.urls')),
+        ...
+    )
+
 
 
 Generating Actions
 ===================
 
 Generating actions is probably best done in a separate signal::
-
-   from django.db.models.signals import pre_save
-   from actstream import action
-   from myapp.models import MyModel
-   
-   def my_handler(sender, **kwargs):
-      action.save(sender, verb='was saved')
-   
-   pre_save.connect(my_handler, sender=MyModel)   
+    
+    from django.db.models.signals import pre_save
+    from actstream import action
+    from myapp.models import MyModel
+    
+    def my_handler(sender, **kwargs):
+        action.save(sender, verb='was saved')
+    
+    pre_save.connect(my_handler, sender=MyModel)   
 
 To generate an action anywhere in your code, simply import the action signal and send it with your actor, verb, and target::
 
-   from actstream import action
-   action.send(request.user, verb='reached level 10')
-   action.send(request.user, verb='joined', target=group) 
+    from actstream import action
+        action.send(request.user, verb='reached level 10')
+        action.send(request.user, verb='joined', target=group) 
 
 Following Actors
 =================
 
 Generating the link between a ``User`` and any particular ``Actor`` is as easy as calling a function::
 
-   from actstream import follow
-   follow(request.user, group)
+    from actstream import follow
+    follow(request.user, group)
    
 You can also just make a ``GET`` request to the ``actstream_follow`` view::
 
-   GET /activity/follow/<content_type_id>/<object_id>/
+    GET /activity/follow/<content_type_id>/<object_id>/?next=/blog/
    
-Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``.
+Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
 
 Activity Feeds
 ===============
 
 Listings of activities are available for several points of view. All are sorted by ``-timestamp``::
 
-   from actstream import actor_stream, user_stream, model_stream
+    from actstream import actor_stream, user_stream, model_stream
 
 Activities by actor::
 
-   actor_stream(actor)
+    actor_stream(actor)
    
 Activities by Django ``Model``::
 
-   model_stream(model)
+    model_stream(model)
    
 Activities from actors that a particular user is folowing::
 
-   user_stream(user)
+    user_stream(user)
