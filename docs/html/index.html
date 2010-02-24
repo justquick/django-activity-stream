@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Activity Stream Documentation &mdash; Django Activity Stream v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Django Activity Stream v0.1 documentation" href="" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="">Django Activity Stream v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="activity-stream-documentation">
+<span id="index"></span><h1>Activity Stream Documentation<a class="headerlink" href="#activity-stream-documentation" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body">Justin Quick &lt;<a class="reference external" href="mailto:justquick&#37;&#52;&#48;gmail&#46;com">justquick<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field"><th class="field-name">Version:</th><td class="field-body">0.1</td>
+</tr>
+</tbody>
+</table>
+<p>Django Activity Stream is a way of creating activities to match actions taken on your site.
+Activity events are categorized by three main components.</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Actor</span></tt>. The object that performed the action.</li>
+<li><tt class="docutils literal"><span class="pre">Verb</span></tt>. The verb phrase of the action performed.</li>
+<li><tt class="docutils literal"><span class="pre">Target</span></tt>. <em>(Optional)</em> The object that the verb is enacted on.</li>
+</ul>
+</blockquote>
+<p><tt class="docutils literal"><span class="pre">Actor</span></tt> and <tt class="docutils literal"><span class="pre">Target</span></tt> are <tt class="docutils literal"><span class="pre">GenericForeignKeys</span></tt> to any arbitrary Django object. An activity is a description of an action that was performed (<tt class="docutils literal"><span class="pre">Verb</span></tt>) at some instant in time by some <tt class="docutils literal"><span class="pre">Acor</span></tt>, with some optional <tt class="docutils literal"><span class="pre">Target</span></tt>.</p>
+<p>Nomenclature of this specification is based on the <a class="reference external" href="http://martin.atkins.me.uk/specs/activitystreams/atomactivity">Atom Activity Extension</a></p>
+</div>
+<div class="section" id="install">
+<h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
+<p>Add <tt class="docutils literal"><span class="pre">actstream</span></tt> to your <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt>:</p>
+<div class="highlight-python"><pre>INSTALLED_APPS = (
+...
+'actstream',
+...
+)</pre>
+</div>
+<p>Add the activity urls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+   <span class="o">...</span>
+   <span class="p">(</span><span class="s">&#39;^activity/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">&#39;actstream.urls&#39;</span><span class="p">)),</span>
+   <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-actions">
+<h1>Generating Actions<a class="headerlink" href="#generating-actions" title="Permalink to this headline">¶</a></h1>
+<p>Generating actions is probably best done in a separate signal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">pre_save</span>
+<span class="kn">from</span> <span class="nn">actstream</span> <span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">MyModel</span>
+
+<span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+   <span class="n">action</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&#39;was saved&#39;</span><span class="p">)</span>
+
+<span class="n">pre_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">my_handler</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">MyModel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To generate an action anywhere in your code, simply import the action signal and send it with your actor, verb, and target:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream</span> <span class="kn">import</span> <span class="n">action</span>
+<span class="n">action</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&#39;reached level 10&#39;</span><span class="p">)</span>
+<span class="n">action</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&#39;joined&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="following-actors">
+<h1>Following Actors<a class="headerlink" href="#following-actors" title="Permalink to this headline">¶</a></h1>
+<p>Generating the link between a <tt class="docutils literal"><span class="pre">User</span></tt> and any particular <tt class="docutils literal"><span class="pre">Actor</span></tt> is as easy as calling a function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream</span> <span class="kn">import</span> <span class="n">follow</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also just make a <tt class="docutils literal"><span class="pre">GET</span></tt> request to the <tt class="docutils literal"><span class="pre">actstream_follow</span></tt> view:</p>
+<div class="highlight-python"><pre>GET /activity/follow/&lt;content_type_id&gt;/&lt;object_id&gt;/</pre>
+</div>
+<p>Then the current logged in user will follow the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt> &amp; <tt class="docutils literal"><span class="pre">object_id</span></tt>.</p>
+</div>
+<div class="section" id="activity-feeds">
+<h1>Activity Feeds<a class="headerlink" href="#activity-feeds" title="Permalink to this headline">¶</a></h1>
+<p>Listings of activities are available for several points of view. All are sorted by <tt class="docutils literal"><span class="pre">-timestamp</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream</span> <span class="kn">import</span> <span class="n">actor_stream</span><span class="p">,</span> <span class="n">user_stream</span><span class="p">,</span> <span class="n">model_stream</span>
+</pre></div>
+</div>
+<p>Activities by actor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">actor_stream</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Activities by Django <tt class="docutils literal"><span class="pre">Model</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model_stream</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Activities from actors that a particular user is folowing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">user_stream</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-actstream">
+<h1>API<a class="headerlink" href="#module-actstream" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="actstream.follow">
+<tt class="descclassname">actstream.</tt><tt class="descname">follow</tt><big>(</big><em>user</em>, <em>actor</em><big>)</big><a class="headerlink" href="#actstream.follow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Links the user =&gt; actor, letting the user follow the actor&#8217;s activities</p>
+<p>Syntax:</p>
+<div class="highlight-python"><pre>follow(&lt;user&gt;, &lt;actor&gt;)</pre>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.actor_stream">
+<tt class="descclassname">actstream.</tt><tt class="descname">actor_stream</tt><big>(</big><em>actor</em><big>)</big><a class="headerlink" href="#actstream.actor_stream" title="Permalink to this definition">¶</a></dt>
+<dd>Produces a QuerySet of most recent activities for any actor</dd></dl>
+
+<dl class="function">
+<dt id="actstream.user_stream">
+<tt class="descclassname">actstream.</tt><tt class="descname">user_stream</tt><big>(</big><em>user</em><big>)</big><a class="headerlink" href="#actstream.user_stream" title="Permalink to this definition">¶</a></dt>
+<dd>Produces a QuerySet of most recent activities from actors the user follows</dd></dl>
+
+<dl class="function">
+<dt id="actstream.model_stream">
+<tt class="descclassname">actstream.</tt><tt class="descname">model_stream</tt><big>(</big><em>model</em><big>)</big><a class="headerlink" href="#actstream.model_stream" title="Permalink to this definition">¶</a></dt>
+<dd>Produces a QuerySet of most recent activities for any model</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference external" href="modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference external" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Activity Stream Documentation</a></li>
+<li><a class="reference external" href="#install">Install</a></li>
+<li><a class="reference external" href="#generating-actions">Generating Actions</a></li>
+<li><a class="reference external" href="#following-actors">Following Actors</a></li>
+<li><a class="reference external" href="#activity-feeds">Activity Feeds</a></li>
+<li><a class="reference external" href="#module-actstream">API</a></li>
+<li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="">Django Activity Stream v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Justin Quick &lt;justquick@gmail.com&gt;.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>
