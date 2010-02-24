@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(name='django-activity-stream',
       version='0.1',
-      description='Create activities from your site\'s actions',
+      description='Generate generic activity streams from the actions on your site. Users can follow any actor\'s activities for personalized streams.',
       long_description=open('README.rst').read(),
       author='Justin Quick',
       author_email='justquick@gmail.com',
