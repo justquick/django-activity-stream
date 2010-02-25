@@ -156,7 +156,7 @@ html_static_path = []
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'DjangoNativeTagsdoc'
+htmlhelp_basename = 'doc'
 
 
 # -- Options for LaTeX output --------------------------------------------------

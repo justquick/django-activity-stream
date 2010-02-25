@@ -135,6 +135,10 @@ class Activity(models.Model):
             activity.save()
         return activity
     
+    @models.permalink
+    def get_absolute_url(self):
+        return ('actstream.views.detail', [self.pk])    
+    
 def action_handler(verb, target=None, **kwargs):
     actor = kwargs.pop('sender')
     activity = Activity.objects.get_or_create(

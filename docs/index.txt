@@ -14,7 +14,7 @@ Activity events are categorized by three main components.
  * ``Verb``. The verb phrase of the action performed.
  * ``Target``. *(Optional)* The object that the verb is enacted on.
  
-``Actor`` and ``Target`` are ``GenericForeignKeys`` to any arbitrary Django object. An activity is a description of an action that was performed (``Verb``) at some instant in time by some ``Acor``, with some optional ``Target``.
+``Actor`` and ``Target`` are ``GenericForeignKeys`` to any arbitrary Django objects. An activity is a description of an action that was performed (``Verb``) at some instant in time by some ``Acor``, with some optional ``Target``.
 
 Nomenclature of this specification is based on the `Atom Activity Extension <http://martin.atkins.me.uk/specs/activitystreams/atomactivity>`_
 

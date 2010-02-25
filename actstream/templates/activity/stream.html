@@ -1,6 +1,6 @@
 <h2>{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}</h2>
 {{ actor }} {{ request.user }}<ol>
 {% for action in object_list %}
-    {% include 'activity/action.html' %}
+    <li>{% include 'activity/action.html' %}</li>
 {% endfor %}
 </ol>

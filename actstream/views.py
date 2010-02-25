@@ -32,4 +32,9 @@ def user(request, username):
     user = get_object_or_404(User, username=username)
     return render_to_response('activity/stream.html', {
             'actor':user,'object_list':Activity.objects.stream(user)
+        }, context_instance=RequestContext(request))
+    
+def detail(request, activity_id):
+    return render_to_response('activity/detail.html', {
+            'action': get_object_or_404(Activity, pk=activity_id)
         }, context_instance=RequestContext(request)) 
