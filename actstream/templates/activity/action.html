@@ -1,3 +1,8 @@
-<a href="{{ action.actor.get_absolute_url }}">{{ action.actor }}</a> {{ action.verb }}
-{% if action.target %}<a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>{% endif %}
+{% if action.actor.get_absolute_url %}<a href="{{ action.actor.get_absolute_url }}">{{ action.actor }}</a>
+{% else %}<a href="{{ action.actor_url }}">{{ action.actor }}</a>{% endif %}
+{{ action.verb }}
+{% if action.target %}
+    {% if target.get_absolute_url %}<a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
+    {% else %}<a href="{{ action.target_url }}">{{ action.target }}</a>{% endif %}
+{% endif %}
 {{ action.timestamp|timesince }} ago

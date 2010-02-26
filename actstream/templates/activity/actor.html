@@ -1,0 +1,12 @@
+<h2>{{ actor }}</h2>
+<a href="../../../feed/{{ ctype.id }}/{{ actor.id }}">RSS</a> |
+<a href="../../../feed/{{ ctype.id }}/{{ actor.id }}/atom/">ATOM</a> |
+<a href="../../../follow/{{ ctype.id }}/{{ actor.id }}/">FOLLOW</a>
+
+<ul>
+{% for action in action_list %}
+    <li>{% include 'activity/action.html' %}</li>
+{% empty %}
+No actions yet    
+{% endfor %}
+</ul>
