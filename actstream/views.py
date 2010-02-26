@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.models import Follow, Activity
+from actstream.util import user_stream, actor_stream
 
 @login_required
 def follow(request, content_type_id, object_id):
@@ -18,23 +19,37 @@ def follow(request, content_type_id, object_id):
     if 'next' in request.REQUEST:
         return HttpResponseRedirect(request.REQUEST['next'])
     return render_to_response('activity/follow.html', {
-            'actor':actor,'created':created
-        }, context_instance=RequestContext(request))
+        'actor':actor,'created':created
+    }, context_instance=RequestContext(request))
     
 @login_required
 def stream(request):
     return render_to_response('activity/stream.html', {
-            'actor':request.user,
-            'object_list':Follow.objects.stream(request.user)
-        }, context_instance=RequestContext(request))
+        'actor':request.user,'object_list':user_stream(request.user)
+    }, context_instance=RequestContext(request))
+    
+def followers(request, content_type_id, object_id):
+    ctype = get_object_or_404(ContentType, pk=content_type_id)
+    follows = Follow.objects.filter(content_type=ctype, object_id=object_id)
+    actor = get_object_or_404(ctype.model_class(), pk=object_id)
+    return render_to_response('activity/followers.html', {
+        'followers': [f.user for f in follows], 'actor':actor
+    }, context_instance=RequestContext(request))
     
 def user(request, username):
     user = get_object_or_404(User, username=username)
     return render_to_response('activity/stream.html', {
-            'actor':user,'object_list':Activity.objects.stream(user)
-        }, context_instance=RequestContext(request))
+        'actor':user,'object_list':actor_stream(user)
+    }, context_instance=RequestContext(request))
     
 def detail(request, activity_id):
     return render_to_response('activity/detail.html', {
-            'action': get_object_or_404(Activity, pk=activity_id)
-        }, context_instance=RequestContext(request)) 
+        'action': get_object_or_404(Activity, pk=activity_id)
+    }, context_instance=RequestContext(request))
+    
+def actor(request, content_type_id, object_id):
+    ctype = get_object_or_404(ContentType, pk=content_type_id)
+    actor = get_object_or_404(ctype.model_class(), pk=object_id)    
+    return render_to_response('activity/actor.html', {
+        'action_list': actor_stream(actor), 'actor':actor,'ctype':ctype
+    }, context_instance=RequestContext(request)) 
