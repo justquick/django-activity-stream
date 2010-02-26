@@ -1,5 +1,8 @@
+from operator import or_
 from django.db import models
 from django.db.models.query import QuerySet
+from django.core.urlresolvers import reverse
+from django.utils.timesince import timesince as timesince_
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -11,7 +14,6 @@ class FollowManager(models.Manager):
         """
         Produces a QuerySet of most recent activities from actors the user follows
         """
-        from operator import or_
         qs = (Activity.objects.stream_for_actor(follow.actor) for follow in self.filter(user=user))
         return reduce(or_, qs).order_by('-timestamp')
     
@@ -27,32 +29,8 @@ class Follow(models.Model):
     
     objects = FollowManager()
     
-    def link(cls, user, actor):
-        action.send(user,verb='started following',target=actor)
-        return cls.objects.get_or_create(
-            user = user,
-            content_type = ContentType.objects.get_for_model(actor),
-            object_id = actor.pk,            
-        )[0]
-    link = classmethod(link)
-
     def __unicode__(self):
-        return u'%s => %s' % (self.user, self.actor)
-
-def follow(user, actor):
-    """
-    Links the user => actor, letting the user follow the actor's activities
-    
-    Syntax::
-    
-        follow(<user>, <actor>)
-    
-    Example::
-    
-        follow(request.user, group)
-    
-    """
-    Follow.link(user, actor)    
+        return u'%s -> %s' % (self.user, self.actor)
 
 class ActivityManager(models.Manager):
     def stream_for_actor(self, actor):
@@ -116,28 +94,62 @@ class Activity(models.Model):
                 (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
         
+    def actor_url(self):
+        """
+        Returns the actor stream of this activity's actor
+        """
+        return reverse('actstream_actor',None,(self.actor_content_type.pk,self.actor_object_id))
+        
+    def target_url(self):
+        """
+        Returns the actor stream of this activity's target
+        """        
+        return reverse('actstream_actor',None,(self.target_content_type.pk,self.target_object_id))
+                
+        
     def timesince(self, now=None):
         """
         Shortcut for the ``django.utils.timesince.timesince`` function of the activity's timestamp
         """
-        from django.utils.timesince import timesince as timesince_
         return timesince_(self.timestamp, now)
 
-    def from_actor(cls, actor, verb, target=None):
-        activity = cls.objects.get_or_create(
-            actor_content_type = ContentType.objects.get_for_model(actor),
-            actor_object_id = actor.pk,            
-            verb = verb
-        )[0]
-        if target:
-            activity.target_object_id = target.pk
-            activity.target_content_type = ContentType.objects.get_for_model(target)
-            activity.save()
-        return activity
-    
     @models.permalink
     def get_absolute_url(self):
-        return ('actstream.views.detail', [self.pk])    
+        return ('actstream.views.detail', [self.pk])
+        
+
+def follow(user, actor):
+    """
+    Links a ``User`` to any  ``Actor`` so that the actor's activities appear in the user's stream.
+    Also sends the ``<user> started following <actor>`` signal.
+    
+    Syntax::
+    
+        follow(<user>, <actor>)
+    
+    Example::
+    
+        follow(request.user, group)
+    
+    """
+    action.send(user, verb='started following', target=actor)
+    return Follow.objects.get_or_create(
+        user = user, object_id = actor.pk, 
+        content_type = ContentType.objects.get_for_model(actor)
+    )[0]
+    
+def actor_stream(actor):
+    return Activity.objects.stream_for_actor(actor)
+actor_stream.__doc__ = Activity.objects.stream_for_actor.__doc__
+    
+def user_stream(user):
+    return Follow.objects.stream_for_user(user)
+user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
+    
+def model_stream(model):
+    return Activity.objects.stream_for_model(model)
+model_stream.__doc__ = Activity.objects.stream_for_model.__doc__
+
     
 def action_handler(verb, target=None, **kwargs):
     actor = kwargs.pop('sender')
