@@ -69,7 +69,7 @@ class ActivityTestCase(unittest.TestCase):
         from random import choice, randint
         from time import sleep
         
-        humans = [Player.objects.create() for i in range(100)]
+        humans = [Player.objects.create() for i in range(10)]
         zombies = [Player.objects.create(state=1) for _ in range(2)]
 
         while len(humans):
