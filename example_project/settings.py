@@ -70,6 +70,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'example_project.urls'
 
 TEMPLATE_DIRS = (
+    'templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -84,6 +85,26 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'django.contrib.sites',
     'django.contrib.messages',
+    'registration',
     'actstream',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+)
+
+def user_override(user):
+    from django.contrib.contenttypes.models import ContentType
+    from django.core.urlresolvers import reverse    
+    return reverse('actstream_actor',None,(ContentType.objects.get_for_model(user).pk,user.pk))
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': user_override
+}
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
