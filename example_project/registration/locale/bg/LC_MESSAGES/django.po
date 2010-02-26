@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-19 19:30-0500\n"
+"PO-Revision-Date: 2008-03-05 12:37+0200\n"
+"Last-Translator: Vladislav <vladislav.mitov@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Bookmarks: -1,-1,-1,-1,10,-1,-1,-1,-1,-1\n"
+
+#: forms.py:38
+msgid "username"
+msgstr "Потребителско име "
+
+#: forms.py:41
+msgid "email address"
+msgstr "Електронна поща"
+
+#: forms.py:43
+msgid "password"
+msgstr "Парола"
+
+#: forms.py:45
+msgid "password (again)"
+msgstr "Парола (проверка)"
+
+#: forms.py:54
+msgid "Usernames can only contain letters, numbers and underscores"
+msgstr "Потребителските имена могат да съдържат букви, цифри и подчертавки"
+
+#: forms.py:59
+msgid "This username is already taken. Please choose another."
+msgstr "Потребителското име е заето. Моля изберето друго."
+
+#: forms.py:68
+msgid "You must type the same password each time"
+msgstr "Грешка при проверка на паролата."
+
+#: forms.py:96
+msgid "I have read and agree to the Terms of Service"
+msgstr "Прочел съм и съм съгласен с условията за експлоатация"
+
+#: forms.py:105
+msgid "You must agree to the terms to register"
+msgstr "Трябва да сте съгласни с условията за да се регистрирате."
+
+#: forms.py:124
+msgid "This email address is already in use. Please supply a different email address."
+msgstr "Адреса на електронната поща е използван. Моля въведете друг адрес."
+
+#: forms.py:149
+msgid "Registration using free email addresses is prohibited. Please supply a different email address."
+msgstr "Регистрациите с безплатни адреси е забранен. Моля въведете различен адрес за електронна поща"
+
+#: models.py:188
+msgid "user"
+msgstr "Потребител"
+
+#: models.py:189
+msgid "activation key"
+msgstr "Ключ за активация"
+
+#: models.py:194
+msgid "registration profile"
+msgstr "регистрационен профил"
+
+#: models.py:195
+msgid "registration profiles"
+msgstr "регистрационни профили"
+

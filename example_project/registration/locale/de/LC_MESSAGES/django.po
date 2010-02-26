@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Jannis Leidel <jannis@leidel.info>, 2007-2009.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: django-registration 0.8 \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-10-18 21:32+0200\n"
+"PO-Revision-Date: 2007-09-29 16:50+0200\n"
+"Last-Translator: Jannis Leidel <jannis@leidel.info>\n"
+"Language-Team: Deutsch <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:23
+msgid "Activate users"
+msgstr "Benutzer aktivieren"
+
+#: admin.py:43
+msgid "Re-send activation emails"
+msgstr "Aktivierungs-E-Mail erneut senden"
+
+#: forms.py:35
+msgid "Username"
+msgstr "Benutzername"
+
+#: forms.py:36
+msgid "This value must contain only letters, numbers and underscores."
+msgstr "Dieser Wert darf nur Buchstaben, Ziffern und Unterstriche enthalten."
+
+#: forms.py:39
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: forms.py:41
+msgid "Password"
+msgstr "Passwort"
+
+#: forms.py:43
+msgid "Password (again)"
+msgstr "Passwort (wiederholen)"
+
+#: forms.py:55
+msgid "A user with that username already exists."
+msgstr "Dieser Benutzername ist bereits vergeben."
+
+#: forms.py:67
+msgid "The two password fields didn't match."
+msgstr "Die beiden Passwörter sind nicht identisch."
+
+#: forms.py:78
+msgid "I have read and agree to the Terms of Service"
+msgstr "Ich habe die Nutzungsvereinbarung gelesen und stimme ihr zu"
+
+#: forms.py:79
+msgid "You must agree to the terms to register"
+msgstr "Sie müssen der Nutzungsvereinbarung zustimmen, um sich zu registrieren"
+
+#: forms.py:95
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+"Diese E-Mail-Adresse wird schon genutzt. Bitte geben Sie eine andere E-Mail-"
+"Adresse an."
+
+#: forms.py:122
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+"Die Registrierung mit einer kostenlosen E-Mail-Adresse ist untersagt. Bitte "
+"geben Sie eine andere E-Mail-Adresse an."
+
+#: models.py:165
+msgid "user"
+msgstr "Benutzer"
+
+#: models.py:166
+msgid "activation key"
+msgstr "Aktivierungsschlüssel"
+
+#: models.py:171
+msgid "registration profile"
+msgstr "Registrierungsprofil"
+
+#: models.py:172
+msgid "registration profiles"
+msgstr "Registrierungsprofile"

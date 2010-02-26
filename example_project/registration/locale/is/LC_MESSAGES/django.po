@@ -1,0 +1,74 @@
+# Icelandic translation of django-registration
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the django-registration
+# package.
+# Björn Kristinsson <bjornkri@gmail.com>, 2009.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-01-22 12:49+0100\n"
+"PO-Revision-Date: 2009-01-22 12:49+0100\n"
+"Last-Translator: Björn Kristinsson <bjornkri@gmail.com>\n"
+"Language-Team: Icelandic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:36
+msgid "username"
+msgstr "notandanafn"
+
+#: forms.py:39
+msgid "email address"
+msgstr "netfang"
+
+#: forms.py:41
+msgid "password"
+msgstr "lykilorð"
+
+#: forms.py:43
+msgid "password (again)"
+msgstr "lykilorð (aftur)"
+
+#: forms.py:55
+msgid "This username is already taken. Please choose another."
+msgstr "Þetta notendanafn er þegar á skrá. Vinsamlega reyndu annað."
+
+#: forms.py:67
+msgid "You must type the same password each time"
+msgstr "Lykilorðin verða að vera eins "
+
+#: forms.py:90
+msgid "I have read and agree to the Terms of Service"
+msgstr "Ég hef lesið og samþykki skilmálana"
+
+#: forms.py:107
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr "Þetta netfang er þegar á skrá. Vinsamlegast notaðu annað netfang."
+
+#: forms.py:133
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr "Óheimilt er að nota ókeypis netföng. Vinsamlegast notaðu annað netfang."
+
+#: models.py:218
+msgid "user"
+msgstr "notandi"
+
+#: models.py:219
+msgid "activation key"
+msgstr "einkennislykill"
+
+#: models.py:224
+msgid "registration profile"
+msgstr "skráningarprófíll"
+
+#: models.py:225
+msgid "registration profiles"
+msgstr "skráningarprófílar"

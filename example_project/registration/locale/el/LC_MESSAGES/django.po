@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Panos Laganakos <panos.laganakos@gmail.com>, 2007.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-19 19:30-0500\n"
+"PO-Revision-Date: 2007-11-14 21:50+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:38
+msgid "username"
+msgstr "όνομα χρήστη"
+
+#: forms.py:41
+msgid "email address"
+msgstr "διεύθυνση ηλεκτρονικού ταχυδρομείου"
+
+#: forms.py:43
+msgid "password"
+msgstr "συνθηματικό"
+
+#: forms.py:45
+msgid "password (again)"
+msgstr "συνθηματικό (ξανά)"
+
+#: forms.py:54
+msgid "Usernames can only contain letters, numbers and underscores"
+msgstr "Τα ονόματα χρηστών μπορούν να περιλαμβάνουν μόνο γράμματα, αριθμούς και υπογραμμίσεις"
+
+#: forms.py:59
+msgid "This username is already taken. Please choose another."
+msgstr "Αυτό το όνομα χρήστη χρησιμοποίειται ήδη. Παρακαλώ διαλέξτε ένα άλλο."
+
+#: forms.py:68
+msgid "You must type the same password each time"
+msgstr "Πρέπει να εισάγετε το ίδιο συνθηματικό κάθε φορά"
+
+#: forms.py:96
+msgid "I have read and agree to the Terms of Service"
+msgstr "Διάβασα και συμφωνώ με τους Όρους της Υπηρεσίας"
+
+#: forms.py:105
+msgid "You must agree to the terms to register"
+msgstr "Πρέπει να συμφωνείται με τους όρους για να εγγραφείτε"
+
+#: forms.py:124
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+"Η συγκεκριμένη διεύθυνση ηλεκτρονικού ταχυδρομείου χρησιμοποιείται ήδη. "
+"Παρακαλώ δώστε κάποια άλλη."
+
+#: forms.py:149
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+"Η εγγραφή μέσω δωρεάν διευθύνσεων ηλεκτρονικού ταχυδρομείου απαγορεύεται. ""Παρακαλώ δώστε κάποια άλλη."
+
+#: models.py:188
+msgid "user"
+msgstr "χρήστης"
+
+#: models.py:189
+msgid "activation key"
+msgstr "κλειδί ενεργοποίησης"
+
+#: models.py:194
+msgid "registration profile"
+msgstr "προφίλ εγγραφής"
+
+#: models.py:195
+msgid "registration profiles"
+msgstr "προφίλ εγγραφών"

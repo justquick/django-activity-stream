@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Rune Bromer <rb@konstellation.dk>, 2007-2009.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: django-registration 0.8 \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n" 
+"PO-Revision-Date: \n" 
+"Last-Translator: Rune Bromer <rb@konstellation.dk>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:23
+msgid "Activate users"
+msgstr "Aktiver brugere"
+
+#: admin.py:43
+msgid "Re-send activation emails"
+msgstr "Gensend aktiveringsemails"
+
+#: forms.py:35
+msgid "Username"
+msgstr "Brugernavn"
+
+#: forms.py:36
+msgid "This value must contain only letters, numbers and underscores."
+msgstr "V¾rdien m kun indeholde bogstaver, tal og underscore."
+
+#: forms.py:39
+msgid "Email address"
+msgstr "E-mailadresse"
+
+#: forms.py:41
+msgid "Password"
+msgstr "Password"
+
+#: forms.py:43
+msgid "Password (again)"
+msgstr "Password (gentag)"
+
+#: forms.py:55
+msgid "A user with that username already exists."
+msgstr "Der findes allerede en bruger med dette brugernavn."
+
+#: forms.py:67
+msgid "The two password fields didn't match."
+msgstr "De 2 passwordfelter er ikke ens."
+
+#: forms.py:78
+msgid "I have read and agree to the Terms of Service"
+msgstr "I har l¾st og accepterer betingelserne."
+
+#: forms.py:79
+msgid "You must agree to the terms to register"
+msgstr "Du skal acceptere betingelserne for at registere"
+
+#: forms.py:95
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+"Denne emailadresse er allerede i brug. Benyt venligst en anden. "
+
+#: forms.py:122
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+"Registrering med gratis emailadresser er ikke muligt. V¾lg venligst en "
+"anden emailadresse"
+
+#: models.py:165
+msgid "user"
+msgstr "bruger"
+
+#: models.py:166
+msgid "activation key"
+msgstr "Aktiveringsn¿gle"
+
+#: models.py:171
+msgid "registration profile"
+msgstr "Registreringsprofil"
+
+#: models.py:172
+msgid "registration profiles"
+msgstr "Registreringprofiler"

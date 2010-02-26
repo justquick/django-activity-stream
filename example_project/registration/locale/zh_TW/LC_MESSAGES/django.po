@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-19 19:30-0500\n"
+"PO-Revision-Date: 2008-03-20 23:22+0800\n"
+"Last-Translator: hutuworm <hutuworm@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:38
+msgid "username"
+msgstr "用戶名"
+
+#: forms.py:41
+msgid "email address"
+msgstr "Email 地址"
+
+#: forms.py:43
+msgid "password"
+msgstr "密碼"
+
+#: forms.py:45
+msgid "password (again)"
+msgstr "密碼（重復）"
+
+#: forms.py:54
+msgid "Usernames can only contain letters, numbers and underscores"
+msgstr "用戶名只能包含字母、數字和下劃線"
+
+#: forms.py:59
+msgid "This username is already taken. Please choose another."
+msgstr "該用戶名已被佔用，請另選一個。"
+
+#: forms.py:68
+msgid "You must type the same password each time"
+msgstr "您必須輸入兩遍同樣的密碼"
+
+#: forms.py:96
+msgid "I have read and agree to the Terms of Service"
+msgstr "我已閱讀並同意該服務條款"
+
+#: forms.py:105
+msgid "You must agree to the terms to register"
+msgstr "您必須同意注冊條款"
+
+#: forms.py:124
+msgid "This email address is already in use. Please supply a different email address."
+msgstr "該 Email 地址已有人使用，請提供一個另外的 Email 地址。"
+
+#: forms.py:149
+msgid "Registration using free email addresses is prohibited. Please supply a different email address."
+msgstr "禁止使用免費 Email 地址注冊，請提供一個另外的 Email 地址。"
+
+#: models.py:188
+msgid "user"
+msgstr "用戶"
+
+#: models.py:189
+msgid "activation key"
+msgstr "激活密鑰"
+
+#: models.py:194
+msgid "registration profile"
+msgstr "注冊信息"
+
+#: models.py:195
+msgid "registration profiles"
+msgstr "注冊信息"
+
