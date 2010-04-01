@@ -1,8 +1,15 @@
-<h2>{{ actor }}</h2>
-<a href="../../../feed/{{ ctype.id }}/{{ actor.id }}">RSS</a> |
-<a href="../../../feed/{{ ctype.id }}/{{ actor.id }}/atom/">ATOM</a> |
-<a href="../../../follow/{{ ctype.id }}/{{ actor.id }}/">FOLLOW</a>
+{% extends 'base.html' %}
 
+{% block title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
+{% block content_title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
+
+{% block navlinks %}
+<li><a href="../../../feed/{{ ctype.id }}/{{ actor.id }}">RSS</a></li>
+<li><a href="../../../feed/{{ ctype.id }}/{{ actor.id }}/atom/">ATOM</a></li>
+{% ifequal request.user actor %}{% else %}<li><a href="../../../follow/{{ ctype.id }}/{{ actor.id }}/">FOLLOW</a></li>{% endifequal %}
+{% endblock %}
+
+{% block content %}
 <ul>
 {% for action in action_list %}
     <li>{% include 'activity/action.html' %}</li>
@@ -10,3 +17,4 @@
 No actions yet    
 {% endfor %}
 </ul>
+{% endblock %}

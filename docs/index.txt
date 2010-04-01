@@ -99,7 +99,7 @@ API
 ====
 
 .. automodule:: actstream
-   :members: follow, action, actor_stream, user_stream, model_stream
+   :members: Activity, follow, action, actor_stream, user_stream, model_stream
 
 Indices and tables
 ==================

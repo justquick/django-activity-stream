@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+
+<head>
+
+<meta http-equiv="Content-Language" content="en" />
+
+<title>{% block title %}{% endblock %} | ActivityStream</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+
+<!-- style sheet links -->
+<link rel="stylesheet" type="text/css" href="/media/style.css" />
+<link rel="stylesheet" type="text/css" href="/media/menu.css" />
+
+</head>
+
+<body>
+
+<div id="headercontainer">
+	<div id="header">
+		<h1>Activity Stream</h1>
+	</div>
+</div>
+
+<div id="menucontainer">
+	<div id="menu">
+		<div id="navcontainer">
+			<ul id="navlist">
+				{% block navlinks %}{% endblock %}
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="content">
+	<h2>{% block content_title %}{% endblock %}</h2>
+	{% block content %}{% endblock %}
+</div>
+
+<div id="footer">
+	web design by <a title="derby web design" href="http://www.tristarwebdesign.co.uk">tri-star web design</a>
+</div>
+
+</body>
+
+</html>
