@@ -126,8 +126,9 @@ class Action(models.Model):
 
 def follow(user, actor):
     """
-    Links a ``User`` to any  ``Actor`` so that the actor's activities appear in the user's stream.
-    Also sends the ``action`` signal with args ``actor=<user>``, ``verb='started following'``, ``target=<actor>`` signal.
+    Creates a ``User`` -> ``Actor`` follow relationship such that the actor's activities appear in the user's stream.
+    Also sends the ``<user> started following <actor>`` action signal.
+    Returns the created ``Follow`` instance
     
     Syntax::
     
@@ -139,9 +140,25 @@ def follow(user, actor):
     
     """
     action.send(user, verb='started following', target=actor)
-    return Follow.objects.get_or_create(
-        user = user, object_id = actor.pk, 
-        content_type = ContentType.objects.get_for_model(actor))[0]
+    return Follow.objects.create(user = user, object_id = actor.pk, 
+        content_type = ContentType.objects.get_for_model(actor))
+    
+def unfollow(user, actor, send_action=False):
+    """
+    Removes ``User`` -> ``Actor`` follow relationship. 
+    Optionally sends the ``<user> stopped following <actor>`` action signal.
+    
+    Syntax::
+    
+        unfollow(<user>, <actor>)
+    
+    Example::
+    
+        unfollow(request.user, other_user)
+    
+    """
+    Follow.objects.filter(user = user, object_id = actor.pk, 
+        content_type = ContentType.objects.get_for_model(actor)).delete()   
     
 def actor_stream(actor):
     return Action.objects.stream_for_actor(actor)
