@@ -17,6 +17,20 @@ Action events are categorized by three main components.
 Nomenclature of this specification is based on the `Atom Activity Extension <http://martin.atkins.me.uk/specs/activitystreams/atomactivity>`_
 
 
+Example Project
+================
+
+Download the most recent sourcecode and start up the development server. Make sure you have the most recent version of django::
+
+    git clone git://github.com/justquick/django-activity-stream.git
+    cd django-activity-stream/example_project
+    pip install django
+    python manage.py runserver
+    
+If all goes well it will be available at http://127.0.0.1:8000/. Use the demo login (demo:demo) and try tinkering with the site and following users/groups. Some sample data is provided/
+    
+
+
 Install
 ========
 
@@ -74,10 +88,12 @@ You can also just make a ``GET`` request to the ``actstream_follow`` view::
    
 Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
 
+There is also a function ``actstream.unfollow`` which removes the link and takes the same arguments as ``actstream.follow``
+
 Activity Feeds
 ===============
 
-Listings of activities are available for several points of view. All are sorted by ``-timestamp``::
+Listings of activities are available for several points of view. All return ``QuerySet``s of ``Action``s sorted by ``-timestamp``::
 
     from actstream import actor_stream, user_stream, model_stream
 
