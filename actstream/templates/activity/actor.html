@@ -4,9 +4,9 @@
 {% block content_title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
 
 {% block navlinks %}
-<li><a href="../../../feed/{{ ctype.id }}/{{ actor.id }}">RSS</a></li>
-<li><a href="../../../feed/{{ ctype.id }}/{{ actor.id }}/atom/">ATOM</a></li>
-{% ifequal request.user actor %}{% else %}<li><a href="../../../follow/{{ ctype.id }}/{{ actor.id }}/">FOLLOW</a></li>{% endifequal %}
+<li><a href="{% url actstream_object_feed content_type_id=ctype.id  object_id=actor.id %}">RSS</a></li>
+<li><a href="{% url actstream_object_feed_atom content_type_id=ctype.id  object_id=actor.id %}">ATOM</a></li>
+{% ifequal request.user actor %}{% else %}<li><a href="{% url actstream_follow content_type_id=ctype.id  object_id=actor.id %}">FOLLOW</a></li>{% endifequal %}
 {% endblock %}
 
 {% block content %}
