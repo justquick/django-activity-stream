@@ -2,11 +2,11 @@ from operator import or_
 from django.db import models
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 from django.utils.timesince import timesince as timesince_
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
 
 from actstream.signals import action
 
@@ -184,8 +184,8 @@ def action_handler(verb, target=None, public=True, **kwargs):
     kw = {
         'actor_content_type': ContentType.objects.get_for_model(actor),
         'actor_object_id': actor.pk,
-        'verb': verb,
-        'public':public,
+        'verb': unicode(verb),
+        'public': bool(public),
     }
     if target:
         kw.update(target_object_id=target.pk,
