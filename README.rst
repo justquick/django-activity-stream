@@ -86,7 +86,7 @@ Following Actors
 
 Generating the link between a ``User`` and any particular ``Actor`` is as easy as calling a function::
 
-    from actstream import follow
+    from actstream.models import follow, unfollow
     
     follow(request.user, group)
    
@@ -103,7 +103,7 @@ Action Feeds
 
 Listings of actions are available for several points of view. All return a ``QuerySet`` of ``Action`` items sorted by ``-timestamp``::
 
-    from actstream import actor_stream, user_stream, model_stream
+    from actstream.models import actor_stream, user_stream, model_stream
 
 Actions by a given actor::
 
