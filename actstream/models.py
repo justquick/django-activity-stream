@@ -6,6 +6,7 @@ from django.utils.timesince import timesince as timesince_
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 from actstream.signals import action
 
@@ -90,6 +91,8 @@ class Action(models.Model):
     
     timestamp = models.DateTimeField(auto_now_add=True)
     
+    public = models.BooleanField(default=True)
+    
     objects = ActionManager()
     
     def __unicode__(self):
@@ -139,7 +142,7 @@ def follow(user, actor):
         follow(request.user, group)
     
     """
-    action.send(user, verb='started following', target=actor)
+    action.send(user, verb=_('started following'), target=actor)
     return Follow.objects.create(user = user, object_id = actor.pk, 
         content_type = ContentType.objects.get_for_model(actor))
     
@@ -158,7 +161,9 @@ def unfollow(user, actor, send_action=False):
     
     """
     Follow.objects.filter(user = user, object_id = actor.pk, 
-        content_type = ContentType.objects.get_for_model(actor)).delete()   
+        content_type = ContentType.objects.get_for_model(actor)).delete()
+    if send_action:
+        action.send(user, verb=_('stopped following'), target=actor)
     
 def actor_stream(actor):
     return Action.objects.stream_for_actor(actor)
@@ -173,13 +178,14 @@ def model_stream(model):
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
 
     
-def action_handler(verb, target=None, **kwargs):
+def action_handler(verb, target=None, public=True, **kwargs):
     actor = kwargs.pop('sender')
     kwargs.pop('signal', None)
     kw = {
         'actor_content_type': ContentType.objects.get_for_model(actor),
         'actor_object_id': actor.pk,
-        'verb': verb
+        'verb': verb,
+        'public':public,
     }
     if target:
         kw.update(target_object_id=target.pk,
