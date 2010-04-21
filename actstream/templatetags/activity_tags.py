@@ -53,7 +53,7 @@ class DisplayActionShort(Node):
         try:
             action_output = render_to_string(('activity/%(verb)s/action.html' % { 'verb':action_instance.verb.replace(' ','_') }),{ 'hide_actor':True, 'action':action_instance },context)
         except TemplateDoesNotExist:
-            action_output = render_to_string(('activity/action.html'),{ 'action':action_instance },context)
+            action_output = render_to_string(('activity/action.html'),{ 'hide_actor':True, 'action':action_instance },context)
         if self.varname is not None:
             context[self.varname] = action_output
             return ""
