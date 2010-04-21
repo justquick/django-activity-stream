@@ -88,6 +88,17 @@ def do_print_action(parser, token):
     else:
         return DisplayAction(bits[1])
         
+def do_print_action_short(parser, token):
+    bits = token.contents.split()
+    if len(bits) > 3:
+        if len(bits) != 4:
+            raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
+        if bits[2] != 'as':
+            raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
+        return DisplayActionShort(bits[1],bits[3])
+    else:
+        return DisplayActionShort(bits[1])
+        
 def do_print_grouped_actions(parser, token):
     bits = token.contents.split()
     if len(bits) > 3:
@@ -114,6 +125,7 @@ def do_print_action_label(parser, token):
 
 register = Library()     
 register.tag('display_action', do_print_action)
+register.tag('display_action_short', do_print_action_short)
 register.tag('display_grouped_actions', do_print_grouped_actions)
 register.tag('action_label', do_print_action_label)
 
