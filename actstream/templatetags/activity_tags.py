@@ -16,7 +16,7 @@ class DisplayActionLabel(Node):
             if user and user == actor_instance.user:
                 result=" your "
             else:
-                result = " %s's " % (actor_instance.user.get_full_name or actor_instance.user.username)
+                result = " %s's " % (actor_instance.user.get_full_name() or actor_instance.user.username)
         except ValueError:
             result = ""
         result += actor_instance.get_label()
