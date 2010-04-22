@@ -2,8 +2,8 @@ Activity Stream Documentation
 ==============================
 
 :Authors:
-   Justin Quick <justquick@gmail.com>
-   Aaron Williamson
+   Justin Quick <justquick@gmail.com>,
+   Aaron Williamson,
    Jordan Reiter
 :Version: 0.2
 
@@ -37,7 +37,6 @@ To test the activity-stream app, stop the server and run this::
 
     python manage.py test actstream
     
-
 
 Install
 ========
