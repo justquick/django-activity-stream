@@ -8,21 +8,22 @@ from django.contrib.contenttypes.models import ContentType
 from actstream.models import Follow, Action, user_stream, actor_stream, model_stream
 
 @login_required
-def follow(request, content_type_id, object_id):
+def follow_unfollow(request, content_type_id, object_id, follow=True):
     """
     Creates follow relationship st ``request.user`` starts following the actor defined by ``content_type_id``, ``object_id``
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
     actor = get_object_or_404(ctype.model_class(), pk=object_id)
-    _,created = Follow.objects.get_or_create(user=request.user,
-        content_type=ctype, object_id=object_id)
-    if request.is_ajax():
-        return HttpResponse()
-    if 'next' in request.REQUEST:
-        return HttpResponseRedirect(request.REQUEST['next'])
-    return render_to_response('activity/follow.html', {
-        'actor':actor, 'created':created
-    }, context_instance=RequestContext(request))
+    lookup = {
+        'user': request.user,
+        'content_type': ctype,
+        'object_id': object_id,
+    }
+    if follow:
+        Follow.objects.get_or_create(**lookup)
+        return type('Created', (HttpResponse,), {'status_code':201})()
+    Follow.objects.get(**lookup).delete()
+    return type('Deleted', (HttpResponse,), {'status_code':204})()
     
 @login_required
 def stream(request):
