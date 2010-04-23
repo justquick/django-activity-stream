@@ -181,16 +181,14 @@ model_stream.__doc__ = Action.objects.stream_for_model.__doc__
 def action_handler(verb, target=None, public=True, **kwargs):
     actor = kwargs.pop('sender')
     kwargs.pop('signal', None)
-    kw = {
-        'actor_content_type': ContentType.objects.get_for_model(actor),
-        'actor_object_id': actor.pk,
-        'verb': unicode(verb),
-        'public': bool(public),
-    }
+    action = Action(actor_content_type=ContentType.objects.get_for_model(actor),
+                    actor_object_id=actor.pk,
+                    verb=unicode(verb),
+                    public=bool(public))
     if target:
-        kw.update(target_object_id=target.pk,
-            target_content_type=ContentType.objects.get_for_model(target))
-    kw.update(kwargs)
-    Action.objects.get_or_create(**kw)[0]
+        action.target_object_id=target.pk
+        action.target_content_type=ContantType.objects.get_for_model(target)
+
+    action.save()
     
-action.connect(action_handler)
+action.connect(action_handler, dispatch_uid="actstream.models")
