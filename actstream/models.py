@@ -50,7 +50,7 @@ class ActionManager(models.Manager):
         Produces a QuerySet of most recent activities for any model
         """
         return self.filter(
-            actor_content_type = ContentType.objects.get_for_model(model),
+            target_content_type = ContentType.objects.get_for_model(model)
         ).order_by('-timestamp')
         
 class Action(models.Model):
