@@ -1,0 +1,4 @@
+build
+dist
+*.pyc
+example_project/media/.DS_Store
