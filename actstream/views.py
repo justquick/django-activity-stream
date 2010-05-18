@@ -19,15 +19,16 @@ def follow_unfollow(request, content_type_id, object_id, follow=True):
         'content_type': ctype,
         'object_id': object_id,
     }
-    if follow:
-        Follow.objects.get_or_create(**lookup)
+    def resp(code=201):
         if 'next' in request.REQUEST:
             return HttpResponseRedirect(request.REQUEST['next'])
-        return type('Created', (HttpResponse,), {'status_code':201})()
-    if 'next' in request.REQUEST:
-        return HttpResponseRedirect(request.REQUEST['next'])
+        return type('Response%d' % code, (HttpResponse,), {'status_code': code})()
+        
+    if follow:
+        Follow.objects.get_or_create(**lookup)
+        return resp()
     Follow.objects.get(**lookup).delete()
-    return type('Deleted', (HttpResponse,), {'status_code':204})()
+    return resp(204)
     
 @login_required
 def stream(request):
