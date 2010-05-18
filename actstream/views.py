@@ -21,7 +21,11 @@ def follow_unfollow(request, content_type_id, object_id, follow=True):
     }
     if follow:
         Follow.objects.get_or_create(**lookup)
+        if 'next' in request.REQUEST:
+            return HttpResponseRedirect(request.REQUEST['next'])
         return type('Created', (HttpResponse,), {'status_code':201})()
+    if 'next' in request.REQUEST:
+        return HttpResponseRedirect(request.REQUEST['next'])
     Follow.objects.get(**lookup).delete()
     return type('Deleted', (HttpResponse,), {'status_code':204})()
     
