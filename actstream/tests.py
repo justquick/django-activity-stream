@@ -48,7 +48,7 @@ class ActivityTestCase(unittest.TestCase):
         
         self.client = Client()
 
-    def test_user1(self):
+    def test_aauser1(self):
         self.assertEqual(map(unicode, actor_stream(self.user1)),
             [u'admin commented on CoolGroup 0 minutes ago', u'admin started following Two 0 minutes ago', u'admin joined CoolGroup 0 minutes ago'])
         
@@ -101,3 +101,9 @@ class ActivityTestCase(unittest.TestCase):
             f = open('testdata%d.json'%i,'w')
             f.write(serialize('json',m.objects.all()))
             f.close()
+        Action.objects.all().delete()
+        Comment.objects.all().delete()
+        Player.objects.all().delete()
+        User.objects.all().delete()
+        Group.objects.all().delete()
+        Follow.objects.all().delete()
