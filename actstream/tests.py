@@ -48,7 +48,7 @@ class ActivityTestCase(unittest.TestCase):
         
         self.client = Client()
 
-    def test_aauser1(self):
+    def test_user1(self):
         self.assertEqual(map(unicode, actor_stream(self.user1)),
             [u'admin commented on CoolGroup 0 minutes ago', u'admin started following Two 0 minutes ago', u'admin joined CoolGroup 0 minutes ago'])
         
