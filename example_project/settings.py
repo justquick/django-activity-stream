@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-     ('Justin Quick', 'justquick@gmail.com'),
+    ('Justin Quick', 'justquick@gmail.com'),
 )
 
 
@@ -96,7 +96,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'settings.users',
 )
+
+def users(request):
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.auth.models import User
+    return {'users': User.objects.all(), 'user_ctype': ContentType.objects.get_for_model(User)}
 
 def user_override(user):
     from django.contrib.contenttypes.models import ContentType
