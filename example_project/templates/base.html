@@ -12,7 +12,8 @@
 <!-- style sheet links -->
 <link rel="stylesheet" type="text/css" href="/media/style.css" />
 <link rel="stylesheet" type="text/css" href="/media/menu.css" />
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+{% block extra_head %}{% endblock %}
 </head>
 
 <body>
@@ -34,6 +35,7 @@
 </div>
 
 <div id="content">
+	<p><b>Active users</b>{% for user in users %} | <a href="{{ user.get_absolute_url }}">{{ user }}</a>{% endfor %}</p>
 	<h2>{% block content_title %}{% endblock %}</h2>
 	{% block content %}{% endblock %}
 </div>

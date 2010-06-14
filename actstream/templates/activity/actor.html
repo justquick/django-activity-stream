@@ -1,12 +1,30 @@
 {% extends 'base.html' %}
 
+{% block extra_head %}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+{% endblock %}
+
+
 {% block title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
 {% block content_title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
 
 {% block navlinks %}
 <li><a href="{% url actstream_object_feed content_type_id=ctype.id  object_id=actor.id %}">RSS</a></li>
 <li><a href="{% url actstream_object_feed_atom content_type_id=ctype.id  object_id=actor.id %}">ATOM</a></li>
-{% ifequal request.user actor %}{% else %}<li><a href="{% url actstream_follow content_type_id=ctype.id  object_id=actor.id %}">FOLLOW</a></li>{% endifequal %}
+{% ifequal request.user actor %}{% else %}
+    <li>
+        <a href="{% url actstream_unfollow content_type_id=ctype.id  object_id=actor.id %}" id="unfollow_button" style="display:none">UNFOLLOW</a>
+        <a href="{% url actstream_follow content_type_id=ctype.id  object_id=actor.id %}" id="follow_button" >FOLLOW</a>
+    </li>
+{% endifequal %}
 {% endblock %}
 
 {% block content %}
