@@ -5,14 +5,13 @@ setup.py
 actstream/templates/activity/action.html
 actstream/templates/activity/actor.html
 actstream/templates/activity/detail.html
-actstream/templates/activity/follow.html
 actstream/templates/activity/followers.html
-actstream/templates/activity/stream.html
 actstream/__init__.py
 actstream/admin.py
 actstream/models.py
 actstream/signals.py
 actstream/tests.py
 actstream/urls.py
-actstream/util.py
 actstream/views.py
+actstream/templatetags/__init__.py
+actstream/templatetags/activity_tags.py
