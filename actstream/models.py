@@ -188,7 +188,7 @@ def action_handler(verb, target=None, public=True, **kwargs):
                     description=kwargs.pop('description', None))
     if target:
         action.target_object_id=target.pk
-        action.target_content_type=ContantType.objects.get_for_model(target)
+        action.target_content_type=ContentType.objects.get_for_model(target)
 
     action.save()
     
