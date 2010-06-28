@@ -184,7 +184,8 @@ def action_handler(verb, target=None, public=True, **kwargs):
     action = Action(actor_content_type=ContentType.objects.get_for_model(actor),
                     actor_object_id=actor.pk,
                     verb=unicode(verb),
-                    public=bool(public))
+                    public=bool(public),
+                    description=kwargs.pop('description', None))
     if target:
         action.target_object_id=target.pk
         action.target_content_type=ContantType.objects.get_for_model(target)
