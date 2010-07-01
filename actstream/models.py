@@ -63,16 +63,19 @@ class Action(models.Model):
     
         <actor> <verb> <time>
         <actor> <verb> <target> <time>
+        <actor> <verb> <action_object> <target> <time>
     
     Examples::
     
         <justquick> <reached level 60> <1 minute ago>
         <brosner> <commented on> <pinax/pinax> <2 hours ago>
         <washingtontimes> <started follow> <justquick> <8 minutes ago>
+        <mitsuhiko> <closed> <issue 70> on <mitsuhiko/flask> <about 3 hours ago>
         
     Unicode Representation::
     
         justquick reached level 60 1 minute ago
+        mitsuhiko closed issue 70 on mitsuhiko/flask 3 hours ago
         
     HTML Representation::
     
@@ -89,6 +92,10 @@ class Action(models.Model):
     target_content_type = models.ForeignKey(ContentType,related_name='target',blank=True,null=True)
     target_object_id = models.PositiveIntegerField(blank=True,null=True) 
     target = generic.GenericForeignKey('target_content_type','target_object_id')
+    
+    action_object_content_type = models.ForeignKey(ContentType,related_name='action_object',blank=True,null=True)
+    action_object_object_id = models.PositiveIntegerField(blank=True,null=True) 
+    action_object = generic.GenericForeignKey('action_object_content_type','action_object_object_id')
     
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -183,6 +190,7 @@ model_stream.__doc__ = Action.objects.stream_for_model.__doc__
     
 def action_handler(verb, target=None, **kwargs):
     actor = kwargs.pop('sender')
+    action_object = kwargs.pop('action_object', None)
     kwargs.pop('signal', None)
     action = Action(actor_content_type=ContentType.objects.get_for_model(actor),
                     actor_object_id=actor.pk,
@@ -193,6 +201,10 @@ def action_handler(verb, target=None, **kwargs):
     if target:
         action.target_object_id=target.pk
         action.target_content_type=ContentType.objects.get_for_model(target)
+        
+    if action_object:
+        action.action_object_object_id = action_object.pk
+        action.action_object_content_type=ContentType.objects.get_for_model(action_object)
 
     action.save()
     
