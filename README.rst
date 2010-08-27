@@ -23,7 +23,9 @@ Action events are categorized by four main components.
  * ``Target``. *(Optional)* The object that the verb is enacted on.
  
 ``Actor``, ``Action Object`` and ``Target`` are ``GenericForeignKeys`` to any arbitrary Django object.
-An action is a description of an action that was performed (``Verb``) at some instant in time by some ``Actor``, with some optional ``Target`` that results in some ``Action Object`` getting modified.
+An action is a description of an action that was performed (``Verb``) at some instant in time by some ``Actor``, with some optional ``Target`` that results in some ``Action Object`` getting created/updated/deleted.
+
+For example: ``<justquick>`` *(actor)* ``<closed>`` *(verb)* ``<issue 1>`` *(object)* on ``<activity-stream>`` *(target)* 12 hours ago
 
 Nomenclature of this specification is based on the `Atom Activity Extension <http://martin.atkins.me.uk/specs/activitystreams/atomactivity>`_
 
@@ -31,7 +33,7 @@ Nomenclature of this specification is based on the `Atom Activity Extension <htt
 Example Project
 ================
 
-Download the most recent sourcecode and start up the development server. Make sure you have the most recent version of django::
+Download the most recent sourcecode and start up the development server. Make sure you have the most recent version of Django::
 
     git clone git://github.com/justquick/django-activity-stream.git
     cd django-activity-stream
@@ -88,6 +90,7 @@ To generate an action anywhere in your code, simply import the action signal and
     
     action.send(request.user, verb='reached level 10')
     action.send(request.user, verb='joined', target=group) 
+    action.send(request.user, verb='created comment', action_object=comment, target=group) 
 
 Following Actors
 =================
