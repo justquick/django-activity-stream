@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 
 from actstream.signals import action
 
+
 class FollowManager(models.Manager):
     def stream_for_user(self, user):
         """
@@ -105,8 +106,10 @@ class Action(models.Model):
     
     def __unicode__(self):
         if self.target:
-            return u'%s %s %s %s ago' % \
-                (self.actor, self.verb, self.target, self.timesince())
+            if self.action_object:
+                return u'%s %s %s on %s %s ago' % (self.actor, self.verb, self.action_object, self.target, self.timesince())
+            else:
+                return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
         
     def actor_url(self):
@@ -186,26 +189,27 @@ user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
 def model_stream(model):
     return Action.objects.stream_for_model(model)
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
-
     
-def action_handler(verb, target=None, **kwargs):
-    actor = kwargs.pop('sender')
-    action_object = kwargs.pop('action_object', None)
+def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
-    action = Action(actor_content_type=ContentType.objects.get_for_model(actor),
-                    actor_object_id=actor.pk,
-                    verb=unicode(verb),
-                    public=bool(kwargs.pop('public', True)),
-                    description=kwargs.pop('description', None),
-                    timestamp=kwargs.pop('timestamp', datetime.now()))
-    if target:
-        action.target_object_id=target.pk
-        action.target_content_type=ContentType.objects.get_for_model(target)
-        
-    if action_object:
-        action.action_object_object_id = action_object.pk
-        action.action_object_content_type=ContentType.objects.get_for_model(action_object)
+    actor = kwargs.pop('sender')
+    newaction = Action(actor_content_type = ContentType.objects.get_for_model(actor),
+                    actor_object_id = actor.pk,
+                    verb = unicode(verb),
+                    public = bool(kwargs.pop('public', True)),
+                    description = kwargs.pop('description', None),
+                    timestamp = kwargs.pop('timestamp', datetime.now()))
 
-    action.save()
+    target = kwargs.pop('target', None)
+    if target:
+        newaction.target_object_id = target.pk
+        newaction.target_content_type = ContentType.objects.get_for_model(target)
+        
+    action_object = kwargs.pop('action_object', None)
+    if action_object:
+        newaction.action_object_object_id = action_object.pk
+        newaction.action_object_content_type = ContentType.objects.get_for_model(action_object)
+
+    newaction.save()
     
 action.connect(action_handler, dispatch_uid="actstream.models")

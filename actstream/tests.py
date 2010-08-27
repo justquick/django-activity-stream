@@ -35,7 +35,7 @@ class ActivityTestCase(unittest.TestCase):
         
         # User1 comments on group
         action.send(self.user1,verb='commented on',target=self.group)
-        comment = Comment.objects.get_or_create(
+        self.comment = Comment.objects.get_or_create(
             user = self.user1,
             content_type = ContentType.objects.get_for_model(self.group),
             object_pk = self.group.pk,
@@ -44,7 +44,7 @@ class ActivityTestCase(unittest.TestCase):
         )[0]
         
         # Group responds to comment
-        action.send(self.group,verb='responded to',target=comment)
+        action.send(self.group,verb='responded to',target=self.comment)
         
         self.client = Client()
 
@@ -95,10 +95,19 @@ class ActivityTestCase(unittest.TestCase):
         self.assertEqual(map(unicode,model_stream(Player))[:5],
             map(unicode,Action.objects.order_by('-timestamp')[:5]))
         
+    def test_action_object(self):
+        action.send(self.user1,verb='created comment',action_object=self.comment,target=self.group)
+        created_action = Action.objects.get(verb='created comment')
+
+        self.assertEqual(created_action.actor, self.user1)
+        self.assertEqual(created_action.action_object, self.comment)
+        self.assertEqual(created_action.target, self.group)
+        self.assertEqual(unicode(created_action), u'admin created comment admin: Sweet Group!... on CoolGroup 0 minutes ago')
+        
     def tearDown(self):
         from django.core.serializers import serialize
-        for i,m in enumerate((Comment,ContentType,Player,Follow,Action,User,Group)):
-            f = open('testdata%d.json'%i,'w')
+        for m in (Comment,ContentType,Player,Follow,Action,User,Group):
+            f = open('testdata-%s.json' % m.__name__.lower(),'w')
             f.write(serialize('json',m.objects.all()))
             f.close()
         Action.objects.all().delete()
