@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 
 from actstream.signals import action
 
+
 class FollowManager(models.Manager):
     def stream_for_user(self, user):
         """
@@ -63,16 +64,19 @@ class Action(models.Model):
     
         <actor> <verb> <time>
         <actor> <verb> <target> <time>
+        <actor> <verb> <action_object> <target> <time>
     
     Examples::
     
         <justquick> <reached level 60> <1 minute ago>
         <brosner> <commented on> <pinax/pinax> <2 hours ago>
         <washingtontimes> <started follow> <justquick> <8 minutes ago>
+        <mitsuhiko> <closed> <issue 70> on <mitsuhiko/flask> <about 3 hours ago>
         
     Unicode Representation::
     
         justquick reached level 60 1 minute ago
+        mitsuhiko closed issue 70 on mitsuhiko/flask 3 hours ago
         
     HTML Representation::
     
@@ -90,6 +94,10 @@ class Action(models.Model):
     target_object_id = models.PositiveIntegerField(blank=True,null=True) 
     target = generic.GenericForeignKey('target_content_type','target_object_id')
     
+    action_object_content_type = models.ForeignKey(ContentType,related_name='action_object',blank=True,null=True)
+    action_object_object_id = models.PositiveIntegerField(blank=True,null=True) 
+    action_object = generic.GenericForeignKey('action_object_content_type','action_object_object_id')
+    
     timestamp = models.DateTimeField(auto_now_add=True)
     
     public = models.BooleanField(default=True)
@@ -98,8 +106,10 @@ class Action(models.Model):
     
     def __unicode__(self):
         if self.target:
-            return u'%s %s %s %s ago' % \
-                (self.actor, self.verb, self.target, self.timesince())
+            if self.action_object:
+                return u'%s %s %s on %s %s ago' % (self.actor, self.verb, self.action_object, self.target, self.timesince())
+            else:
+                return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
         
     def actor_url(self):
@@ -179,21 +189,27 @@ user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
 def model_stream(model):
     return Action.objects.stream_for_model(model)
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
-
     
-def action_handler(verb, target=None, **kwargs):
-    actor = kwargs.pop('sender')
+def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
-    action = Action(actor_content_type=ContentType.objects.get_for_model(actor),
-                    actor_object_id=actor.pk,
-                    verb=unicode(verb),
-                    public=bool(kwargs.pop('public', True)),
-                    description=kwargs.pop('description', None),
-                    timestamp=kwargs.pop('timestamp', datetime.now()))
-    if target:
-        action.target_object_id=target.pk
-        action.target_content_type=ContentType.objects.get_for_model(target)
+    actor = kwargs.pop('sender')
+    newaction = Action(actor_content_type = ContentType.objects.get_for_model(actor),
+                    actor_object_id = actor.pk,
+                    verb = unicode(verb),
+                    public = bool(kwargs.pop('public', True)),
+                    description = kwargs.pop('description', None),
+                    timestamp = kwargs.pop('timestamp', datetime.now()))
 
-    action.save()
+    target = kwargs.pop('target', None)
+    if target:
+        newaction.target_object_id = target.pk
+        newaction.target_content_type = ContentType.objects.get_for_model(target)
+        
+    action_object = kwargs.pop('action_object', None)
+    if action_object:
+        newaction.action_object_object_id = action_object.pk
+        newaction.action_object_content_type = ContentType.objects.get_for_model(action_object)
+
+    newaction.save()
     
 action.connect(action_handler, dispatch_uid="actstream.models")

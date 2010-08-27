@@ -1,8 +1,0 @@
-# Sphinx inventory version 1
-# Project: Django Activity Stream
-# Version: 0.1
-actstream mod index.html
-actstream.follow function index.html
-actstream.model_stream function index.html
-actstream.user_stream function index.html
-actstream.actor_stream function index.html
