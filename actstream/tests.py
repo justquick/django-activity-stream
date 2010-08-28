@@ -105,11 +105,11 @@ class ActivityTestCase(unittest.TestCase):
         self.assertEqual(unicode(created_action), u'admin created comment admin: Sweet Group!... on CoolGroup 0 minutes ago')
         
     def tearDown(self):
-        from django.core.serializers import serialize
-        for m in (Comment,ContentType,Player,Follow,Action,User,Group):
-            f = open('testdata-%s.json' % m.__name__.lower(),'w')
-            f.write(serialize('json',m.objects.all()))
-            f.close()
+        #from django.core.serializers import serialize
+        #for m in (Comment,ContentType,Player,Follow,Action,User,Group):
+        #    f = open('testdata-%s.json' % m.__name__.lower(),'w')
+        #    f.write(serialize('json',m.objects.all()))
+        #    f.close()
         Action.objects.all().delete()
         Comment.objects.all().delete()
         Player.objects.all().delete()
