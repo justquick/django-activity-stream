@@ -1,5 +1,8 @@
 from django.template import Variable, Library, Node, TemplateSyntaxError, TemplateDoesNotExist
 from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+
 
 class DisplayActionLabel(Node):
     def __init__(self, actor, varname=None):
@@ -121,15 +124,20 @@ def do_print_action_label(parser, token):
     else:
         return DisplayActionLabel(bits[1])
     
+def do_get_user_contenttype(parser, token):
+    return UserContentTypeNode(*token.split_contents())
 
+class UserContentTypeNode(Node):
+    def __init__(self, *args):
+        self.args = args
+        
+    def render(self, context):
+        context[self.args[-1]] = ContentType.objects.get_for_model(User)
+        return ''
 
 register = Library()     
 register.tag('display_action', do_print_action)
 register.tag('display_action_short', do_print_action_short)
 register.tag('display_grouped_actions', do_print_grouped_actions)
 register.tag('action_label', do_print_action_label)
-
-
-
-
-# just changing it to make it different
+register.tag('get_user_contenttype', do_get_user_contenttype)

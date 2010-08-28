@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load activity_tags %}
 {% block extra_head %}
 <script>
 $(function () {
@@ -28,6 +28,7 @@ $(function () {
 {% endblock %}
 
 {% block content %}
+{% get_user_contenttype as user_ctype %}
 <p><b><a href="{% url actstream_actor content_type_id=user_ctype.id object_id=request.user.id %}">View my actions</a></b></p>
 <ul>
 {% for action in action_list %}
