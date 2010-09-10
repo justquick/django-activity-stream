@@ -2,9 +2,12 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed
-from django.contrib.syndication.views import Feed
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+try:
+    from django.contrib.syndication.views import Feed
+except ImportError: # Pre 1.2
+    from django.contrib.syndication.feeds import Feed
 
 from actstream.models import actor_stream, model_stream, user_stream
 
