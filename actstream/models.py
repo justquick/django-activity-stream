@@ -21,6 +21,9 @@ class FollowManager(models.Manager):
         qs = (Action.objects.stream_for_actor(follow.actor) for follow in follows)
         if follows.count():
             return reduce(or_, qs).order_by('-timestamp')
+
+        return Action.objects.none()
+
     
 class Follow(models.Model):
     """
