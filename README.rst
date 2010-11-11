@@ -80,7 +80,7 @@ Generating actions is probably best done in a separate signal::
     from myapp.models import MyModel
     
     def my_handler(sender, **kwargs):
-        action.save(sender, verb='was saved')
+        action.send(sender, verb='was saved')
     
     pre_save.connect(my_handler, sender=MyModel)   
 
