@@ -75,14 +75,14 @@ Generating Actions
 
 Generating actions is probably best done in a separate signal::
     
-    from django.db.models.signals import pre_save
+    from django.db.models.signals import post_save
     from actstream import action
     from myapp.models import MyModel
     
-    def my_handler(sender, **kwargs):
-        action.send(sender, verb='was saved')
+    def my_handler(sender, instance, created, **kwargs):
+        action.send(instance, verb='was saved')
     
-    pre_save.connect(my_handler, sender=MyModel)   
+    post_save.connect(my_handler, sender=MyModel)
 
 To generate an action anywhere in your code, simply import the action signal and send it with your actor, verb, and target::
 
