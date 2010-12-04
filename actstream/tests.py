@@ -1,6 +1,8 @@
 import unittest
+
 from django.db import models
 from django.test.client import Client
+from django.test import TransactionTestCase
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -8,15 +10,12 @@ from django.contrib.sites.models import Site
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
 
-class Comment(models.Model):
-    comment = models.TextField()
-    user = models.ForeignKey(User)
+class ActivityTestCase(TransactionTestCase):
+    urls = 'actstream.urls'    
     
-    def __unicode__(self):
-        return "%s: %s..." % (self.user.username , self.comment)
-
-class ActivityTestCase(unittest.TestCase):
     def setUp(self):
+        self._urlconf_setup()
+        
         self.group = Group.objects.get_or_create(name='CoolGroup')[0]
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -46,7 +45,6 @@ class ActivityTestCase(unittest.TestCase):
         
         # Group responds to comment
         action.send(self.group,verb='responded to',target=self.comment)
-        
         self.client = Client()
 
     def test_user1(self):
@@ -123,13 +121,15 @@ class ActivityTestCase(unittest.TestCase):
         self.assertEquals(f1, f2, "Should have received the same Follow object that I first submitted")
 
     def tearDown(self):
-        #from django.core.serializers import serialize
-        #for m in (Comment,ContentType,Player,Follow,Action,User,Group):
-        #    f = open('testdata-%s.json' % m.__name__.lower(),'w')
-        #    f.write(serialize('json',m.objects.all()))
-        #    f.close()
         Action.objects.all().delete()
-#        Comment.objects.all().delete()
         User.objects.all().delete()
         Group.objects.all().delete()
         Follow.objects.all().delete()
+
+class Comment(models.Model):
+    comment = models.TextField()
+    user = models.ForeignKey(User)
+    
+    def __unicode__(self):
+        return "%s: %s..." % (self.user.username , self.comment)
+
