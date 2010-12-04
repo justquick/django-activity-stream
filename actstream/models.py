@@ -8,6 +8,7 @@ from django.utils.timesince import timesince as timesince_
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 from actstream.signals import action
 
@@ -36,7 +37,10 @@ class Follow(models.Model):
     actor = generic.GenericForeignKey()
     
     objects = FollowManager()
-    
+
+    class Meta:
+        unique_together = (("user", "content_type", "object_id"),)
+
     def __unicode__(self):
         return u'%s -> %s' % (self.user, self.actor)
 
@@ -157,10 +161,15 @@ def follow(user, actor, send_action=True):
         follow(request.user, group)
     
     """
-    if send_action:
-        action.send(user, verb=_('started following'), target=actor)
-    return Follow.objects.create(user = user, object_id = actor.pk, 
-        content_type = ContentType.objects.get_for_model(actor))
+    try:
+        follow = Follow.objects.create(user = user, object_id = actor.pk, 
+            content_type = ContentType.objects.get_for_model(actor))
+        if send_action:
+            action.send(user, verb=_('started following'), target=actor)
+        return follow
+    except IntegrityError:
+        return Follow.objects.filter(user = user, object_id = actor.pk,
+            content_type = ContentType.objects.get_for_model(actor)).all()[0]
     
 def unfollow(user, actor, send_action=False):
     """
