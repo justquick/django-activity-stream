@@ -8,7 +8,7 @@ from django.contrib.sites.models import Site
 
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
-from testapp.models import Player
+
 
 class ActivityTestCase(unittest.TestCase):
     def setUp(self):
@@ -79,20 +79,19 @@ class ActivityTestCase(unittest.TestCase):
     def test_zombies(self):
         from random import choice, randint
         
-        humans = [Player.objects.create() for i in range(10)]
-        zombies = [Player.objects.create(state=1) for _ in range(2)]
+        humans = [User.objects.create(username='human%d' % i) for i in range(10)]
+        zombies = [User.objects.create(username='zombie%d' % j) for j in range(2)]
     
         while len(humans):
             for z in zombies:
                 if not len(humans): break
                 victim = choice(humans)
                 humans.pop(humans.index(victim))
-                victim.state = 1
                 victim.save()
                 zombies.append(victim)
                 action.send(z,verb='killed',target=victim)
                 
-        self.assertEqual(map(unicode,model_stream(Player))[:5],
+        self.assertEqual(map(unicode,model_stream(User))[:5],
             map(unicode,Action.objects.order_by('-timestamp')[:5]))
         
     def test_action_object(self):
@@ -103,7 +102,25 @@ class ActivityTestCase(unittest.TestCase):
         self.assertEqual(created_action.action_object, self.comment)
         self.assertEqual(created_action.target, self.group)
         self.assertEqual(unicode(created_action), u'admin created comment admin: Sweet Group!... on CoolGroup 0 minutes ago')
+
+    def test_doesnt_generate_duplicate_follow_records(self):
+        g = Group.objects.get_or_create(name='DupGroup')[0]
+        s = User.objects.get_or_create(username='dupuser')[0]
         
+        f1 = follow(s, g)
+        self.assertTrue(f1 is not None, "Should have received a new follow record")
+        self.assertTrue(isinstance(f1, Follow), "Returns a Follow object")
+        
+        self.assertEquals( 1, Follow.objects.filter(user = s, object_id = g.pk, 
+            content_type = ContentType.objects.get_for_model(g)).count(), "Should only have 1 follow record here")
+        
+        f2 = follow(s, g)
+        self.assertEquals( 1, Follow.objects.filter(user = s, object_id = g.pk, 
+            content_type = ContentType.objects.get_for_model(g)).count(), "Should still only have 1 follow record here")
+        self.assertTrue( f2 is not None, "Should have received a Follow object")
+        self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
+        self.assertEquals(f1, f2, "Should have received the same Follow object that I first submitted")
+
     def tearDown(self):
         #from django.core.serializers import serialize
         #for m in (Comment,ContentType,Player,Follow,Action,User,Group):
@@ -112,7 +129,6 @@ class ActivityTestCase(unittest.TestCase):
         #    f.close()
         Action.objects.all().delete()
         Comment.objects.all().delete()
-        Player.objects.all().delete()
         User.objects.all().delete()
         Group.objects.all().delete()
         Follow.objects.all().delete()
