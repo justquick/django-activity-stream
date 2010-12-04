@@ -2,13 +2,18 @@ import unittest
 from django.db import models
 from django.test.client import Client
 from django.contrib.auth.models import User, Group
-from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
 
+class Comment(models.Model):
+    comment = models.TextField()
+    user = models.ForeignKey(User)
+    
+    def __unicode__(self):
+        return "%s: %s..." % (self.user.username , self.comment)
 
 class ActivityTestCase(unittest.TestCase):
     def setUp(self):
@@ -35,13 +40,9 @@ class ActivityTestCase(unittest.TestCase):
         
         # User1 comments on group
         action.send(self.user1,verb='commented on',target=self.group)
-        self.comment = Comment.objects.get_or_create(
+        self.comment = Comment.objects.create(
             user = self.user1,
-            content_type = ContentType.objects.get_for_model(self.group),
-            object_pk = self.group.pk,
-            comment = 'Sweet Group!',
-            site = Site.objects.get_current()
-        )[0]
+            comment="Sweet Group!")
         
         # Group responds to comment
         action.send(self.group,verb='responded to',target=self.comment)
@@ -128,7 +129,7 @@ class ActivityTestCase(unittest.TestCase):
         #    f.write(serialize('json',m.objects.all()))
         #    f.close()
         Action.objects.all().delete()
-        Comment.objects.all().delete()
+#        Comment.objects.all().delete()
         User.objects.all().delete()
         Group.objects.all().delete()
         Follow.objects.all().delete()
