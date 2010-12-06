@@ -123,6 +123,7 @@ class ActivityTestCase(TransactionTestCase):
     def tearDown(self):
         Action.objects.all().delete()
         User.objects.all().delete()
+        Comment.objects.all().delete()
         Group.objects.all().delete()
         Follow.objects.all().delete()
 
