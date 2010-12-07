@@ -1,0 +1,12 @@
+Build a 'story' list page
+build a story detail page
+	with follower count
+	with with a follow link (smart link)
+	following icon (you are following/you are not following)
+	activity stream related to the story
+
+when a story is 'updated' (post_save) add an action
+
+latest 'n' activities
+latest 'n' activities for an item
+latest 'n' activities for a person

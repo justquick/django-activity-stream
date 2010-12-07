@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load activity_tags %}
+{% load follower_tags %}
 {% block extra_head %}
 <script>
 $(function () {
@@ -28,6 +29,66 @@ $(function () {
 {% endblock %}
 
 {% block content %}
+
+
+<table>
+	<tr>
+		<th>Tag Code</th>
+		<th>Results</th>
+	</tr>
+	<tr>
+		<td>
+		&#123;% get_follower_count for auth.user identified by user.id %&#125;<br/> 
+		Follower Count for current user &#123;&#123;user.username&#125;&#125; is &#123;&#123; follower_count &#125;&#125;
+		</td>
+		<td>
+		{% get_follower_count for auth.user identified by user.id %} 
+		Follower Count for current user {{user.username}} is {{ follower_count }}
+		</td>
+	</tr>
+	<tr>
+		<td>&#123;% get_follower_count for actor %&#125; Follower Count for &#123;&#123;actor&#125;&#125; is &#123;&#123; follower_count &#125;&#125;</td>
+		<td>{% get_follower_count for actor %}Follower Count for {{actor}} is {{ follower_count }}</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<th width="50%">Tag</th>
+		<th>Results</th>
+	</tr>
+	<tr>
+		<td>
+			&#123;% get_follower_list for actor %&#125;<br/>
+			&lt;ul&gt;<br/>
+			&#123;% for f in follower_list %&#125;<br/>
+			&lt;li&gt;{{f.user}}&lt;/li&gt;<br/>
+			&#123;% endfor %&#125;<br/>
+			&lt;/ul&gt;<br/>
+		</td>
+		<td>
+			{% get_follower_list for actor %}
+			<ul>
+			{% for f in follower_list %}
+			<li>{{ f.user }}</li>
+			{% endfor %}
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			&#123;% render_follower_list for actor %&#125;
+		</td>
+		<td>
+			{% render_follower_list for actor %}
+		</td>
+	</tr>
+</table>
+
+
+
+
+<h2>Links</h2>
 {% get_user_contenttype as user_ctype %}
 <p><b><a href="{% url actstream_actor content_type_id=user_ctype.id object_id=request.user.id %}">View my actions</a></b></p>
 <ul>
