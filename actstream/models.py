@@ -49,8 +49,8 @@ class ActionManager(models.Manager):
         Produces a QuerySet of most recent activities for any actor
         """
         return self.filter(
-            actor_content_type = ContentType.objects.get_for_model(actor),
-            actor_object_id = actor.pk,
+            actor_content_type=ContentType.objects.get_for_model(actor),
+            actor_object_id=actor.pk,
         ).order_by('-timestamp')
         
     def stream_for_model(self, model):
@@ -58,9 +58,9 @@ class ActionManager(models.Manager):
         Produces a QuerySet of most recent activities for any model
         """
         return self.filter(
-            target_content_type = ContentType.objects.get_for_model(model)
+            target_content_type=ContentType.objects.get_for_model(model)
         ).order_by('-timestamp')
-        
+    
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional target). 
@@ -89,20 +89,20 @@ class Action(models.Model):
         <a href="http://oebfare.com/">brosner</a> commented on <a href="http://github.com/pinax/pinax">pinax/pinax</a> 2 hours ago
 
     """
-    actor_content_type = models.ForeignKey(ContentType,related_name='actor')
+    actor_content_type = models.ForeignKey(ContentType, related_name='actor')
     actor_object_id = models.PositiveIntegerField() 
-    actor = generic.GenericForeignKey('actor_content_type','actor_object_id')
+    actor = generic.GenericForeignKey('actor_content_type', 'actor_object_id')
     
     verb = models.CharField(max_length=255)
-    description = models.TextField(blank=True,null=True)
+    description = models.TextField(blank=True, null=True)
     
-    target_content_type = models.ForeignKey(ContentType,related_name='target',blank=True,null=True)
-    target_object_id = models.PositiveIntegerField(blank=True,null=True) 
-    target = generic.GenericForeignKey('target_content_type','target_object_id')
+    target_content_type = models.ForeignKey(ContentType, related_name='target', blank=True, null=True)
+    target_object_id = models.PositiveIntegerField(blank=True, null=True) 
+    target = generic.GenericForeignKey('target_content_type', 'target_object_id')
     
-    action_object_content_type = models.ForeignKey(ContentType,related_name='action_object',blank=True,null=True)
-    action_object_object_id = models.PositiveIntegerField(blank=True,null=True) 
-    action_object = generic.GenericForeignKey('action_object_content_type','action_object_object_id')
+    action_object_content_type = models.ForeignKey(ContentType, related_name='action_object', blank=True, null=True)
+    action_object_object_id = models.PositiveIntegerField(blank=True, null=True) 
+    action_object = generic.GenericForeignKey('action_object_content_type', 'action_object_object_id')
     
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -160,7 +160,7 @@ def follow(user, actor, send_action=True):
         follow(request.user, group)
     
     """
-    follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk, 
+    follow, created = Follow.objects.get_or_create(user=user, object_id=actor.pk,
         content_type=ContentType.objects.get_for_model(actor))
     if send_action:
         action.send(user, verb=_('started following'), target=actor)
@@ -180,8 +180,8 @@ def unfollow(user, actor, send_action=False):
         unfollow(request.user, other_user)
     
     """
-    Follow.objects.filter(user = user, object_id = actor.pk, 
-        content_type = ContentType.objects.get_for_model(actor)).delete()
+    Follow.objects.filter(user=user, object_id=actor.pk,
+        content_type=ContentType.objects.get_for_model(actor)).delete()
     if send_action:
         action.send(user, verb=_('stopped following'), target=actor)
     
@@ -200,12 +200,12 @@ model_stream.__doc__ = Action.objects.stream_for_model.__doc__
 def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
-    newaction = Action(actor_content_type = ContentType.objects.get_for_model(actor),
-                    actor_object_id = actor.pk,
-                    verb = unicode(verb),
-                    public = bool(kwargs.pop('public', True)),
-                    description = kwargs.pop('description', None),
-                    timestamp = kwargs.pop('timestamp', datetime.now()))
+    newaction = Action(actor_content_type=ContentType.objects.get_for_model(actor),
+                    actor_object_id=actor.pk,
+                    verb=unicode(verb),
+                    public=bool(kwargs.pop('public', True)),
+                    description=kwargs.pop('description', None),
+                    timestamp=kwargs.pop('timestamp', datetime.now()))
 
     target = kwargs.pop('target', None)
     if target:

@@ -17,7 +17,7 @@ class DisplayActionLabel(Node):
             user = None
         try:
             if user and user == actor_instance.user:
-                result=" your "
+                result = " your "
             else:
                 result = " %s's " % (actor_instance.user.get_full_name() or actor_instance.user.username)
         except ValueError:
@@ -37,9 +37,9 @@ class DisplayAction(Node):
     def render(self, context):
         action_instance = self.action.resolve(context)
         try:
-            action_output = render_to_string(('activity/%(verb)s/action.html' % { 'verb':action_instance.verb.replace(' ','_') }),{ 'action':action_instance },context)
+            action_output = render_to_string(('activity/%(verb)s/action.html' % { 'verb':action_instance.verb.replace(' ', '_') }), { 'action':action_instance }, context)
         except TemplateDoesNotExist:
-            action_output = render_to_string(('activity/action.html'),{ 'action':action_instance },context)
+            action_output = render_to_string(('activity/action.html'), { 'action':action_instance }, context)
         if self.varname is not None:
             context[self.varname] = action_output
             return ""
@@ -54,9 +54,9 @@ class DisplayActionShort(Node):
     def render(self, context):
         action_instance = self.action.resolve(context)
         try:
-            action_output = render_to_string(('activity/%(verb)s/action.html' % { 'verb':action_instance.verb.replace(' ','_') }),{ 'hide_actor':True, 'action':action_instance },context)
+            action_output = render_to_string(('activity/%(verb)s/action.html' % { 'verb':action_instance.verb.replace(' ', '_') }), { 'hide_actor':True, 'action':action_instance }, context)
         except TemplateDoesNotExist:
-            action_output = render_to_string(('activity/action.html'),{ 'hide_actor':True, 'action':action_instance },context)
+            action_output = render_to_string(('activity/action.html'), { 'hide_actor':True, 'action':action_instance }, context)
         if self.varname is not None:
             context[self.varname] = action_output
             return ""
@@ -71,9 +71,9 @@ class DisplayGroupedActions(Node):
     def render(self, context):
         actions_instance = self.action.resolve(context)
         try:
-            action_output = render_to_string(('activity/%(verb)s/grouped.html' % { 'verb':actions_instance[0].verb }),{ 'actions':actions_instance })
+            action_output = render_to_string(('activity/%(verb)s/grouped.html' % { 'verb':actions_instance[0].verb }), { 'actions':actions_instance })
         except TemplateDoesNotExist:
-            action_output = render_to_string(('activity/grouped.html'),{ 'actions':actions_instance })
+            action_output = render_to_string(('activity/grouped.html'), { 'actions':actions_instance })
         if self.varname is not None:
             context[self.varname] = action_output
             return ""
@@ -102,7 +102,7 @@ def do_display_action(parser, token):
             raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
         if bits[2] != 'as':
             raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
-        return DisplayAction(bits[1],bits[3])
+        return DisplayAction(bits[1], bits[3])
     else:
         return DisplayAction(bits[1])
         
@@ -128,7 +128,7 @@ def do_display_action_short(parser, token):
             raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
         if bits[2] != 'as':
             raise TemplateSyntaxError, "Accepted formats {% display_action [action] %} or {% display_action [action] as [var] %}"
-        return DisplayActionShort(bits[1],bits[3])
+        return DisplayActionShort(bits[1], bits[3])
     else:
         return DisplayActionShort(bits[1])
         
@@ -146,7 +146,7 @@ def do_display_grouped_actions(parser, token):
             raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_grouped_actions [action] as [var] %}"
         if bits[2] != 'as':
             raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_grouped_actions [action] as [var] %}"
-        return DisplayAction(bits[1],bits[3])
+        return DisplayAction(bits[1], bits[3])
     else:
         return DisplayAction(bits[1])
         
@@ -157,7 +157,7 @@ def do_print_action_label(parser, token):
             raise TemplateSyntaxError, "Accepted formats {% action_label [action] %} or {% action_label [action] as [var] %}"
         if bits[2] != 'as':
             raise TemplateSyntaxError, "Accepted formats {% action_label [action] %} or {% action_label [action] as [var] %}"
-        return DisplayActionLabel(bits[1],bits[3])
+        return DisplayActionLabel(bits[1], bits[3])
     elif len(bits) < 2:
         raise TemplateSyntaxError, "Accepted formats {% action_label [action] %} or {% action_label [action] as [var] %}"
     else:
@@ -189,6 +189,46 @@ class UserContentTypeNode(Node):
     def render(self, context):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
+
+
+
+
+#get_comment_count
+#Gets the comment count for the given params and populates the template context with a variable containing that value, whose name is defined by the 'as' clause.
+#{% get_comment_count for [object] as [varname]  %}
+#{% get_comment_count for [app].[model] [object_id] as [varname]  %}
+#Example usage:
+#
+#{% get_comment_count for event as comment_count %}
+#{% get_comment_count for calendar.event event.id as comment_count %}
+#{% get_comment_count for calendar.event 17 as comment_count %}
+#
+#
+#
+#get_comment_list
+#Gets the list of comments for the given params and populates the template context with a variable containing that value, whose name is defined by the 'as' clause.
+#
+#Syntax:
+#
+#{% get_comment_list for [object] as [varname]  %}
+#{% get_comment_list for [app].[model] [object_id] as [varname]  %}
+#Example usage:
+#
+#{% get_comment_list for event as comment_list %}
+#{% for comment in comment_list %}
+#    ...
+#{% endfor %}
+#get_comment_permalink
+#Get the permalink for a comment, optionally specifying the format of the named anchor to be appended to the end of the URL.
+
+#
+#render_comment_list
+#Render the comment list (as returned by {% get_comment_list %}) through the comments/list.html template
+#{% render_comment_list for [object] %}
+#{% render_action_list for [app].[model] [object_id] %}
+#{% render_action_list for event %}
+
+
 
 register = Library()     
 register.tag('display_action', do_display_action)

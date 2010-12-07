@@ -6,3 +6,11 @@ class Player(models.Model):
     
     def __unicode__(self):
         return '#%d' % self.pk
+
+class Story(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+
+    def __unicode__(self):
+        return self.title
+    

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load activity_tags %}
+{% load follower_tags %}
 {% block extra_head %}
 <script>
 $(function () {
@@ -28,6 +29,14 @@ $(function () {
 {% endblock %}
 
 {% block content %}
+
+<p>
+Follower Count {% get_follower_count for auth.user identified by user.id %} for current user {{user.username}} is {{ follower_count }}
+</p>
+<p>
+Follower Count {% get_follower_count for actor %} {{ follower_count }} for {{actor}}
+</p>
+
 {% get_user_contenttype as user_ctype %}
 <p><b><a href="{% url actstream_actor content_type_id=user_ctype.id object_id=request.user.id %}">View my actions</a></b></p>
 <ul>
