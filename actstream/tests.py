@@ -3,9 +3,10 @@ import unittest
 from django.db import models
 from django.test.client import Client
 from django.test import TransactionTestCase
+from django.template import Template, Context, RequestContext
+from django.http import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
@@ -119,6 +120,48 @@ class ActivityTestCase(TransactionTestCase):
         self.assertTrue( f2 is not None, "Should have received a Follow object")
         self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
         self.assertEquals(f1, f2, "Should have received the same Follow object that I first submitted")
+
+    def test_tag_display_action_rendered(self):
+        an_action = Action.objects.all()[0]
+        t = Template('{% load activity_tags %}{% display_action the_action %}')
+        r = HttpRequest()
+        c = RequestContext(r, { 'the_action' : an_action })
+        result = t.render(c)
+        self.assertTrue(result.find(str(an_action.actor)) > -1)
+        self.assertTrue(result.find('/actors/') > -1)
+        self.assertTrue(result.find(str(an_action.target)) > -1)
+
+    def test_tag_display_action_rendered_into_variable(self):
+        an_action = Action.objects.all()[0]
+        t = Template('{% load activity_tags %}{% display_action the_action as thevar %}')
+        r = HttpRequest()
+        c = RequestContext(r, { 'the_action' : an_action })
+        result = t.render(c)
+        self.assertEquals("", result, "Returns an empty string when passing in 'as <varname>'")
+        self.assertTrue(c['thevar'].find(str(an_action.actor)) > -1)
+        self.assertTrue(c['thevar'].find('/actors/') > -1)
+        self.assertTrue(c['thevar'].find(str(an_action.target)) > -1)
+
+    def test_tag_get_user_contenttype(self):
+        c = Context()
+        user_content_type = ContentType.objects.get_for_model(User)
+
+        t = Template('{% load activity_tags %}{% get_user_contenttype %}')
+        t.render(c)
+        '''
+        i don't think this was intentional, but this unit test will cover this to ensure
+        any change in the future to the tag still work for anyone using it.
+        '''
+        self.assertEquals(user_content_type, c['get_user_contenttype'], 
+            "User ContentType object has been inserted into the context as the tag name")
+
+        t = Template('{% load activity_tags %}{% get_user_contenttype as user_ctype %}{{ user_ctype.id }}')
+        results = t.render(c)
+        expected_user_content_type_id = '%d' % user_content_type.id
+        self.assertEquals(expected_user_content_type_id, results, 
+            "Tags load, execute and return the correct result")
+        self.assertEquals(user_content_type, c['user_ctype'], 
+            "User ContentType object has been inserted into the context as the specified variable")
 
     def tearDown(self):
         Action.objects.all().delete()

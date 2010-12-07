@@ -80,7 +80,22 @@ class DisplayGroupedActions(Node):
         else:
             return action_output        
         
-def do_print_action(parser, token):
+def do_display_action(parser, token):
+    """
+    Renders an action into html using the :template: 'activity/%(verb)s/action.html' ; *verb* coming
+    from the Action (spaces are replaced with underscores) or 'activity/action.html' if the former is not found.
+    
+    Usage::
+    
+        {% load activity_tags %}
+        {% display_action [action] %}
+        .. renders the template inline ..
+        
+        {% display_action [action] as [var] %}"
+        .. renders the template and stores into the content variable [var] ..
+        {{ [var] }}
+    
+    """
     bits = token.contents.split()
     if len(bits) > 3:
         if len(bits) != 4:
@@ -91,7 +106,22 @@ def do_print_action(parser, token):
     else:
         return DisplayAction(bits[1])
         
-def do_print_action_short(parser, token):
+def do_display_action_short(parser, token):
+    """
+    Same as :tag:`display_action` except that it inserts a variable called 'hide_actor' into the context with 
+    a value of True
+    
+    Usage::
+    
+        {% load activity_tags %}
+        {% display_action_short [action] %}
+        .. renders the template inline ..
+
+        {% display_action_short [action] as [var] %}"
+        .. renders the template and stores into the content variable [var] ..
+        {{ [var] }}
+    
+    """
     bits = token.contents.split()
     if len(bits) > 3:
         if len(bits) != 4:
@@ -102,13 +132,20 @@ def do_print_action_short(parser, token):
     else:
         return DisplayActionShort(bits[1])
         
-def do_print_grouped_actions(parser, token):
+def do_display_grouped_actions(parser, token):
+    """
+    
+    Usage::
+        {% display_grouped_actions [action] %}
+    With 'as var' syntax::
+        {% display_grouped_actions [action] as [var] %}
+    """
     bits = token.contents.split()
     if len(bits) > 3:
         if len(bits) != 4:
-            raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_action [action] as [var] %}"
+            raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_grouped_actions [action] as [var] %}"
         if bits[2] != 'as':
-            raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_action [action] as [var] %}"
+            raise TemplateSyntaxError, "Accepted formats {% display_grouped_actions [action] %} or {% display_grouped_actions [action] as [var] %}"
         return DisplayAction(bits[1],bits[3])
     else:
         return DisplayAction(bits[1])
@@ -121,10 +158,28 @@ def do_print_action_label(parser, token):
         if bits[2] != 'as':
             raise TemplateSyntaxError, "Accepted formats {% action_label [action] %} or {% action_label [action] as [var] %}"
         return DisplayActionLabel(bits[1],bits[3])
+    elif len(bits) < 2:
+        raise TemplateSyntaxError, "Accepted formats {% action_label [action] %} or {% action_label [action] as [var] %}"
     else:
         return DisplayActionLabel(bits[1])
     
 def do_get_user_contenttype(parser, token):
+    """
+    Sets a context variable that contains the user content type
+    object from the content type manager. The default variable name 
+    is 'get_user_content_type' unless you use the 'as var' format (see below)
+    
+    Usage::
+    
+        {% load activity_tags %}
+        {% get_user_content_type %}
+        {{ get_user_content_type.id }}
+    
+    The 'as var' format::
+    
+        {% get_user_content_type as var %}
+        {{ var.id }}
+    """
     return UserContentTypeNode(*token.split_contents())
 
 class UserContentTypeNode(Node):
@@ -136,8 +191,8 @@ class UserContentTypeNode(Node):
         return ''
 
 register = Library()     
-register.tag('display_action', do_print_action)
-register.tag('display_action_short', do_print_action_short)
-register.tag('display_grouped_actions', do_print_grouped_actions)
+register.tag('display_action', do_display_action)
+register.tag('display_action_short', do_display_action_short)
+register.tag('display_grouped_actions', do_display_grouped_actions)
 register.tag('action_label', do_print_action_label)
 register.tag('get_user_contenttype', do_get_user_contenttype)
