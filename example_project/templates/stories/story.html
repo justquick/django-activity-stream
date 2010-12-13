@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load follower_tags %}
+{% load activity_tags2 %}
 
 {% block extra_head %}
 <script>
@@ -21,6 +22,8 @@ $(function () {
 {% block content %}
 
 {% get_follower_count for story as c %}
+{% get_activity_count for story as a %}
+{% get_activity_list for story as al %}
 
 <table>
     <tr>
@@ -35,6 +38,14 @@ $(function () {
                 <a id="follow_button" href="{% url_to_follow story %}">follow</a>
             {% endif %}
             </h4>
+            <h4>{{ a }} Activities have occured on this Story</h4>
+            <p>
+            {% for a in al %}
+                {{ filter.join }}
+                    {{a.timesince}} ago
+                {{filter}}
+            {% endfor %}
+            </p>
 
             <p>
             {{ story.content }}
@@ -44,7 +55,7 @@ $(function () {
             <h4>Follower List</h4>
             {% render_follower_list for story %}
             <h4>Activity Stream</h4>
-            to do
+            {% render_activity_list for story %}
         </td>
     </tr>
 </table>

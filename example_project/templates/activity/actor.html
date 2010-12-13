@@ -29,6 +29,7 @@ $(function () {
 {% endblock %}
 
 {% block content %}
+<p><b>Active users</b>{% for user in users %} | <a href="{{ user.get_absolute_url }}">{{ user }}</a>{% endfor %}</p>
 
 
 <table>

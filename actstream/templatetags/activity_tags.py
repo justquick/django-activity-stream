@@ -1,7 +1,10 @@
-from django.template import Variable, Library, Node, TemplateSyntaxError, TemplateDoesNotExist
+from django.template import Variable, Library, Node, NodeList, TemplateSyntaxError, TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from actstream.models import Action
+import re
+
 
 
 class DisplayActionLabel(Node):
@@ -191,43 +194,113 @@ class UserContentTypeNode(Node):
         return ''
 
 
+class ActivityNodeBase(Node):
+    def __init__(self, parser, token):
+        self.object_varname = None
+        self.content_type = None
+        self.object_id_varname = None
+        self.as_varname = self.get_default_var_name()
+        r = r'(?P<tag>\w+) for (?P<name>[\w\.]+)(?: identified by (?P<id_by>[\w\.]+))?(?: as (?P<as_varname>\w+))?(?: limit(?: to)? (?P<limit>\d+))?'
+        p = re.compile(r)
+        m = p.match(token.contents)
+        if m is None:
+            raise TemplateSyntaxError("Your tag doesn't match %s" % r)
+        
+        d = m.groupdict()
+        if not d['as_varname'] is None:
+            self.as_varname = d['as_varname']
+
+        if not d['id_by'] is None:
+            self.content_type = ContentType.objects.get(app_label=d['name'].split('.')[0], model=d['name'].split('.')[1])
+            self.object_id_varname = d['id_by']
+        else:
+            self.object_varname = d['name']
+       
+        if not d['limit'] is None:
+            self.limit = d['limit']
 
 
-#get_comment_count
-#Gets the comment count for the given params and populates the template context with a variable containing that value, whose name is defined by the 'as' clause.
-#{% get_comment_count for [object] as [varname]  %}
-#{% get_comment_count for [app].[model] [object_id] as [varname]  %}
-#Example usage:
-#
-#{% get_comment_count for event as comment_count %}
-#{% get_comment_count for calendar.event event.id as comment_count %}
-#{% get_comment_count for calendar.event 17 as comment_count %}
-#
-#
-#
-#get_comment_list
-#Gets the list of comments for the given params and populates the template context with a variable containing that value, whose name is defined by the 'as' clause.
-#
-#Syntax:
-#
-#{% get_comment_list for [object] as [varname]  %}
-#{% get_comment_list for [app].[model] [object_id] as [varname]  %}
-#Example usage:
-#
-#{% get_comment_list for event as comment_list %}
-#{% for comment in comment_list %}
-#    ...
-#{% endfor %}
-#get_comment_permalink
-#Get the permalink for a comment, optionally specifying the format of the named anchor to be appended to the end of the URL.
+    def get_default_var_name(self):
+        raise NotImplementedError
+    
+    def get_final_result_from_query_set(self, qs):
+        return qs
 
-#
-#render_comment_list
-#Render the comment list (as returned by {% get_comment_list %}) through the comments/list.html template
-#{% render_comment_list for [object] %}
-#{% render_action_list for [app].[model] [object_id] %}
-#{% render_action_list for event %}
+    def render_context_value(self, context, context_value):
+        return ''
+    
+    def render(self, context):
+        context_value = None
+        ctype = None
+        c_id = None
+        
+        if not self.content_type is None:
+            ctype = self.content_type
+            c_id = Variable(self.object_id_varname).resolve(context)
+        else:
+            model = Variable(self.object_varname).resolve(context)
+            ctype = ContentType.objects.get_for_model(model)
+            c_id = model.id
+        
+        context_value = Action.objects.filter(
+                target_content_type=ctype,
+                target_object_id=c_id)
+        context_value = self.get_final_result_from_query_set(context_value) 
+        context[self.as_varname] = context_value
+        return self.render_context_value(context, context_value)
+        
 
+
+
+class ActivityCountNode(ActivityNodeBase):
+    def get_default_var_name(self):
+        return "activity_count"
+    
+    def get_final_result_from_query_set(self, queryset):
+        return queryset.count()         
+
+
+    
+class ActivityListNode(ActivityNodeBase):
+    def get_default_var_name(self):
+        return "activity_list"
+
+    def get_final_result_from_query_set(self, queryset):
+        return queryset.all()
+
+
+
+class RenderActivityListNode(ActivityListNode):
+    def render_context_value(self, context, context_value):
+        return render_to_string(('activity/list.html'), {'activity_list' : context_value }, context)
+
+
+
+def do_render_activity_list(parser, token):
+    return RenderActivityListNode(parser, token)
+
+def do_get_activity_list(parser, token):
+    return ActivityListNode(parser, token)
+
+def do_get_activity_count(parser, token):
+    """
+    Gets the number of activities for the specified object or apramters and
+    puts the value into the context.  The default variable name is
+    'activity_count' but can be altered using the 'as var' syntax.
+    
+    Syntax::
+
+        {% get_activity_count for [object] as [varname]  %}
+        {% get_activity_count for [app].[model] identified by [variable] as [varname] limit [number] %}
+
+    Example usage::
+
+        {% get_activity_count for story %}
+        {% get_activity_count for story as fc %}
+        {% get_activity_count for tesapp.story story.id as fc %}
+
+    """
+    return ActivityCountNode(parser, token)
 
 
 register = Library()     
@@ -236,3 +309,6 @@ register.tag('display_action_short', do_display_action_short)
 register.tag('display_grouped_actions', do_display_grouped_actions)
 register.tag('action_label', do_print_action_label)
 register.tag('get_user_contenttype', do_get_user_contenttype)
+register.tag('get_activity_count', do_get_activity_count)
+register.tag('get_activity_list', do_get_activity_list)
+register.tag('render_activity_list', do_render_activity_list)

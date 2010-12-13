@@ -1,9 +1,8 @@
-from django import template
+from django.template import Node, NodeList, Variable, TemplateSyntaxError
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from actstream.models import Follow
-from django.utils.encoding import smart_unicode
 import re
 
 class FollowerNodeBase(template.Node):
@@ -30,7 +29,7 @@ class FollowerNodeBase(template.Node):
        
         if not d['limit'] is None:
             self.limit = d['limit']
-            
+
 
     def get_default_var_name(self):
         raise NotImplementedError
@@ -41,10 +40,6 @@ class FollowerNodeBase(template.Node):
     def render_context_value(self, context, context_value):
         return ''
     
-    def ensure_token_is(self, expected, actual):
-        if not expected == actual:
-            raise template.TemplateSyntaxError("Expected to see %s, but you have %s" % [expected, actual])
-         
     def render(self, context):
         context_value = None
         ctype = None
@@ -67,6 +62,41 @@ class FollowerNodeBase(template.Node):
         
 
 
+class UrlForObjectNode(FollowerNodeBase):    
+    def __init__(self, parser, token):
+        self.object_varname = None
+
+        r = r'(?P<tag>\w+) (?P<name>[\w\.]+)'
+        p = re.compile(r)
+        m = p.match(token.contents)
+        if m is None:
+            raise template.TemplateSyntaxError("Your tag doesn't match %s" % r)
+        
+        d = m.groupdict()
+        self.object_varname = d['name']
+
+    def render(self, context):
+        model = Variable(self.object_varname).resolve(context)
+        return self.render_link(model, context)
+
+    def render_link(self, model, context):
+        raise NotImplementedError
+
+
+
+class UrlToFollowNode(UrlForObjectNode):    
+    def render_link(self, model, context):
+        ctype = ContentType.objects.get_for_model(model)
+        return reverse('actstream_follow', None, (ctype.pk,model.pk))
+
+class UrlToUnfollowNode(UrlForObjectNode):    
+    def render_link(self, model, context):
+        ctype = ContentType.objects.get_for_model(model)
+        print "ctype : %s" % ctype
+        return reverse('actstream_unfollow', None, (ctype.pk,model.pk))
+
+
+
 class FollowerCountNode(FollowerNodeBase):
     def get_default_var_name(self):
         return "follower_count"
@@ -82,11 +112,45 @@ class FollowerListNode(FollowerNodeBase):
 
     def get_final_result_from_query_set(self, queryset):
         return queryset.all()
-             
+
+
+
 class RenderFollowerListNode(FollowerListNode):
     def render_context_value(self, context, context_value):
         return render_to_string(('follower/list.html'), {'follower_list' : context_value }, context)
-            
+
+
+
+
+class BooleanNode(Node):
+    def __init__(self, boolean_function, nodelist_true, nodelist_false):
+        self.boolean_function = boolean_function
+        self.nodelist_true, self.nodelist_false = nodelist_true, nodelist_false
+    def render(self, context):
+        if self.boolean_function(context):
+            return self.nodelist_true.render(context)	
+        else:
+            return self.nodelist_false.render(context)
+
+def do_if_user_is_following(parser, token):
+    bits = token.contents.split()
+    if len(bits) != 2:
+        raise TemplateSyntaxError, "'if_user_is_following' statement requires one argument [model object]"
+    model_object_var = bits[1]
+    nodelist_true = parser.parse(('else', 'endif'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endif',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = NodeList()
+    b = lambda context : Follow.objects.filter(
+        user=Variable("request.user").resolve(context), 
+        object_id=Variable(model_object_var).resolve(context).pk,
+        content_type=ContentType.objects.get_for_model(Variable(model_object_var).resolve(context))
+        ).exists() 
+    return BooleanNode(b, nodelist_true, nodelist_false)
+
 #{% get_follower_count for event as comment_count %}
 #{% get_follower_count for calendar.event event.id as comment_count %}
 
@@ -118,9 +182,17 @@ def do_get_follower_count(parser, token):
     """
     return FollowerCountNode(parser, token)
 
+def do_url_to_follow(parser, token):
+    return UrlToFollowNode(parser, token)
+
+def do_url_to_unfollow(parser, token):
+    return UrlToUnfollowNode(parser, token)
 
 
 register = template.Library()     
 register.tag('get_follower_count', do_get_follower_count)
 register.tag('get_follower_list', do_get_follower_list)
 register.tag('render_follower_list', do_render_follower_list)
+register.tag('if_user_is_following', do_if_user_is_following)
+register.tag('url_to_follow', do_url_to_follow)
+register.tag('url_to_unfollow', do_url_to_unfollow)
