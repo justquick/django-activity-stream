@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load follower_tags %}
+{% block content_title %}Stories{% endblock %}
+
+
+{% block content %}
+
+{% for story in stories %}
+{% get_follower_count for story as c %}
+<h3><a href="{% url testapp_story story_id=story.id %}">{{ story.title }}</a></h3>
+<h4>Followers ({{ c }})</h4>
+<p>
+{{ story.content }}
+</p>
+{% endfor %}
+
+{% endblock %}

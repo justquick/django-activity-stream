@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load follower_tags %}
+
+{% block extra_head %}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.get($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block content_title %}Story{% endblock %}
+
+
+{% block content %}
+
+{% get_follower_count for story as c %}
+
+<table>
+    <tr>
+        <td>
+            <h3>{{ story.title }}</h3>
+            <h4>Followers ({{ c }})
+            {% if_user_is_following story %}
+                <a id="unfollow_button" href="{% url_to_unfollow story %}">unfollow</a>
+                <a style="display:none" id="follow_button" href="{% url_to_follow story %}">follow</a>
+            {% else %}
+                <a style="display:none" id="unfollow_button" href="{% url_to_unfollow story %}">unfollow</a>
+                <a id="follow_button" href="{% url_to_follow story %}">follow</a>
+            {% endif %}
+            </h4>
+
+            <p>
+            {{ story.content }}
+            </p>
+        </td>
+        <td width="30%" valign="top">
+            <h4>Follower List</h4>
+            {% render_follower_list for story %}
+            <h4>Activity Stream</h4>
+            to do
+        </td>
+    </tr>
+</table>
+TODO - Add Commenting here and link coments to the activity stream
+
+{% endblock %}
