@@ -191,11 +191,11 @@ class UserContentTypeNode(Node):
 
 class ActivityNodeBase(Node):
     def __init__(self, parser, token):
-		'''
-		base class for all activity nodes. parses the arguments.
-		subclasses should override get_final_result_from_query_set
-		to add any further filters.
-		'''
+        '''
+        base class for all activity nodes. parses the arguments.
+        subclasses should override get_final_result_from_query_set
+        to add any further filters.
+        '''
         self.object_varname = None
         self.content_type = None
         self.object_id_varname = None
@@ -209,7 +209,6 @@ class ActivityNodeBase(Node):
 
         d = m.groupdict()
 
-        print "***%s" % d
         if d['type'] is None:
             d['type'] = 'target'
 
@@ -270,10 +269,10 @@ class ActivityNodeBase(Node):
 class ActivityCountNode(ActivityNodeBase):
     def get_default_var_name(self):
         return "activity_count"
-    
+
     def get_final_result_from_query_set(self, queryset):
         return queryset.count()         
-    
+
 class ActivityListNode(ActivityNodeBase):
     def get_default_var_name(self):
         return "activity_list"
@@ -288,42 +287,41 @@ class RenderActivityListNode(ActivityListNode):
 
 
 def do_render_activity_list(parser, token):
-	'''
-	Renders the activities for the specified object
-	with the activity/list.html template. see
-	get_activity_list for syntax.
-	'''
+    '''
+    Renders the activities for the specified object
+    with the activity/list.html template. see
+    get_activity_list for syntax.
+    '''
     return RenderActivityListNode(parser, token)
 
 def do_get_activity_list(parser, token):
-	'''
-	inserts the activities for the requested
-	domain object into the specified variable.
-	if no variable is specified, then 'activity_list'
-	is used.
+    '''
+    inserts the activities for the requested
+    domain object into the specified variable.
+    if no variable is specified, then 'activity_list'
+    is used.
 
     Syntax::
         {% get_activity_list for
-			(actor|target|action)?
-			( <object> | <app.model> identified by <id> )
-			(as <varname>)?
-			(limit to <digit>)?
-		%}
-	Examples::
+            (actor|target|action)?
+            ( <object> | <app.model> identified by <id> )
+            (as <varname>)?
+            (limit to <digit>)?
+        %}
+    Examples::
         {% get_activity_list for actor request.user %}
         {% get_activity_list for target story %}
         {% get_activity_list for target story as al %}
         {% get_activity_list for story limit 5 %}
         {% get_activity_list for target testapp.story identified by 9 as al limit 5 %}
-
-	'''
+    '''
     return ActivityListNode(parser, token)
 
 def do_get_activity_count(parser, token):
-   	''' 
+    '''
     Gets the number of activities for the specified object
     see get_activity_list for syntax   
-   	''' 
+    '''
     return ActivityCountNode(parser, token)
 
 
