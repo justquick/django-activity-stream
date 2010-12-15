@@ -1,4 +1,4 @@
-from django.template import Variable, Library, Node, NodeList, TemplateSyntaxError, TemplateDoesNotExist
+from django.template import Variable, Library, Node, NodeList, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -115,7 +115,6 @@ def do_display_action_short(parser, token):
     a value of True
     
     Usage::
-    
         {% load activity_tags %}
         {% display_action_short [action] %}
         .. renders the template inline ..
@@ -137,7 +136,6 @@ def do_display_action_short(parser, token):
         
 def do_display_grouped_actions(parser, token):
     """
-    
     Usage::
         {% display_grouped_actions [action] %}
     With 'as var' syntax::
@@ -171,15 +169,13 @@ def do_get_user_contenttype(parser, token):
     Sets a context variable that contains the user content type
     object from the content type manager. The default variable name 
     is 'get_user_content_type' unless you use the 'as var' format (see below)
-    
+
     Usage::
-    
         {% load activity_tags %}
         {% get_user_content_type %}
         {{ get_user_content_type.id }}
     
     The 'as var' format::
-    
         {% get_user_content_type as var %}
         {{ var.id }}
     """
@@ -193,20 +189,32 @@ class UserContentTypeNode(Node):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
 
-
 class ActivityNodeBase(Node):
     def __init__(self, parser, token):
+		'''
+		base class for all activity nodes. parses the arguments.
+		subclasses should override get_final_result_from_query_set
+		to add any further filters.
+		'''
         self.object_varname = None
         self.content_type = None
         self.object_id_varname = None
         self.as_varname = self.get_default_var_name()
-        r = r'(?P<tag>\w+) for (?P<name>[\w\.]+)(?: identified by (?P<id_by>[\w\.]+))?(?: as (?P<as_varname>\w+))?(?: limit(?: to)? (?P<limit>\d+))?'
+        r = r'(?P<tag>\w+) for(?: (?P<type>actor|target|action))?(?: (?P<name>[\w\.]+))(?: identified by (?P<id_by>[\w\.]+))?(?: as (?P<as_varname>\w+))?(?: limit(?: to)? (?P<limit>\d+))?'
         p = re.compile(r)
         m = p.match(token.contents)
+
         if m is None:
             raise TemplateSyntaxError("Your tag doesn't match %s" % r)
-        
+
         d = m.groupdict()
+
+        print "***%s" % d
+        if d['type'] is None:
+            d['type'] = 'target'
+
+        self.what_to_fetch = d['type']
+
         if not d['as_varname'] is None:
             self.as_varname = d['as_varname']
 
@@ -241,16 +249,23 @@ class ActivityNodeBase(Node):
             model = Variable(self.object_varname).resolve(context)
             ctype = ContentType.objects.get_for_model(model)
             c_id = model.id
-        
-        context_value = Action.objects.filter(
-                target_content_type=ctype,
-                target_object_id=c_id)
+            
+        if self.what_to_fetch == 'actor':
+            context_value = Action.objects.filter(
+                    actor_content_type=ctype,
+                    actor_object_id=c_id)
+        elif self.what_to_fetch == 'target':
+            context_value = Action.objects.filter(
+                    target_content_type=ctype,
+                    target_object_id=c_id)
+        elif self.what_to_fetch == 'action':    
+            context_value = Action.objects.filter(
+                    action_object_content_type=ctype,
+                    action_object_object_id=c_id)
+
         context_value = self.get_final_result_from_query_set(context_value) 
         context[self.as_varname] = context_value
         return self.render_context_value(context, context_value)
-        
-
-
 
 class ActivityCountNode(ActivityNodeBase):
     def get_default_var_name(self):
@@ -258,8 +273,6 @@ class ActivityCountNode(ActivityNodeBase):
     
     def get_final_result_from_query_set(self, queryset):
         return queryset.count()         
-
-
     
 class ActivityListNode(ActivityNodeBase):
     def get_default_var_name(self):
@@ -268,8 +281,6 @@ class ActivityListNode(ActivityNodeBase):
     def get_final_result_from_query_set(self, queryset):
         return queryset.all()
 
-
-
 class RenderActivityListNode(ActivityListNode):
     def render_context_value(self, context, context_value):
         return render_to_string(('activity/list.html'), {'activity_list' : context_value }, context)
@@ -277,29 +288,42 @@ class RenderActivityListNode(ActivityListNode):
 
 
 def do_render_activity_list(parser, token):
+	'''
+	Renders the activities for the specified object
+	with the activity/list.html template. see
+	get_activity_list for syntax.
+	'''
     return RenderActivityListNode(parser, token)
 
 def do_get_activity_list(parser, token):
+	'''
+	inserts the activities for the requested
+	domain object into the specified variable.
+	if no variable is specified, then 'activity_list'
+	is used.
+
+    Syntax::
+        {% get_activity_list for
+			(actor|target|action)?
+			( <object> | <app.model> identified by <id> )
+			(as <varname>)?
+			(limit to <digit>)?
+		%}
+	Examples::
+        {% get_activity_list for actor request.user %}
+        {% get_activity_list for target story %}
+        {% get_activity_list for target story as al %}
+        {% get_activity_list for story limit 5 %}
+        {% get_activity_list for target testapp.story identified by 9 as al limit 5 %}
+
+	'''
     return ActivityListNode(parser, token)
 
 def do_get_activity_count(parser, token):
-    """
-    Gets the number of activities for the specified object or apramters and
-    puts the value into the context.  The default variable name is
-    'activity_count' but can be altered using the 'as var' syntax.
-    
-    Syntax::
-
-        {% get_activity_count for [object] as [varname]  %}
-        {% get_activity_count for [app].[model] identified by [variable] as [varname] limit [number] %}
-
-    Example usage::
-
-        {% get_activity_count for story %}
-        {% get_activity_count for story as fc %}
-        {% get_activity_count for tesapp.story story.id as fc %}
-
-    """
+   	''' 
+    Gets the number of activities for the specified object
+    see get_activity_list for syntax   
+   	''' 
     return ActivityCountNode(parser, token)
 
 
