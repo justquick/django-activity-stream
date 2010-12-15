@@ -1,11 +1,11 @@
-from django.template import Node, NodeList, Variable, TemplateSyntaxError
+from django.template import Node, NodeList, Variable, TemplateSyntaxError, Library
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 from actstream.models import Follow
 import re
 
-class FollowerNodeBase(template.Node):
+class FollowerNodeBase(Node):
     def __init__(self, parser, token):
         self.object_varname = None
         self.content_type = None
@@ -15,7 +15,7 @@ class FollowerNodeBase(template.Node):
         p = re.compile(r)
         m = p.match(token.contents)
         if m is None:
-            raise template.TemplateSyntaxError("Your tag doesn't match %s" % r)
+            raise TemplateSyntaxError("Your tag doesn't match %s" % r)
         
         d = m.groupdict()
         if not d['as_varname'] is None:
@@ -47,9 +47,9 @@ class FollowerNodeBase(template.Node):
         
         if not self.content_type is None:
             ctype = self.content_type
-            c_id = template.Variable(self.object_id_varname).resolve(context)
+            c_id = Variable(self.object_id_varname).resolve(context)
         else:
-            model = template.Variable(self.object_varname).resolve(context)
+            model = Variable(self.object_varname).resolve(context)
             ctype = ContentType.objects.get_for_model(model)
             c_id = model.id
         
@@ -70,7 +70,7 @@ class UrlForObjectNode(FollowerNodeBase):
         p = re.compile(r)
         m = p.match(token.contents)
         if m is None:
-            raise template.TemplateSyntaxError("Your tag doesn't match %s" % r)
+            raise TemplateSyntaxError("Your tag doesn't match %s" % r)
         
         d = m.groupdict()
         self.object_varname = d['name']
@@ -92,7 +92,6 @@ class UrlToFollowNode(UrlForObjectNode):
 class UrlToUnfollowNode(UrlForObjectNode):    
     def render_link(self, model, context):
         ctype = ContentType.objects.get_for_model(model)
-        print "ctype : %s" % ctype
         return reverse('actstream_unfollow', None, (ctype.pk,model.pk))
 
 
@@ -151,11 +150,7 @@ def do_if_user_is_following(parser, token):
         ).exists() 
     return BooleanNode(b, nodelist_true, nodelist_false)
 
-#{% get_follower_count for event as comment_count %}
-#{% get_follower_count for calendar.event event.id as comment_count %}
 
-# get_follower_list
-# render_follower_list
 def do_render_follower_list(parser, token):
     return RenderFollowerListNode(parser, token)
 
@@ -189,7 +184,7 @@ def do_url_to_unfollow(parser, token):
     return UrlToUnfollowNode(parser, token)
 
 
-register = template.Library()     
+register = Library()     
 register.tag('get_follower_count', do_get_follower_count)
 register.tag('get_follower_list', do_get_follower_list)
 register.tag('render_follower_list', do_render_follower_list)
