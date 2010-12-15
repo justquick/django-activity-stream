@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load follower_tags %}
-{% load activity_tags2 %}
+{% load activity_tags %}
 
 {% block extra_head %}
 <script>
@@ -22,12 +22,12 @@ $(function () {
 {% block content %}
 
 {% get_follower_count for story as c %}
-{% get_activity_count for story as a %}
+{% get_activity_count for target story as a %}
 {% get_activity_list for story as al %}
 
 <table>
     <tr>
-        <td>
+        <td valign="top">
             <h3>{{ story.title }}</h3>
             <h4>Followers ({{ c }})
             {% if_user_is_following story %}
@@ -54,8 +54,14 @@ $(function () {
         <td width="30%" valign="top">
             <h4>Follower List</h4>
             {% render_follower_list for story %}
-            <h4>Activity Stream</h4>
-            {% render_activity_list for story %}
+            <h4>Activity Stream for Story</h4>
+            {% render_activity_list for target story %}
+            <h4>Activity Stream for Story (alternate syntax)</h4>
+            {% render_activity_list for target testapp.story identified by story.id %}
+            <h4>Activity Stream for Current User</h4>
+            {% render_activity_list for actor request.user %}
+            <h4>Activity Stream for Current User (Alternate Syntax)</h4>
+            {% render_activity_list for actor auth.user identified by request.user.id %}
         </td>
     </tr>
 </table>
