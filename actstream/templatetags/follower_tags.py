@@ -132,6 +132,13 @@ class BooleanNode(Node):
             return self.nodelist_false.render(context)
 
 def do_if_user_is_following(parser, token):
+    """
+    same syntax as if/else/endif.  if the current user
+    is following the specified object (provided as the first
+    argument) then the 'true' block is evaluated, otherwise
+    the false or else block is evaluated.
+    """
+
     bits = token.contents.split()
     if len(bits) != 2:
         raise TemplateSyntaxError, "'if_user_is_following' statement requires one argument [model object]"
@@ -152,9 +159,17 @@ def do_if_user_is_following(parser, token):
 
 
 def do_render_follower_list(parser, token):
+    """
+    renders the follower list for the specified object
+    see :tag:`get_follower_count` for syntax specifics
+    """
     return RenderFollowerListNode(parser, token)
 
 def do_get_follower_list(parser, token):
+    """
+    returns the follower list of the specified object (
+    see :tag:`get_follower_count` for syntax specifics
+    """
     return FollowerListNode(parser, token)
 
 def do_get_follower_count(parser, token):
@@ -178,9 +193,17 @@ def do_get_follower_count(parser, token):
     return FollowerCountNode(parser, token)
 
 def do_url_to_follow(parser, token):
+    """
+    returns the url that can be invoked to follow 
+    the specified object
+    """
     return UrlToFollowNode(parser, token)
 
 def do_url_to_unfollow(parser, token):
+    """
+    returns the url that can be invoked to unfollow 
+    the specified object
+    """
     return UrlToUnfollowNode(parser, token)
 
 

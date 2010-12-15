@@ -115,6 +115,7 @@ def do_display_action_short(parser, token):
     a value of True
     
     Usage::
+
         {% load activity_tags %}
         {% display_action_short [action] %}
         .. renders the template inline ..
@@ -136,9 +137,14 @@ def do_display_action_short(parser, token):
         
 def do_display_grouped_actions(parser, token):
     """
+    TBD
+
     Usage::
+
         {% display_grouped_actions [action] %}
+
     With 'as var' syntax::
+
         {% display_grouped_actions [action] as [var] %}
     """
     bits = token.contents.split()
@@ -171,11 +177,13 @@ def do_get_user_contenttype(parser, token):
     is 'get_user_content_type' unless you use the 'as var' format (see below)
 
     Usage::
+
         {% load activity_tags %}
         {% get_user_content_type %}
         {{ get_user_content_type.id }}
     
     The 'as var' format::
+
         {% get_user_content_type as var %}
         {{ var.id }}
     """
@@ -289,8 +297,8 @@ class RenderActivityListNode(ActivityListNode):
 def do_render_activity_list(parser, token):
     '''
     Renders the activities for the specified object
-    with the activity/list.html template. see
-    get_activity_list for syntax.
+    with the :template:`activity/list.html` template. see
+    :tag:`get_activity_list` for syntax.
     '''
     return RenderActivityListNode(parser, token)
 
@@ -302,13 +310,16 @@ def do_get_activity_list(parser, token):
     is used.
 
     Syntax::
+
         {% get_activity_list for
             (actor|target|action)?
             ( <object> | <app.model> identified by <id> )
             (as <varname>)?
             (limit to <digit>)?
         %}
+
     Examples::
+
         {% get_activity_list for actor request.user %}
         {% get_activity_list for target story %}
         {% get_activity_list for target story as al %}
@@ -320,7 +331,7 @@ def do_get_activity_list(parser, token):
 def do_get_activity_count(parser, token):
     '''
     Gets the number of activities for the specified object
-    see get_activity_list for syntax   
+    see :tag:`get_activity_list` for syntax   
     '''
     return ActivityCountNode(parser, token)
 
