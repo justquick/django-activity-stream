@@ -15,7 +15,7 @@ urlpatterns = patterns('actstream.views',
     url(r'^follow/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$',
         'follow_unfollow', name='actstream_follow'),
     url(r'^unfollow/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$',
-        'follow_unfollow', {'follow':False}, 'actstream_unfollow'),
+        'follow_unfollow', {'do_follow':False}, name='actstream_unfollow'),
     
     # Follower and Actor lists
     url(r'^followers/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$',

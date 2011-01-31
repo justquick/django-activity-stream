@@ -162,7 +162,7 @@ def follow(user, actor, send_action=True):
     """
     follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk, 
         content_type=ContentType.objects.get_for_model(actor))
-    if send_action:
+    if send_action and created:
         action.send(user, verb=_('started following'), target=actor)
     return follow
 
