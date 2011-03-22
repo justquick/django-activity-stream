@@ -1,7 +1,6 @@
 from datetime import datetime
 from operator import or_
 from django.db import models
-from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timesince import timesince as timesince_
@@ -44,14 +43,35 @@ class Follow(models.Model):
         return u'%s -> %s' % (self.user, self.actor)
 
 class ActionManager(models.Manager):
+    def _generic_select_related(self, queryset, attribute):
+        generics = {}
+        
+        for item in queryset:
+            generics.setdefault(getattr(item, '%s_content_type_id' % attribute), set()).add(getattr(item, '%s_object_id' % attribute))
+            
+        content_types = ContentType.objects.in_bulk(generics.keys())
+        
+        if content_types:
+            relations = {}
+            for ct, fk_list in generics.items():
+                ct_model = content_types[ct].model_class()
+                relations[ct] = ct_model.objects.in_bulk(list(fk_list))
+
+            for item in queryset:
+                setattr(item, '_%s_cache' % attribute, relations[getattr(item, '%s_content_type_id' % attribute)][getattr(item, '%s_object_id' % attribute)])
+            
+        return queryset
+        
     def stream_for_actor(self, actor):
         """
         Produces a QuerySet of most recent activities for any actor
         """
-        return self.filter(
-            actor_content_type = ContentType.objects.get_for_model(actor),
-            actor_object_id = actor.pk,
-        ).order_by('-timestamp')
+        queryset = self._generic_select_related(self.filter(
+                                                actor_content_type = ContentType.objects.get_for_model(actor),
+                                                actor_object_id = actor.pk,
+                                                ).order_by('-timestamp'), 'actor')                 
+        queryset = self._generic_select_related(queryset, 'action_object')
+        return self._generic_select_related(queryset, 'target')
         
     def stream_for_model(self, model):
         """
