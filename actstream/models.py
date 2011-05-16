@@ -1,6 +1,7 @@
 from datetime import datetime
 from operator import or_
 from django.db import models
+from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -58,7 +59,8 @@ class ActionManager(models.Manager):
         Produces a QuerySet of most recent activities for any model
         """
         return self.filter(
-            target_content_type = ContentType.objects.get_for_model(model)
+            Q(target_content_type = ContentType.objects.get_for_model(model)) |
+            Q(action_object_content_type = ContentType.objects.get_for_model(model))
         ).order_by('-timestamp')
         
 class Action(models.Model):
