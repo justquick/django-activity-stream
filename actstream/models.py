@@ -62,6 +62,15 @@ class ActionManager(models.Manager):
             Q(target_content_type = ContentType.objects.get_for_model(model)) |
             Q(action_object_content_type = ContentType.objects.get_for_model(model))
         ).order_by('-timestamp')
+
+    def stream_for_target(self, target):
+        """
+        Produces a QuerySet of most recent on a target
+        """
+        return self.filter(
+            target_content_type = ContentType.objects.get_for_model(target),
+            target_object_id = target.pk,
+        ).order_by('-timestamp')
         
 class Action(models.Model):
     """
@@ -198,6 +207,10 @@ user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
 def model_stream(model):
     return Action.objects.stream_for_model(model)
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
+
+def target_stream(target):
+    return Action.objects.stream_for_target(target)
+target_stream.__doc__ = Action.objects.stream_for_target.__doc__
     
 def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
