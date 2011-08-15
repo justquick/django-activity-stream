@@ -14,7 +14,6 @@ class ActivityTestCase(TestCase):
     urls = 'actstream.urls'    
     
     def setUp(self):
-        self._urlconf_setup()
         
         self.group = Group.objects.get_or_create(name='CoolGroup')[0]
         self.user1 = User.objects.get_or_create(username='admin')[0]
