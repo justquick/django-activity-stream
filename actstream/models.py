@@ -68,7 +68,7 @@ class ActionManager(models.Manager):
 
     def stream_for_object(self, obj):
         """
-        Produces a QuerySet of most recent activities where the model is the object
+        Produces a QuerySet of most recent activities where the object is the object or target
         of the action
         """
         return self.filter(

@@ -9,7 +9,7 @@ try:
 except ImportError: # Pre 1.2
     from django.contrib.syndication.feeds import Feed
 
-from actstream.models import actor_stream, model_stream, user_stream
+from actstream.models import actor_stream, model_stream, user_stream, object_stream
 
 class ObjectActivityFeed(Feed):
     def get_object(self, request, content_type_id, object_id):
@@ -29,7 +29,7 @@ class ObjectActivityFeed(Feed):
         return 'Public activities of %s' % obj
     
     def items(self, obj):
-        i = actor_stream(obj)
+        i = object_stream(obj)
         if i:
             return i[:30]
         return []
