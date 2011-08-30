@@ -5,6 +5,9 @@ from actstream import feeds
 urlpatterns = patterns('actstream.views',
     # Syndication Feeds
     url(r'^feed/(?P<content_type_id>\d+)/(?P<object_id>\d+)/atom/$', feeds.AtomObjectActivityFeed(), name='actstream_object_feed_atom'),
+
+    url(r'^feed/(?P<content_type_id>\d+)/(?P<object_id>\d+)/as/$', feeds.ActivityStreamsObjectActivityFeed(), name='actstream_object_feed_as'),
+
     url(r'^feed/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$', feeds.ObjectActivityFeed(), name='actstream_object_feed'),
     url(r'^feed/(?P<content_type_id>\d+)/atom/$', feeds.AtomModelActivityFeed(), name='actstream_model_feed_atom'),    
     url(r'^feed/(?P<content_type_id>\d+)/$', feeds.ModelActivityFeed(), name='actstream_model_feed'),
