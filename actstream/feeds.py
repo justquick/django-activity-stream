@@ -146,8 +146,6 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
 #            'id': 64L,
 #            'action_object_object_id': 1L
 #        }
-        # get_object_or_404(ContentType, pk=content_type_id)\
-        #    .get_object_for_this_type(pk=object_id)
         try:
             object_id = obj.action_object.get_absolute_url()
         except Exception, e:
@@ -158,7 +156,6 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
         item =  {
             'actor': obj.actor,
             'verb': obj.verb_uri_prefix + obj.verb,
-#            'id': "tag:pushco.de,2011:%s" % obj.get_absolute_url(),
             # action object
             'object_timestamp': obj.timestamp,
             'object': obj.action_object,
