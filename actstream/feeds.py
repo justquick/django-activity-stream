@@ -18,7 +18,7 @@ class AtomWithContentFeed(Atom1Feed):
         super(AtomWithContentFeed, self).add_item_elements(handler, item)
         # <activity:verb>post</activity:verb>
         if 'content' in item:
-            handler.addQuickElement(u"content", item['content'])
+            handler.addQuickElement(u"content", item['content'], {'type':'html'})
 
 
 class ObjectActivityFeed(Feed):
