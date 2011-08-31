@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed, rfc3339_date, get_tag_uri
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from xml.sax import handler
+from django.utils.encoding import force_unicode, iri_to_uri, smart_unicode
 
 try:
     from django.contrib.syndication.views import Feed
@@ -12,6 +12,14 @@ except ImportError: # Pre 1.2
     from django.contrib.syndication.feeds import Feed
 
 from actstream.models import actor_stream, model_stream, user_stream, object_stream
+
+class AtomWithContentFeed(Atom1Feed):
+    def add_item_elements(self, handler, item):
+        super(AtomWithContentFeed, self).add_item_elements(handler, item)
+        # <activity:verb>post</activity:verb>
+        if 'content' in item:
+            handler.addQuickElement(u"content", item['content'])
+
 
 class ObjectActivityFeed(Feed):
     """
@@ -38,29 +46,36 @@ class ObjectActivityFeed(Feed):
         if i:
             return i[:30]
         return []
-        
+
+    def item_extra_kwargs(self, obj):
+        item = {
+            'content': obj.description,
+        }
+        return item
+
+
 class AtomObjectActivityFeed(ObjectActivityFeed):
-    feed_type = Atom1Feed
+    feed_type = AtomWithContentFeed
     subtitle = ObjectActivityFeed.description
 
-class ActivityStreamsGenerator(Atom1Feed):
+class ActivityStreamsFeed(AtomWithContentFeed):
     """
     Custom feed generator for Activity Stream feeds
     """
     def root_attributes(self):
-        attrs = super(ActivityStreamsGenerator, self).root_attributes()
+        attrs = super(ActivityStreamsFeed, self).root_attributes()
         attrs['xmlns:activity'] = 'http://activitystrea.ms/spec/1.0/'
         return attrs
 
     def add_root_elements(self, handler):
-        super(ActivityStreamsGenerator, self).add_root_elements(handler)
+        super(ActivityStreamsFeed, self).add_root_elements(handler)
         # handler.addQuickElement('itunes:explicit', 'clean')
         
     def add_item_elements(self, handler, item):
-        super(ActivityStreamsGenerator, self).add_item_elements(handler, item)
+        super(ActivityStreamsFeed, self).add_item_elements(handler, item)
         # <activity:verb>post</activity:verb>
         handler.addQuickElement(u"activity:verb", item['verb'])
-
+        
         if 'actor' in item:
 #        <author>
             handler.startElement('author', {})
@@ -76,7 +91,6 @@ class ActivityStreamsGenerator(Atom1Feed):
             handler.addQuickElement('link', get_tag_uri(item['actor'].get_absolute_url(), None), {'type':'text/html'})
             handler.endElement('author')
 #        </author>
-
 
         if 'object' in item:
 #       <activity:object>
@@ -112,7 +126,7 @@ class ActivityStreamsGenerator(Atom1Feed):
 
 class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
 
-    feed_type = ActivityStreamsGenerator
+    feed_type = ActivityStreamsFeed
 
     def feed_extra_kwargs(self, obj):
         """
@@ -144,6 +158,8 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
 #            'id': 64L,
 #            'action_object_object_id': 1L
 #        }
+
+
         try:
             object_id = obj.action_object.get_absolute_url()
         except Exception, e:
@@ -152,6 +168,7 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
         object_id = get_tag_uri(object_id, None)
 
         item =  {
+            'content': obj.description,
             'actor': obj.actor,
             'verb': obj.verb_uri_prefix + obj.verb,
             # action object
