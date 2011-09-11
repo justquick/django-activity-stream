@@ -12,6 +12,8 @@ from django.contrib.auth.models import User
 
 from actstream.signals import action
 
+import logging
+log = logging.getLogger(__name__)
 
 class FollowManager(models.Manager):
     def stream_for_user(self, user):
@@ -54,6 +56,7 @@ class ActionManager(models.Manager):
             actor_object_id = actor.pk,
         ).order_by('-timestamp')
         
+
     def stream_for_model(self, model):
         """
         Produces a QuerySet of most recent activities for any model
@@ -62,7 +65,37 @@ class ActionManager(models.Manager):
             Q(target_content_type = ContentType.objects.get_for_model(model)) |
             Q(action_object_content_type = ContentType.objects.get_for_model(model))
         ).order_by('-timestamp')
-        
+
+    def stream_for_object(self, obj):
+        """
+        Produces a QuerySet of most recent activities where the model is the object
+        of the action
+        """
+        return self.filter(
+            Q(target_object_id = obj.id) |
+            Q(action_object_object_id = obj.id)
+        ).order_by('-timestamp')
+
+
+    def stream_for_object_as_object(self, obj):
+        """
+        Produces a QuerySet of most recent activities where the model is the object
+        of the action
+        """
+        return self.filter(
+            action_object_object_id = obj.id
+        ).order_by('-timestamp')
+
+    def stream_for_object_as_target(self, obj):
+        """
+        Produces a QuerySet of most recent activities where the object is the target
+        of the action
+        """
+
+        return self.filter(
+            target_object_id = obj.id
+        ).order_by('-timestamp')
+
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional target). 
@@ -119,7 +152,29 @@ class Action(models.Model):
             else:
                 return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
-        
+    
+    def __repr__(self):
+        return repr({
+            'actor_content_type': self.actor_content_type,
+            'actor_object_id': self.actor_object_id,
+            'actor': self.actor,
+            
+            'verb': self.verb,
+            'description': self.description,
+            
+            'target_content_type': self.target_content_type,
+            'target_object_id': self.target_object_id,
+            'target': self.target,
+            
+            'action_object_content_type': self.action_object_content_type,
+            'action_object_object_id': self.action_object_object_id,
+            'action_object': self.action_object,
+            
+            'timestamp': self.timestamp,
+            
+            'public': self.public,  
+        })
+    
     def actor_url(self):
         """
         Returns the URL to the ``actstream_actor`` view for the current actor
@@ -198,7 +253,19 @@ user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
 def model_stream(model):
     return Action.objects.stream_for_model(model)
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
-    
+
+def object_stream(obj):
+    return Action.objects.stream_for_object(obj)
+model_stream.__doc__ = Action.objects.stream_for_object.__doc__
+
+def object_as_target_stream(obj):
+    return Action.objects.stream_for_object_as_target(obj)
+object_as_target_stream.__doc__ = Action.objects.stream_for_object_as_target.__doc__
+
+def object_as_object_stream(obj):
+    return Action.objects.stream_for_object_as_object(obj)
+object_as_object_stream.__doc__ = Action.objects.stream_for_object_as_object.__doc__
+
 def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
