@@ -12,8 +12,6 @@ from django.contrib.auth.models import User
 
 from actstream.signals import action
 
-import logging
-log = logging.getLogger(__name__)
 
 class FollowManager(models.Manager):
     def stream_for_user(self, user):
@@ -27,17 +25,16 @@ class FollowManager(models.Manager):
 
         return Action.objects.none()
 
-    
 class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
     user = models.ForeignKey(User)
-    
+
     content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField() 
+    object_id = models.PositiveIntegerField()
     actor = generic.GenericForeignKey()
-    
+
     objects = FollowManager()
 
     class Meta:
@@ -55,7 +52,6 @@ class ActionManager(models.Manager):
             actor_content_type = ContentType.objects.get_for_model(actor),
             actor_object_id = actor.pk,
         ).order_by('-timestamp')
-        
 
     def stream_for_model(self, model):
         """
@@ -75,7 +71,6 @@ class ActionManager(models.Manager):
             Q(target_object_id = obj.id) |
             Q(action_object_object_id = obj.id)
         ).order_by('-timestamp')
-
 
     def stream_for_object_as_object(self, obj):
         """
@@ -98,53 +93,53 @@ class ActionManager(models.Manager):
 
 class Action(models.Model):
     """
-    Action model describing the actor acting out a verb (on an optional target). 
+    Action model describing the actor acting out a verb (on an optional target).
     Nomenclature based on http://martin.atkins.me.uk/specs/activitystreams/atomactivity
-    
+
     Generalized Format::
-    
+
         <actor> <verb> <time>
         <actor> <verb> <target> <time>
         <actor> <verb> <action_object> <target> <time>
-    
+
     Examples::
-    
+
         <justquick> <reached level 60> <1 minute ago>
         <brosner> <commented on> <pinax/pinax> <2 hours ago>
         <washingtontimes> <started follow> <justquick> <8 minutes ago>
         <mitsuhiko> <closed> <issue 70> on <mitsuhiko/flask> <about 3 hours ago>
-        
+
     Unicode Representation::
-    
+
         justquick reached level 60 1 minute ago
         mitsuhiko closed issue 70 on mitsuhiko/flask 3 hours ago
-        
+
     HTML Representation::
-    
+
         <a href="http://oebfare.com/">brosner</a> commented on <a href="http://github.com/pinax/pinax">pinax/pinax</a> 2 hours ago
 
     """
     actor_content_type = models.ForeignKey(ContentType,related_name='actor')
-    actor_object_id = models.PositiveIntegerField() 
+    actor_object_id = models.PositiveIntegerField()
     actor = generic.GenericForeignKey('actor_content_type','actor_object_id')
-    
+
     verb = models.CharField(max_length=255)
     description = models.TextField(blank=True,null=True)
-    
+
     target_content_type = models.ForeignKey(ContentType,related_name='target',blank=True,null=True)
-    target_object_id = models.PositiveIntegerField(blank=True,null=True) 
+    target_object_id = models.PositiveIntegerField(blank=True,null=True)
     target = generic.GenericForeignKey('target_content_type','target_object_id')
-    
+
     action_object_content_type = models.ForeignKey(ContentType,related_name='action_object',blank=True,null=True)
-    action_object_object_id = models.PositiveIntegerField(blank=True,null=True) 
+    action_object_object_id = models.PositiveIntegerField(blank=True,null=True)
     action_object = generic.GenericForeignKey('action_object_content_type','action_object_object_id')
-    
+
     timestamp = models.DateTimeField(auto_now_add=True)
-    
+
     public = models.BooleanField(default=True)
-    
+
     objects = ActionManager()
-    
+
     def __unicode__(self):
         if self.target:
             if self.action_object:
@@ -152,44 +147,43 @@ class Action(models.Model):
             else:
                 return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
-    
+
     def __repr__(self):
         return repr({
             'actor_content_type': self.actor_content_type,
             'actor_object_id': self.actor_object_id,
             'actor': self.actor,
-            
+
             'verb': self.verb,
             'description': self.description,
-            
+
             'target_content_type': self.target_content_type,
             'target_object_id': self.target_object_id,
             'target': self.target,
-            
+
             'action_object_content_type': self.action_object_content_type,
             'action_object_object_id': self.action_object_object_id,
             'action_object': self.action_object,
-            
+
             'timestamp': self.timestamp,
-            
-            'public': self.public,  
+
+            'public': self.public,
         })
-    
+
     def actor_url(self):
         """
         Returns the URL to the ``actstream_actor`` view for the current actor
         """
         return reverse('actstream_actor', None,
                        (self.actor_content_type.pk, self.actor_object_id))
-        
+
     def target_url(self):
         """
         Returns the URL to the ``actstream_actor`` view for the current target
-        """        
+        """
         return reverse('actstream_actor', None,
                        (self.target_content_type.pk, self.target_object_id))
-                
-        
+
     def timesince(self, now=None):
         """
         Shortcut for the ``django.utils.timesince.timesince`` function of the current timestamp
@@ -199,7 +193,6 @@ class Action(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
-        
 
 def follow(user, actor, send_action=True):
     """
@@ -207,17 +200,17 @@ def follow(user, actor, send_action=True):
     Also sends the ``<user> started following <actor>`` action signal.
     Returns the created ``Follow`` instance.
     If ``send_action`` is false, no "started following" signal will be created
-    
+
     Syntax::
-    
+
         follow(<user>, <actor>)
-    
+
     Example::
-    
+
         follow(request.user, group)
-    
+
     """
-    follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk, 
+    follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk,
         content_type=ContentType.objects.get_for_model(actor))
     if send_action and created:
         action.send(user, verb=_('started following'), target=actor)
@@ -225,31 +218,31 @@ def follow(user, actor, send_action=True):
 
 def unfollow(user, actor, send_action=False):
     """
-    Removes ``User`` -> ``Actor`` follow relationship. 
+    Removes ``User`` -> ``Actor`` follow relationship.
     Optionally sends the ``<user> stopped following <actor>`` action signal.
-    
+
     Syntax::
-    
+
         unfollow(<user>, <actor>)
-    
+
     Example::
-    
+
         unfollow(request.user, other_user)
-    
+
     """
-    Follow.objects.filter(user = user, object_id = actor.pk, 
+    Follow.objects.filter(user = user, object_id = actor.pk,
         content_type = ContentType.objects.get_for_model(actor)).delete()
     if send_action:
         action.send(user, verb=_('stopped following'), target=actor)
-    
+
 def actor_stream(actor):
     return Action.objects.stream_for_actor(actor)
 actor_stream.__doc__ = Action.objects.stream_for_actor.__doc__
-    
+
 def user_stream(user):
     return Follow.objects.stream_for_user(user)
 user_stream.__doc__ = Follow.objects.stream_for_user.__doc__
-    
+
 def model_stream(model):
     return Action.objects.stream_for_model(model)
 model_stream.__doc__ = Action.objects.stream_for_model.__doc__
@@ -280,12 +273,12 @@ def action_handler(verb, **kwargs):
     if target:
         newaction.target_object_id = target.pk
         newaction.target_content_type = ContentType.objects.get_for_model(target)
-        
+
     action_object = kwargs.pop('action_object', None)
     if action_object:
         newaction.action_object_object_id = action_object.pk
         newaction.action_object_content_type = ContentType.objects.get_for_model(action_object)
 
     newaction.save()
-    
+
 action.connect(action_handler, dispatch_uid="actstream.models")
