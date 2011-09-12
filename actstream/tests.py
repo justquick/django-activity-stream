@@ -2,7 +2,7 @@ import unittest
 
 from django.db import models
 from django.test.client import Client
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -10,12 +10,11 @@ from django.contrib.sites.models import Site
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
 
-class ActivityTestCase(TransactionTestCase):
-    urls = 'actstream.urls'
-
+class ActivityTestCase(TestCase):
+    urls = 'actstream.urls'    
+    
     def setUp(self):
-        self._urlconf_setup()
-
+        
         self.group = Group.objects.get_or_create(name='CoolGroup')[0]
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -38,11 +37,11 @@ class ActivityTestCase(TransactionTestCase):
         follow(self.user2, self.group)
 
         # User1 comments on group
+        # Use a site object here and predict the "__unicode__ method output"
         action.send(self.user1,verb='commented on',target=self.group)
-        self.comment = Comment.objects.create(
-            user = self.user1,
-            comment="Sweet Group!")
-
+        self.comment = Site.objects.create(
+            domain="admin: Sweet Group!...")
+        
         # Group responds to comment
         action.send(self.group,verb='responded to',target=self.comment)
         self.client = Client()
@@ -128,13 +127,6 @@ class ActivityTestCase(TransactionTestCase):
     def tearDown(self):
         Action.objects.all().delete()
         User.objects.all().delete()
-        Comment.objects.all().delete()
+        self.comment.delete()
         Group.objects.all().delete()
         Follow.objects.all().delete()
-
-class Comment(models.Model):
-    comment = models.TextField()
-    user = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return "%s: %s..." % (self.user.username , self.comment)
