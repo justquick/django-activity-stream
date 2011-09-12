@@ -61,7 +61,7 @@ class ActionManager(models.Manager):
 
     def stream_for_object(self, obj):
         """
-        Produces a QuerySet of most recent activities where the model is the object
+        Produces a QuerySet of most recent activities where the object is the object or target
         of the action
         """
         return self.filter(
@@ -121,6 +121,8 @@ class Action(models.Model):
     actor = generic.GenericForeignKey('actor_content_type','actor_object_id')
 
     verb = models.CharField(max_length=255)
+    verb_uri_prefix = models.CharField(max_length=512,
+                                       default='http://activitystrea.ms/schema/1.0/')
     description = models.TextField(blank=True,null=True)
 
     target_content_type = models.ForeignKey(ContentType,related_name='target',blank=True,null=True)
