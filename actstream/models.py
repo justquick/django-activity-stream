@@ -19,11 +19,8 @@ class FollowManager(models.Manager):
         Produces a QuerySet of most recent activities from actors the user follows
         """
         follows = self.filter(user=user)
-        qs = (Action.objects.stream_for_actor(follow.actor) for follow in follows)
-        if follows.count():
-            return reduce(or_, qs).order_by('-timestamp')
-
-        return Action.objects.none()
+        qs = (Action.objects.stream_for_actor(follow.actor) for follow in follows if follow.actor is not None)
+        return reduce(or_, qs, Action.objects.none()).order_by('-timestamp')
 
 class Follow(models.Model):
     """
