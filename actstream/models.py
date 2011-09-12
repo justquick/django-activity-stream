@@ -20,10 +20,7 @@ class FollowManager(models.Manager):
         """
         follows = self.filter(user=user)
         qs = (Action.objects.stream_for_actor(follow.actor) for follow in follows if follow.actor is not None)
-        if follows.count():
-            return reduce(or_, qs).order_by('-timestamp')
-
-        return Action.objects.none()
+        return reduce(or_, qs, Action.objects.none()).order_by('-timestamp')
 
 class Follow(models.Model):
     """
