@@ -3,6 +3,7 @@ from operator import or_
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timesince import timesince as timesince_
@@ -281,4 +282,16 @@ def action_handler(verb, **kwargs):
 
     newaction.save()
 
-action.connect(action_handler, dispatch_uid="actstream.models")
+action.connect(action_handler, dispatch_uid='actstream.models')
+
+def delete_orphaned_actions(sender, instance, **kwargs):
+    """
+    When any object is deleted, delete all their actions to prevent orphans.
+    """
+    ctype, pk = ContentType.objects.get_for_model(instance), instance.pk
+    Action.objects.filter(
+        Q(action_object_object_id=pk, action_object_content_type=ctype) |
+        Q(actor_object_id=pk, actor_content_type=ctype) |
+        Q(target_object_id=pk, target_content_type=ctype)
+    ).delete()
+post_delete.connect(delete_orphaned_actions, dispatch_uid='actstream.models.delete')
