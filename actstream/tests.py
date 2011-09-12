@@ -64,6 +64,14 @@ class ActivityTestCase(TestCase):
         self.assertEqual(map(unicode, user_stream(self.user2)),
             [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
+    def test_stream_stale_follows(self):
+        """
+        user_stream() / FollowManager.stream_for_user() should ignore Follow
+        objects with stale actor references.
+        """
+        self.user2.delete()
+        self.assertEqual(list(user_stream(self.user1)), [])
+
     def test_rss(self):
         rss = self.client.get('/feed/').content
         self.assert_(rss.startswith('<?xml version="1.0" encoding="utf-8"?>\n<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">'))
