@@ -6,7 +6,6 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.timesince import timesince as timesince_
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -149,28 +148,6 @@ class Action(models.Model):
                 return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
 
-    def __repr__(self):
-        return repr({
-            'actor_content_type': self.actor_content_type,
-            'actor_object_id': self.actor_object_id,
-            'actor': self.actor,
-
-            'verb': self.verb,
-            'description': self.description,
-
-            'target_content_type': self.target_content_type,
-            'target_object_id': self.target_object_id,
-            'target': self.target,
-
-            'action_object_content_type': self.action_object_content_type,
-            'action_object_object_id': self.action_object_object_id,
-            'action_object': self.action_object,
-
-            'timestamp': self.timestamp,
-
-            'public': self.public,
-        })
-
     def actor_url(self):
         """
         Returns the URL to the ``actstream_actor`` view for the current actor
@@ -189,6 +166,7 @@ class Action(models.Model):
         """
         Shortcut for the ``django.utils.timesince.timesince`` function of the current timestamp
         """
+        from django.utils.timesince import timesince as timesince_
         return timesince_(self.timestamp, now)
 
     @models.permalink
