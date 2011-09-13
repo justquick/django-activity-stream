@@ -3,12 +3,12 @@ from operator import or_
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from actstream.signals import action
 
@@ -269,4 +269,7 @@ def delete_orphaned_actions(sender, instance, **kwargs):
         Q(actor_object_id=pk, actor_content_type=ctype) |
         Q(target_object_id=pk, target_content_type=ctype)
     ).delete()
-post_delete.connect(delete_orphaned_actions, dispatch_uid='actstream.models.delete')
+
+if getattr(settings, 'ACTSTREAM_DELETE_ORPHANED_ACTIONS', False):
+    from django.db.models.signals import post_delete
+    post_delete.connect(delete_orphaned_actions, dispatch_uid='actstream.models.delete')
