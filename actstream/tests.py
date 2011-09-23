@@ -9,12 +9,13 @@ from django.contrib.sites.models import Site
 
 from actstream.signals import action
 from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
+from actstream.exceptions import ModelNotActionable
 
 class ActivityTestCase(TestCase):
-    urls = 'actstream.urls'    
-    
+    urls = 'actstream.urls'
+
     def setUp(self):
-        
+
         self.group = Group.objects.get_or_create(name='CoolGroup')[0]
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -41,7 +42,7 @@ class ActivityTestCase(TestCase):
         action.send(self.user1,verb='commented on',target=self.group)
         self.comment = Site.objects.create(
             domain="admin: Sweet Group!...")
-        
+
         # Group responds to comment
         action.send(self.group,verb='responded to',target=self.comment)
         self.client = Client()
@@ -131,6 +132,16 @@ class ActivityTestCase(TestCase):
         actions = actor_stream(self.user1).count()
         self.user2.delete()
         self.assertEqual(actions, actor_stream(self.user1).count() + 1)
+
+    def test_generic_relation_accessors(self):
+        self.assertEqual((2,1,0), (
+            self.user2.actions_for_actor.count(),
+            self.user2.actions_for_target.count(),
+            self.user2.actions_for_action_object.count()))
+
+    def test_bad_actionable_model(self):
+        self.assertRaises(ModelNotActionable, follow, self.user1,
+                          ContentType.objects.get_for_model(self.user1))
 
     def tearDown(self):
         Action.objects.all().delete()

@@ -1,5 +1,6 @@
 from datetime import datetime
 from operator import or_
+
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -8,10 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from actstream.signals import action
-
+from actstream.settings import MODELS
+from actstream.exceptions import check_actionable_model
 
 class FollowManager(models.Manager):
     def stream_for_user(self, user):
@@ -186,6 +187,7 @@ def follow(user, actor, send_action=True):
         follow(request.user, group)
 
     """
+    check_actionable_model(actor)
     follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk,
         content_type=ContentType.objects.get_for_model(actor))
     if send_action and created:
@@ -206,6 +208,7 @@ def unfollow(user, actor, send_action=False):
         unfollow(request.user, other_user)
 
     """
+    check_actionable_model(actor)
     Follow.objects.filter(user = user, object_id = actor.pk,
         content_type = ContentType.objects.get_for_model(actor)).delete()
     if send_action:
@@ -238,6 +241,7 @@ object_as_object_stream.__doc__ = Action.objects.stream_for_object_as_object.__d
 def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
+    check_actionable_model(actor)
     newaction = Action(actor_content_type = ContentType.objects.get_for_model(actor),
                     actor_object_id = actor.pk,
                     verb = unicode(verb),
@@ -247,11 +251,13 @@ def action_handler(verb, **kwargs):
 
     target = kwargs.pop('target', None)
     if target:
+        check_actionable_model(target)
         newaction.target_object_id = target.pk
         newaction.target_content_type = ContentType.objects.get_for_model(target)
 
     action_object = kwargs.pop('action_object', None)
     if action_object:
+        check_actionable_model(action_object)
         newaction.action_object_object_id = action_object.pk
         newaction.action_object_content_type = ContentType.objects.get_for_model(action_object)
 
@@ -259,17 +265,12 @@ def action_handler(verb, **kwargs):
 
 action.connect(action_handler, dispatch_uid='actstream.models')
 
-def delete_orphaned_actions(sender, instance, **kwargs):
-    """
-    When any object is deleted, delete all their actions to prevent orphans.
-    """
-    ctype, pk = ContentType.objects.get_for_model(instance), instance.pk
-    Action.objects.filter(
-        Q(action_object_object_id=pk, action_object_content_type=ctype) |
-        Q(actor_object_id=pk, actor_content_type=ctype) |
-        Q(target_object_id=pk, target_content_type=ctype)
-    ).delete()
-
-if getattr(settings, 'ACTSTREAM_DELETE_ORPHANED_ACTIONS', False):
-    from django.db.models.signals import post_delete
-    post_delete.connect(delete_orphaned_actions, dispatch_uid='actstream.models.delete')
+for model in MODELS:
+    opts = model._meta
+    for field in ('actor', 'target', 'action_object'):
+        generic.GenericRelation(Action,
+            content_type_field='%s_content_type' % field,
+            object_id_field='%s_object_id' % field,
+            related_name='actions_with_%s_%s_as_%s' % (
+                opts.app_label, opts.module_name, field),
+        ).contribute_to_class(model, 'actions_for_%s' % field)
