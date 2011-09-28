@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-
+from django.contrib.sessions.models import Session
 from actstream.signals import action
 
 
@@ -266,9 +266,11 @@ def delete_orphaned_actions(sender, instance, **kwargs):
     When any object is deleted, delete all their actions to prevent orphans.
     """
     ctype, pk = ContentType.objects.get_for_model(instance), instance.pk
-    Action.objects.filter(
-        Q(action_object_object_id=pk, action_object_content_type=ctype) |
-        Q(actor_object_id=pk, actor_content_type=ctype) |
-        Q(target_object_id=pk, target_content_type=ctype)
-    ).delete()
+
+    if not isinstance(instance, Session):
+        Action.objects.filter(
+            Q(action_object_object_id=pk, action_object_content_type=ctype) |
+            Q(actor_object_id=pk, actor_content_type=ctype) |
+            Q(target_object_id=pk, target_content_type=ctype)
+        ).delete()
 post_delete.connect(delete_orphaned_actions, dispatch_uid='actstream.models.delete')
