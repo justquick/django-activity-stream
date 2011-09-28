@@ -12,6 +12,19 @@ from django.conf import settings
 
 from actstream.signals import action
 from actstream.managers import FollowManager, ActionManager
+from actstream.utils import get_class
+
+action_manager_path = getattr(settings, 'ACTSTREAM_ACTION_MANAGER', None)
+if action_manager_path:
+    action_manager_class = get_class(action_manager_path)
+else:
+    action_manager_class = ActionManager
+    
+follow_manager_path = getattr(settings, 'ACTSTREAM_FOLLOW_MANAGER', None)
+if follow_manager_path:
+    follow_manager_class = get_class(follow_manager_path)
+else:
+    follow_manager_class = FollowManager
 
 class Action(models.Model):
     """
@@ -60,7 +73,7 @@ class Action(models.Model):
 
     public = models.BooleanField(default=True)
 
-    objects = ActionManager()
+    objects = action_manager_class()
 
     def __unicode__(self):
         if self.target:
@@ -105,7 +118,7 @@ class Follow(models.Model):
     object_id = models.PositiveIntegerField()
     actor = generic.GenericForeignKey()
 
-    objects = FollowManager()
+    objects = follow_manager_class()
 
     class Meta:
         unique_together = ("user", "content_type", "object_id")
