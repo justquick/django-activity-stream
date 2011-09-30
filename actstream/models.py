@@ -11,82 +11,20 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from actstream.signals import action
+from actstream.managers import FollowManager, ActionManager
+from actstream.utils import get_class
 
-
-class FollowManager(models.Manager):
-    def stream_for_user(self, user):
-        """
-        Produces a QuerySet of most recent activities from actors the user follows
-        """
-        follows = self.filter(user=user)
-        qs = (Action.objects.stream_for_actor(follow.actor) for follow in follows if follow.actor is not None)
-        return reduce(or_, qs, Action.objects.none()).order_by('-timestamp')
-
-class Follow(models.Model):
-    """
-    Lets a user follow the activities of any specific actor
-    """
-    user = models.ForeignKey(User)
-
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    actor = generic.GenericForeignKey()
-
-    objects = FollowManager()
-
-    class Meta:
-        unique_together = ("user", "content_type", "object_id")
-
-    def __unicode__(self):
-        return u'%s -> %s' % (self.user, self.actor)
-
-class ActionManager(models.Manager):
-    def stream_for_actor(self, actor):
-        """
-        Produces a QuerySet of most recent activities for any actor
-        """
-        return self.filter(
-            actor_content_type = ContentType.objects.get_for_model(actor),
-            actor_object_id = actor.pk,
-        ).order_by('-timestamp')
-
-    def stream_for_model(self, model):
-        """
-        Produces a QuerySet of most recent activities for any model
-        """
-        return self.filter(
-            Q(target_content_type = ContentType.objects.get_for_model(model)) |
-            Q(action_object_content_type = ContentType.objects.get_for_model(model))
-        ).order_by('-timestamp')
-
-    def stream_for_object(self, obj):
-        """
-        Produces a QuerySet of most recent activities where the model is the object
-        of the action
-        """
-        return self.filter(
-            Q(target_object_id = obj.id) |
-            Q(action_object_object_id = obj.id)
-        ).order_by('-timestamp')
-
-    def stream_for_object_as_object(self, obj):
-        """
-        Produces a QuerySet of most recent activities where the model is the object
-        of the action
-        """
-        return self.filter(
-            action_object_object_id = obj.id
-        ).order_by('-timestamp')
-
-    def stream_for_object_as_target(self, obj):
-        """
-        Produces a QuerySet of most recent activities where the object is the target
-        of the action
-        """
-
-        return self.filter(
-            target_object_id = obj.id
-        ).order_by('-timestamp')
+action_manager_path = getattr(settings, 'ACTSTREAM_ACTION_MANAGER', None)
+if action_manager_path:
+    action_manager_class = get_class(action_manager_path)
+else:
+    action_manager_class = ActionManager
+    
+follow_manager_path = getattr(settings, 'ACTSTREAM_FOLLOW_MANAGER', None)
+if follow_manager_path:
+    follow_manager_class = get_class(follow_manager_path)
+else:
+    follow_manager_class = FollowManager
 
 class Action(models.Model):
     """
@@ -135,7 +73,7 @@ class Action(models.Model):
 
     public = models.BooleanField(default=True)
 
-    objects = ActionManager()
+    objects = action_manager_class()
 
     def __unicode__(self):
         if self.target:
@@ -169,6 +107,24 @@ class Action(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
+
+class Follow(models.Model):
+    """
+    Lets a user follow the activities of any specific actor
+    """
+    user = models.ForeignKey(User)
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    actor = generic.GenericForeignKey()
+
+    objects = follow_manager_class()
+
+    class Meta:
+        unique_together = ("user", "content_type", "object_id")
+
+    def __unicode__(self):
+        return u'%s -> %s' % (self.user, self.actor)
 
 def follow(user, actor, send_action=True):
     """
