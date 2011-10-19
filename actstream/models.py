@@ -65,8 +65,8 @@ class ActionManager(models.Manager):
         of the action
         """
         return self.filter(
-            Q(target_object_id = obj.id) |
-            Q(action_object_object_id = obj.id)
+            Q(target_object_id = obj.pk) |
+            Q(action_object_object_id = obj.pk)
         ).order_by('-timestamp')
 
     def stream_for_object_as_object(self, obj):
@@ -75,7 +75,7 @@ class ActionManager(models.Manager):
         of the action
         """
         return self.filter(
-            action_object_object_id = obj.id
+            action_object_object_id = obj.pk
         ).order_by('-timestamp')
 
     def stream_for_object_as_target(self, obj):
@@ -85,7 +85,7 @@ class ActionManager(models.Manager):
         """
 
         return self.filter(
-            target_object_id = obj.id
+            target_object_id = obj.pk
         ).order_by('-timestamp')
 
 class Action(models.Model):
