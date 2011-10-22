@@ -1,5 +1,4 @@
 from operator import or_
-from functools import wraps
 
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -8,14 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from actstream.exceptions import check_actionable_model
 from actstream.gfk import GFKManager, EmptyGFKQuerySet
 from actstream.exceptions import BadQuerySet
+from actstream.decorators import stream
 
-
-def stream(stream_func):
-    @wraps(stream_func)
-    def wrapped(manager, *args, **kwargs):
-        offset, limit = kwargs.pop('_offset', None), kwargs.pop('_limit', None)
-        return stream_func(manager, *args, **kwargs)[offset:limit].fetch_generic_relations()
-    return wrapped
 
 class ActionManager(GFKManager):
 
