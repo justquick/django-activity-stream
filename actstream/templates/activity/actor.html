@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load activity_tags %}
+{% load activity_tags i18n %}
 {% block extra_head %}
 <script>
 $(function () {
@@ -17,12 +17,12 @@ $(function () {
 {% block content_title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
 
 {% block navlinks %}
-<li><a href="{% url actstream_object_feed content_type_id=ctype.id  object_id=actor.id %}">RSS</a></li>
-<li><a href="{% url actstream_object_feed_atom content_type_id=ctype.id  object_id=actor.id %}">ATOM</a></li>
+<li><a href="{% url actstream_object_feed content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url actstream_object_feed_atom content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
 {% ifequal request.user actor %}{% else %}
     <li>
-        <a href="{% url actstream_unfollow content_type_id=ctype.id  object_id=actor.id %}" id="unfollow_button" style="display:none">UNFOLLOW</a>
-        <a href="{% url actstream_follow content_type_id=ctype.id  object_id=actor.id %}" id="follow_button" >FOLLOW</a>
+        <a href="{% url actstream_unfollow content_type_id=ctype.pk  object_id=actor.pk %}" id="unfollow_button" style="display:none">{% trans "UNFOLLOW" %}</a>
+        <a href="{% url actstream_follow content_type_id=ctype.pk  object_id=actor.pk %}" id="follow_button" >{% trans "FOLLOW" %}</a>
     </li>
 {% endifequal %}
 {% endblock %}
@@ -30,13 +30,13 @@ $(function () {
 {% block content %}
 {% get_user_contenttype as user_ctype %}
 {% if request.user.is_authenticated %}
-<p><b><a href="{% url actstream_actor content_type_id=user_ctype.id object_id=request.user.id %}">View my actions</a></b></p>
+<p><b><a href="{% url actstream_actor content_type_id=user_ctype.pk object_id=request.user.pk %}">{% trans "View my actions" %}</a></b></p>
 {% endif %}
 <ul>
 {% for action in action_list %}
     <li>{% include 'activity/action.html' %}</li>
 {% empty %}
-No actions yet    
+{% trans "No actions yet" %}
 {% endfor %}
 </ul>
 {% endblock %}
