@@ -24,20 +24,20 @@ class ObjectActivityFeed(Feed):
             return obj.get_absolute_url()
         return reverse('actstream_actor', None,
                     (ContentType.objects.get_for_model(obj).pk, obj.pk))
-        
+
     def description(self, obj):
         return 'Public activities of %s' % obj
-    
+
     def items(self, obj):
         i = actor_stream(obj)
         if i:
             return i[:30]
         return []
-        
+
 class AtomObjectActivityFeed(ObjectActivityFeed):
     feed_type = Atom1Feed
-    subtitle = ObjectActivityFeed.description        
-        
+    subtitle = ObjectActivityFeed.description
+
 class ModelActivityFeed(Feed):
     def get_object(self, request, content_type_id):
         return get_object_or_404(ContentType, pk=content_type_id).model_class()
@@ -47,20 +47,20 @@ class ModelActivityFeed(Feed):
 
     def link(self, model):
         return reverse('actstream_model', None, (ContentType.objects.get_for_model(model).pk,))
-        
+
     def description(self, model):
         return 'Public activities of %s' % model
-    
+
     def items(self, model):
         i = model_stream(model)
         if i:
             return i[:30]
         return []
-        
+
 class AtomModelActivityFeed(ModelActivityFeed):
     feed_type = Atom1Feed
-    subtitle = ModelActivityFeed.description            
-        
+    subtitle = ModelActivityFeed.description
+
 class UserActivityFeed(Feed):
     def get_object(self, request):
         if request.user.is_authenticated():
@@ -76,17 +76,18 @@ class UserActivityFeed(Feed):
             return user.get_absolute_url()
         return reverse('actstream_actor', None,
                     (ContentType.objects.get_for_model(user).pk, user.pk))
-        
+
     def description(self, user):
         return 'Public activities of actors you follow'
-    
+
     def items(self, user):
+        if user is None:
+            return []
         i = user_stream(user)
         if i:
             return i[:30]
         return []
-        
+
 class AtomUserActivityFeed(UserActivityFeed):
     feed_type = Atom1Feed
     subtitle = UserActivityFeed.description
-    

@@ -86,9 +86,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'registration',
-    'actstream',
     'testapp',
     'south',
+    'actstream',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -117,3 +117,10 @@ ABSOLUTE_URL_OVERRIDES = {
 ACCOUNT_ACTIVATION_DAYS = 7
 
 ACTSTREAM_ACTION_MODELS = ('auth.user', 'auth.group', 'sites.site')
+
+ACTSTREAM_MANAGER = 'testapp.streams.MyActionManager'
+
+FETCH_RELATIONS = True
+
+USE_PREFETCH = False
+

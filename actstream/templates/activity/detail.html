@@ -1,2 +1,3 @@
+{% load i18n %}
 <h2>{% include 'activity/action.html' %}</h2>
-<p>On {{ action.timestamp|date }} at {{ action.timestamp|time }}</p>
+<p>{% trans "On" %} {{ action.timestamp|date }} {% trans "at" %} {{ action.timestamp|time }}</p>

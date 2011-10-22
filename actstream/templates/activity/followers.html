@@ -1,4 +1,5 @@
-<h2>Users following {{ actor }}</h2>
+{% load i18n %}
+<h2>{% bllocktrans %}Users following {{ actor }}{% endblocktrans %}</h2>
 <ul>
     {% for follower in followers %}
     <li>{{ follower }}</li>

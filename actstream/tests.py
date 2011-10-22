@@ -1,21 +1,23 @@
-import unittest
+from functools import wraps
 
-from django.db import models
-from django.test.client import Client
+from django.db import connection
 from django.test import TestCase
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
-from actstream.signals import action
-from actstream.models import Action, Follow, follow, user_stream, model_stream, actor_stream
+from actstream.models import Action, Follow, model_stream
+from actstream.actions import follow, action
 from actstream.exceptions import ModelNotActionable
+
 
 class ActivityTestCase(TestCase):
     urls = 'actstream.urls'
 
-    def setUp(self):
 
+    def setUp(self):
+        settings.DEBUG = True
         self.group = Group.objects.get_or_create(name='CoolGroup')[0]
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -45,33 +47,32 @@ class ActivityTestCase(TestCase):
 
         # Group responds to comment
         action.send(self.group,verb='responded to',target=self.comment)
-        self.client = Client()
+
 
     def test_aauser1(self):
-        self.assertEqual(map(unicode, actor_stream(self.user1)),
+        self.assertEqual(map(unicode, self.user1.actor_actions.all()),
             [u'admin commented on CoolGroup 0 minutes ago', u'admin started following Two 0 minutes ago', u'admin joined CoolGroup 0 minutes ago'])
 
     def test_user2(self):
-        self.assertEqual(map(unicode, actor_stream(self.user2)),
+        self.assertEqual(map(unicode, Action.objects.actor(self.user2)),
             [u'Two started following CoolGroup 0 minutes ago', u'Two joined CoolGroup 0 minutes ago'])
 
     def test_group(self):
-        self.assertEqual(map(unicode, actor_stream(self.group)),
+        self.assertEqual(map(unicode, Action.objects.actor(self.group)),
             [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_stream(self):
-        self.assertEqual(map(unicode, user_stream(self.user1)),
+        self.assertEqual(map(unicode, Action.objects.user(self.user1)),
             [u'Two started following CoolGroup 0 minutes ago', u'Two joined CoolGroup 0 minutes ago'])
-        self.assertEqual(map(unicode, user_stream(self.user2)),
+        self.assertEqual(map(unicode, Action.objects.user(self.user2)),
             [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_stream_stale_follows(self):
         """
-        user_stream() / FollowManager.stream_for_user() should ignore Follow
-        objects with stale actor references.
+        Action.objects.user() should ignore Follow objects with stale actor references.
         """
         self.user2.delete()
-        self.assertEqual(list(user_stream(self.user1)), [])
+        self.assert_(not 'Two' in str(Action.objects.user(self.user1)))
 
     def test_rss(self):
         rss = self.client.get('/feed/').content
@@ -82,24 +83,6 @@ class ActivityTestCase(TestCase):
         atom = self.client.get('/feed/atom/').content
         self.assert_(atom.startswith('<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">'))
         self.assert_(atom.find('Activity feed for your followed actors')>-1)
-
-    def test_zombies(self):
-        from random import choice, randint
-
-        humans = [User.objects.create(username='human%d' % i) for i in range(10)]
-        zombies = [User.objects.create(username='zombie%d' % j) for j in range(2)]
-
-        while len(humans):
-            for z in zombies:
-                if not len(humans): break
-                victim = choice(humans)
-                humans.pop(humans.index(victim))
-                victim.save()
-                zombies.append(victim)
-                action.send(z,verb='killed',target=victim)
-
-        self.assertEqual(map(unicode,model_stream(User))[:5],
-            map(unicode,Action.objects.order_by('-timestamp')[:5]))
 
     def test_action_object(self):
         action.send(self.user1,verb='created comment',action_object=self.comment,target=self.group)
@@ -129,19 +112,67 @@ class ActivityTestCase(TestCase):
         self.assertEquals(f1, f2, "Should have received the same Follow object that I first submitted")
 
     def test_zzzz_no_orphaned_actions(self):
-        actions = actor_stream(self.user1).count()
+        actions = self.user1.actor_actions.count()
         self.user2.delete()
-        self.assertEqual(actions, actor_stream(self.user1).count() + 1)
+        self.assertEqual(actions, self.user1.actor_actions.count() + 1)
 
     def test_generic_relation_accessors(self):
         self.assertEqual((2,1,0), (
-            self.user2.actions_for_actor.count(),
-            self.user2.actions_for_target.count(),
-            self.user2.actions_for_action_object.count()))
+            self.user2.actor_actions.count(),
+            self.user2.target_actions.count(),
+            self.user2.action_object_actions.count()))
 
     def test_bad_actionable_model(self):
         self.assertRaises(ModelNotActionable, follow, self.user1,
                           ContentType.objects.get_for_model(self.user1))
+
+    def test_hidden_action(self):
+        action = self.user1.actor_actions.all()[0]
+        action.public = False
+        action.save()
+        self.assert_(not action in self.user1.actor_actions.public())
+
+    def _the_zombies_are_coming(self, nums={'human':10,'zombie':2}):
+        from random import choice, randint
+
+        player_generator = lambda n: [User.objects.create(username='%s%d' % (n, i))
+                                      for i in range(nums[n])]
+
+        humans = player_generator('human')
+        zombies = player_generator('zombie')
+
+        while len(humans):
+            for z in zombies:
+                if not len(humans): break
+                victim = choice(humans)
+                humans.pop(humans.index(victim))
+                victim.save()
+                zombies.append(victim)
+                action.send(z,verb='killed',target=victim)
+
+        self.assertEqual(Action.objects.filter(verb='killed').count(), nums['human'])
+
+    def query_load(f):
+        @wraps(f)
+        def inner(self):
+            self._the_zombies_are_coming({'human': 10, 'zombie': 1})
+            ci = len(connection.queries)
+            length, limit = f(self)
+            result = list([map(unicode, (x.actor, x.target, x.action_object))
+                           for x in model_stream(User, _limit=limit)])
+            self.assert_(len(connection.queries) - ci <= 4,
+                         'Too many queries, got %d expected no more than 4' % len(connection.queries))
+            self.assertEqual(len(result), length)
+            return result
+        return inner
+
+    @query_load
+    def test_load(self):
+        return 15, None
+
+    @query_load
+    def test_after_slice(self):
+        return 10,  10
 
     def tearDown(self):
         Action.objects.all().delete()
