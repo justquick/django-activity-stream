@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-09-30 18:57-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: registration/admin.py:23
+msgid "Activate users"
+msgstr ""
+
+#: registration/admin.py:43
+msgid "Re-send activation emails"
+msgstr ""
+
+#: registration/forms.py:35
+msgid "Username"
+msgstr ""
+
+#: registration/forms.py:36
+msgid "This value must contain only letters, numbers and underscores."
+msgstr ""
+
+#: registration/forms.py:39
+msgid "Email address"
+msgstr ""
+
+#: registration/forms.py:41
+msgid "Password"
+msgstr ""
+
+#: registration/forms.py:43
+msgid "Password (again)"
+msgstr ""
+
+#: registration/forms.py:55
+msgid "A user with that username already exists."
+msgstr ""
+
+#: registration/forms.py:67
+msgid "The two password fields didn't match."
+msgstr ""
+
+#: registration/forms.py:78
+msgid "I have read and agree to the Terms of Service"
+msgstr ""
+
+#: registration/forms.py:79
+msgid "You must agree to the terms to register"
+msgstr ""
+
+#: registration/forms.py:95
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+
+#: registration/forms.py:122
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+
+#: registration/models.py:168
+msgid "user"
+msgstr ""
+
+#: registration/models.py:169
+msgid "activation key"
+msgstr ""
+
+#: registration/models.py:174
+msgid "registration profile"
+msgstr ""
+
+#: registration/models.py:175
+msgid "registration profiles"
+msgstr ""
