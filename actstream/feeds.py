@@ -16,10 +16,8 @@ from actstream.models import actor_stream, model_stream, user_stream, action_obj
 class AtomWithContentFeed(Atom1Feed):
     def add_item_elements(self, handler, item):
         super(AtomWithContentFeed, self).add_item_elements(handler, item)
-        # <activity:verb>post</activity:verb>
         if 'content' in item:
             handler.addQuickElement(u"content", item['content'], {'type':'html'})
-
 
 class ObjectActivityFeed(Feed):
     """
@@ -48,11 +46,9 @@ class ObjectActivityFeed(Feed):
         return []
 
     def item_extra_kwargs(self, obj):
-        item = {
+        return  {
             'content': obj.description,
         }
-        return item
-
 
 class AtomObjectActivityFeed(ObjectActivityFeed):
     feed_type = AtomWithContentFeed
@@ -69,63 +65,39 @@ class ActivityStreamsFeed(AtomWithContentFeed):
 
     def add_root_elements(self, handler):
         super(ActivityStreamsFeed, self).add_root_elements(handler)
-        # handler.addQuickElement('itunes:explicit', 'clean')
 
     def add_item_elements(self, handler, item):
         super(ActivityStreamsFeed, self).add_item_elements(handler, item)
-        # <activity:verb>post</activity:verb>
         handler.addQuickElement(u"activity:verb", item['verb'])
 
         if 'actor' in item:
-#        <author>
             handler.startElement('author', {})
-#           <name>Geraldine</name>
             handler.addQuickElement('name', item['actor'].display_name)
-#           <uri>http://example.com/geraldine</uri>
             handler.addQuickElement('uri', get_tag_uri(item['actor'].get_absolute_url(), None))
-#           <id>tag:photopanic.example.com,2009:person/4859</id>
             handler.addQuickElement('id', item['actor'].get_absolute_url())
-#           <activity:object-type>person</activity:object-type>
             handler.addQuickElement('activity:object-type', 'person')
-#           <link rel="alternate" type="text/html" href="http://example.com/geraldine" />
             handler.addQuickElement('link', get_tag_uri(item['actor'].get_absolute_url(), None), {'type':'text/html'})
             handler.endElement('author')
-#        </author>
 
         if 'object' in item:
-#       <activity:object>
             handler.startElement('activity:object', {})
-#           <id>tag:photopanic.example.com,2009:photo/4352</id>
             handler.addQuickElement('id', item['object_id'])
-#           <title>My Cat</title>
             handler.addQuickElement('title', item['object_title'])
-#           <published>2009-11-02T15:29:00Z</published>
             handler.addQuickElement(
                 u"published", rfc3339_date(item['object_timestamp']).decode('utf-8'))
-
-#           <link rel="alternate" type="text/html" href="http://example.com/geraldine/photos/4352" />
             handler.addQuickElement('link', item['object'].get_absolute_url(), {'type':'text/html'})
-#           <activity:object-type>photo</activity:object-type>
             handler.addQuickElement('activity:object-type', item['object_object_type'])
-#       </activity:object>
             handler.endElement('activity:object')
 
         if 'target' in item:
-#        <activity:target>
             handler.startElement('activity:target', {})
-#          <id>tag:photopanic.example.com,2009:photo-album/2519</id>
             handler.addQuickElement('id', item['target_id'])
-#          <title>My Pets</title>
             handler.addQuickElement('title', item['target_title'])
-#          <link rel="alternate" type="text/html" href="/geraldine/albums/pets" />
-#          <activity:object-type>photo-album</activity:object-type>
             handler.addQuickElement('activity:object-type', str(item['target_object_type']))
-#        </activity:target>
             handler.endElement('activity:target')
 
 
 class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
-
     feed_type = ActivityStreamsFeed
 
     def feed_extra_kwargs(self, obj):
@@ -141,28 +113,9 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
         the `add_item` call of the feed generator.
         Add the 'content' field of the 'Entry' item, to be used by the custom feed generator.
         """
-#        {
-#            'actor_content_type_id': 21L,
-#            'description': None,
-#            'timestamp': datetime.datetime(2011, 8, 18, 23, 16, 9),
-#            '_state': '<django.db.models.base.ModelState object at 0x1057357d0>',
-#            '_target_cache': None,
-#            'public': True,
-#            '_actor_cache': '<Person: Steve>',
-#            'actor_object_id': 1L,
-#            'verb': u'updated',
-#            'verb_uri_prefix': 'http://activitystrea.ms/schema/1.0/',
-#            'target_object_id': None,
-#            'action_object_content_type_id': 32L,
-#            'target_content_type_id': None,
-#            'id': 64L,
-#            'action_object_object_id': 1L
-#        }
-
-
         try:
             object_id = obj.action_object.get_absolute_url()
-        except Exception, e:
+        except:
             object_id = obj.action_object_content_type.model + "/" + str(obj.action_object.id)
 
         object_id = get_tag_uri(object_id, None)
