@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0beta1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="action-manager">
+<h2>Action Manager<a class="headerlink" href="#action-manager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="actstream.managers.ActionManager">
+<em class="property">class </em><tt class="descclassname">actstream.managers.</tt><tt class="descname">ActionManager</tt><a class="headerlink" href="#actstream.managers.ActionManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default manager for Actions, accessed through Action.objects</p>
+<dl class="method">
+<dt id="actstream.managers.ActionManager.public">
+<tt class="descname">public</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.public" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only return public actions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="actstream.managers.ActionManager.actor">
+<tt class="descname">actor</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.actor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream of most recent actions where object is the actor.
+Keyword arguments will be passed to Action.objects.filter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="actstream.managers.ActionManager.target">
+<tt class="descname">target</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream of most recent actions where object is the target.
+Keyword arguments will be passed to Action.objects.filter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="actstream.managers.ActionManager.model_actions">
+<tt class="descname">model_actions</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.model_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream of most recent actions by any particular model</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="actstream.managers.ActionManager.action_object">
+<tt class="descname">action_object</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.action_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream of most recent actions where object is the action_object.
+Keyword arguments will be passed to Action.objects.filter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="actstream.managers.ActionManager.user">
+<tt class="descname">user</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream of most recent actions by actors that the passed User object is following</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-actstream.views">
+<span id="views"></span><h2>Views<a class="headerlink" href="#module-actstream.views" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="actstream.views.respond">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">respond</tt><big>(</big><em>request</em>, <em>code</em><big>)</big><a class="headerlink" href="#actstream.views.respond" title="Permalink to this definition">¶</a></dt>
+<dd><p>Responds to the request with the given response code.
+If <tt class="docutils literal"><span class="pre">next</span></tt> is in the form, it will redirect instead</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.follow_unfollow">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">follow_unfollow</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.views.follow_unfollow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates or deletes the follow relationship between <tt class="docutils literal"><span class="pre">request.user</span></tt> and the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.stream">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">stream</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.views.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index page for authenticated user&#8217;s activity stream. (Eg: Your feed at github.com)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.followers">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">followers</tt><big>(</big><em>request</em>, <em>content_type_id</em>, <em>object_id</em><big>)</big><a class="headerlink" href="#actstream.views.followers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a listing of <tt class="docutils literal"><span class="pre">User``s</span> <span class="pre">that</span> <span class="pre">follow</span> <span class="pre">the</span> <span class="pre">actor</span> <span class="pre">defined</span> <span class="pre">by</span> <span class="pre">``content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.user">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">user</tt><big>(</big><em>request</em>, <em>username</em><big>)</big><a class="headerlink" href="#actstream.views.user" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">User</span></tt> focused activity stream. (Eg: Profile page twitter.com/justquick)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.detail">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">detail</tt><big>(</big><em>request</em>, <em>action_id</em><big>)</big><a class="headerlink" href="#actstream.views.detail" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">Action</span></tt> detail view (pretty boring, mainly used for get_absolute_url)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.actor">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">actor</tt><big>(</big><em>request</em>, <em>content_type_id</em>, <em>object_id</em><big>)</big><a class="headerlink" href="#actstream.views.actor" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.views.model">
+<tt class="descclassname">actstream.views.</tt><tt class="descname">model</tt><big>(</big><em>request</em>, <em>content_type_id</em><big>)</big><a class="headerlink" href="#actstream.views.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-actstream.actions">
+<span id="actions"></span><h2>Actions<a class="headerlink" href="#module-actstream.actions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="actstream.actions.follow">
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">follow</tt><big>(</big><em>user</em>, <em>actor</em>, <em>send_action=True</em><big>)</big><a class="headerlink" href="#actstream.actions.follow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship such that the actor&#8217;s activities appear in the user&#8217;s stream.
+Also sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">started</span> <span class="pre">following</span> <span class="pre">&lt;actor&gt;</span></tt> action signal.
+Returns the created <tt class="docutils literal"><span class="pre">Follow</span></tt> instance.
+If <tt class="docutils literal"><span class="pre">send_action</span></tt> is false, no &#8220;started following&#8221; signal will be created</p>
+<p>Syntax:</p>
+<div class="highlight-python"><pre>follow(&lt;user&gt;, &lt;actor&gt;)</pre>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.actions.unfollow">
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">unfollow</tt><big>(</big><em>user</em>, <em>actor</em>, <em>send_action=False</em><big>)</big><a class="headerlink" href="#actstream.actions.unfollow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship.
+Optionally sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">stopped</span> <span class="pre">following</span> <span class="pre">&lt;actor&gt;</span></tt> action signal.</p>
+<p>Syntax:</p>
+<div class="highlight-python"><pre>unfollow(&lt;user&gt;, &lt;actor&gt;)</pre>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">unfollow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">other_user</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.actions.is_following">
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">is_following</tt><big>(</big><em>user</em>, <em>actor</em><big>)</big><a class="headerlink" href="#actstream.actions.is_following" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> relationship exists.
+Returns True if exists, False otherwise.</p>
+<p>Syntax:</p>
+<div class="highlight-python"><pre>is_following(&lt;user&gt;, &lt;actor&gt;)</pre>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">is_following</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.actions.action_handler">
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">action_handler</tt><big>(</big><em>verb</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.actions.action_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler function to create Action instance upon action signal call.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-actstream.decorators">
+<span id="decorators"></span><h2>Decorators<a class="headerlink" href="#module-actstream.decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="actstream.decorators.stream">
+<tt class="descclassname">actstream.decorators.</tt><tt class="descname">stream</tt><big>(</big><em>func</em><big>)</big><a class="headerlink" href="#actstream.decorators.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream decorator to be applied to methods of an <tt class="docutils literal"><span class="pre">ActionManager</span></tt> subclass</p>
+<p>Syntax:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream.decorators</span> <span class="kn">import</span> <span class="n">stream</span>
+<span class="kn">from</span> <span class="nn">actstream.managers</span> <span class="kn">import</span> <span class="n">ActionManager</span>
+
+<span class="k">class</span> <span class="nc">MyManager</span><span class="p">(</span><span class="n">ActionManager</span><span class="p">):</span>
+    <span class="nd">@stream</span>
+    <span class="k">def</span> <span class="nf">foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-actstream.exceptions">
+<span id="exceptions"></span><h2>Exceptions<a class="headerlink" href="#module-actstream.exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="actstream.exceptions.ModelNotActionable">
+<em class="property">exception </em><tt class="descclassname">actstream.exceptions.</tt><tt class="descname">ModelNotActionable</tt><a class="headerlink" href="#actstream.exceptions.ModelNotActionable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a Model not in <tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_MODELS</span></tt> setting is used in an Action</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="actstream.exceptions.BadQuerySet">
+<em class="property">exception </em><tt class="descclassname">actstream.exceptions.</tt><tt class="descname">BadQuerySet</tt><a class="headerlink" href="#actstream.exceptions.BadQuerySet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action stream must return a QuerySet of Action items</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.exceptions.check_actionable_model">
+<tt class="descclassname">actstream.exceptions.</tt><tt class="descname">check_actionable_model</tt><big>(</big><em>model</em><big>)</big><a class="headerlink" href="#actstream.exceptions.check_actionable_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the model is not defined in the <tt class="docutils literal"><span class="pre">MODELS</span></tt> setting this check raises the <tt class="docutils literal"><span class="pre">ModelNotActionable</span></tt> exception</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API</a><ul>
+<li><a class="reference internal" href="#action-manager">Action Manager</a></li>
+<li><a class="reference internal" href="#module-actstream.views">Views</a></li>
+<li><a class="reference internal" href="#module-actstream.actions">Actions</a></li>
+<li><a class="reference internal" href="#module-actstream.decorators">Decorators</a></li>
+<li><a class="reference internal" href="#module-actstream.exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="previous chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >previous</a> |</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Justin Quick.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

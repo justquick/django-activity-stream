@@ -1,0 +1,140 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0beta1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
+    <link rel="next" title="Generating Actions" href="actions.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="actions.html" title="Generating Actions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Update these settings in your project&#8217;s <tt class="docutils literal"><span class="pre">settings.py</span></tt>.  Supported settings are defined below.</p>
+<div class="section" id="action-models">
+<h2>Action Models<a class="headerlink" href="#action-models" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_MODELS</span> <span class="pre">=</span> <span class="pre">['auth.User']</span></tt></p>
+<p>A list the models that you want to enable actions for. Models must be in the format <tt class="docutils literal"><span class="pre">app_label.model_name</span></tt> .
+In the background, django-activity-stream sets up <tt class="docutils literal"><span class="pre">GenericRelations</span></tt> to handle stream generation.</p>
+</div>
+<div class="section" id="action-template">
+<h2>Action Template<a class="headerlink" href="#action-template" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_TEMPLATE</span> <span class="pre">=</span> <span class="pre">'activity/single_action.txt'</span></tt></p>
+<p>String template name. Only used if <tt class="docutils literal"><span class="pre">USE_I18N</span> <span class="pre">=</span> <span class="pre">True</span></tt> in your settings.
+Name of the template to use when formatting an Action for unicode.</p>
+<p>Templates can use the <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/i18n/internationalization/#specifying-translation-strings-in-template-code">i18n framework</a>.</p>
+</div>
+<div class="section" id="stream-modules">
+<h2>Stream Modules<a class="headerlink" href="#stream-modules" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">ACTSTREAM_MANAGER</span> <span class="pre">=</span> <span class="pre">'actstream.managers.ActionManager'</span></tt></p>
+<p>The name of the manager to use for <tt class="docutils literal"><span class="pre">Action.objects</span></tt>.
+Add your own manager here to create custom streams.</p>
+<p>For more info, see <a class="reference internal" href="streams.html#custom-streams"><em>Writing Custom Streams</em></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#action-models">Action Models</a></li>
+<li><a class="reference internal" href="#action-template">Action Template</a></li>
+<li><a class="reference internal" href="#stream-modules">Stream Modules</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="actions.html"
+                        title="next chapter">Generating Actions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="actions.html" title="Generating Actions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Justin Quick.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
