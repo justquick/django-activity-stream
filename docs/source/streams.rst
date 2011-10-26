@@ -1,7 +1,8 @@
 Action Streams
 ===============
 
-Listings of actions are available for several points of view. All return a ``QuerySet`` of ``Action`` items sorted by ``-timestamp``.
+Listings of actions are available for several points of view.
+All streams return a ``QuerySet`` of ``Action`` items sorted by ``-timestamp``.
 
 
 Using Builtin Streams
@@ -12,8 +13,8 @@ There are several builtin streams which cover the basics, but you are never limi
 User
 -----
 
-User streams are the most important. Basically you follow anyone (or anything) on your site and their actions show up here.
-User streams take one argument which is a ``User`` instance which is the one doing the following (usually ``request.user``)
+User streams are the most important, like your News Feed on `github <https://github.com/>`_. Basically you follow anyone (or anything) on your site and their actions show up here.
+These streams take one argument which is a ``User`` instance which is the one doing the following (usually ``request.user``)
 
 .. code-block:: python
 
@@ -97,20 +98,18 @@ To start writing your custom stream module, create a file in your app called ``m
 
     from actstream.managers import ActionManager, stream
 
-
     class MyActionManager(ActionManager):
 
         @stream
-        def mystream(self, object):
+        def mystream(self, object, verb='posted', time=None):
             if time is None:
                 time = datetime.now()
-            return object.actor_actions.filter(timestamp__lte = time)
+            return object.actor_actions.filter(verb = verb, timestamp__lte = time)
 
-This defines a manager with one stream which filters actions by timestamp
+This defines a manager with one stream which filters actions by verb and timestamp.
 
-
-Now that stream is available at several places in the API.
-You can access it directly on the ``Action`` manager through ``Action.objects.verbage`` or from the ``GenericRelation`` on any actionable model instance.
+Now that stream is available directly on the ``Action`` manager through ``Action.objects.mystream``
+or from the ``GenericRelation`` on any actionable model instance.
 
 .. code-block:: python
 
@@ -119,6 +118,6 @@ You can access it directly on the ``Action`` manager through ``Action.objects.ve
 
     user = User.objects.all()[0]
 
-    Action.objects.verbage(user, 'posted')
+    Action.objects.mystream(user, 'commented')
     #OR
-    user.actor_actions.verbage('posted')
+    user_instance.actor_actions.mystream('commented')

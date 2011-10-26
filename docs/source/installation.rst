@@ -15,7 +15,7 @@ or get it from source
     $ cd django-activity-stream
     $ python setup.py install
 
-Then to add the django-activity-stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
+Then to add the Django Activity Stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
 
 The app should go somewhere after all the apps that are going to be generating activities like ``django.contrib.auth``::
 

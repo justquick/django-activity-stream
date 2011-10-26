@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 class ModelNotActionable(ImproperlyConfigured):
     """
-    Raised when a Model not in ACTSTREAM_ACTION_MODELS is used in an Action
+    Raised when a Model not in ``ACTSTREAM_ACTION_MODELS`` setting is used in an Action
     """
     def __str__(self):
         model = self.args[0]
@@ -21,7 +21,7 @@ class BadQuerySet(ValueError):
 
 def check_actionable_model(model):
     """
-    If the model is not defined in MODELS this check raises ModelNotActionable
+    If the model is not defined in the ``MODELS`` setting this check raises the ``ModelNotActionable`` exception
     """
     from actstream.settings import MODELS
 

@@ -11,6 +11,9 @@ from actstream.decorators import stream
 
 
 class ActionManager(GFKManager):
+    """
+    Default manager for Actions, accessed through Action.objects
+    """
 
     def public(self, *args, **kwargs):
         """

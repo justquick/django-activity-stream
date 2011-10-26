@@ -32,6 +32,7 @@ Contents:
    actions
    follow
    streams
+   api
 
 Indices and tables
 ==================

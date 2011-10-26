@@ -57,6 +57,9 @@ def unfollow(user, actor, send_action=False):
         action.send(user, verb=_('stopped following'), target=actor)
 
 def action_handler(verb, **kwargs):
+    """
+    Handler function to create Action instance upon action signal call.
+    """
     from actstream.models import Action
 
     kwargs.pop('signal', None)
