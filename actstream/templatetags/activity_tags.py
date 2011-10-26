@@ -5,19 +5,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from actstream.models import Follow
 
-register=Library()
+register = Library()
 
 def is_following(context, instance):
     try:
-        user=context['user']
+        user = context['user']
     except KeyError:
         return False
     content_type = ContentType.objects.get_for_model(instance).pk
-    try:
-        return Follow.objects.filter(content_type=content_type, user=user, object_id=instance.pk).count() > 0
-    except TypeError:
-        pass
-    return False
+    return bool(Follow.objects.filter(content_type_id=content_type, user=user, object_id=instance.pk).count())
 
 @register.simple_tag(takes_context=True)
 def activity_follow_label(context, instance, follow, unfollow):
@@ -42,13 +38,13 @@ def activity_followers_count(instance):
     content_type = ContentType.objects.get_for_model(instance).pk
     val = Follow.objects.filter(content_type=content_type, object_id=instance.pk).count()
     return val
-    
+
 
 class DisplayActionLabel(Node):
     def __init__(self, actor, varname=None):
         self.actor = Variable(actor)
         self.varname = varname
-        
+
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         try:
@@ -73,7 +69,7 @@ class DisplayAction(Node):
     def __init__(self, action, varname=None):
         self.action = Variable(action)
         self.varname = varname
-        
+
     def render(self, context):
         action_instance = self.action.resolve(context)
         try:
@@ -84,13 +80,13 @@ class DisplayAction(Node):
             context[self.varname] = action_output
             return ""
         else:
-            return action_output        
-        
+            return action_output
+
 class DisplayActionShort(Node):
     def __init__(self, action, varname=None):
         self.action = Variable(action)
         self.varname = varname
-        
+
     def render(self, context):
         action_instance = self.action.resolve(context)
         try:
@@ -101,13 +97,13 @@ class DisplayActionShort(Node):
             context[self.varname] = action_output
             return ""
         else:
-            return action_output        
-        
+            return action_output
+
 class DisplayGroupedActions(Node):
     def __init__(self, actions, varname=None):
         self.actions = Variable(actions)
         self.varname = varname
-        
+
     def render(self, context):
         actions_instance = self.action.resolve(context)
         try:
@@ -118,8 +114,8 @@ class DisplayGroupedActions(Node):
             context[self.varname] = action_output
             return ""
         else:
-            return action_output        
-        
+            return action_output
+
 def do_print_action(parser, token):
     bits = token.contents.split()
     if len(bits) > 3:
@@ -130,7 +126,7 @@ def do_print_action(parser, token):
         return DisplayAction(bits[1],bits[3])
     else:
         return DisplayAction(bits[1])
-        
+
 def do_print_action_short(parser, token):
     bits = token.contents.split()
     if len(bits) > 3:
@@ -141,7 +137,7 @@ def do_print_action_short(parser, token):
         return DisplayActionShort(bits[1],bits[3])
     else:
         return DisplayActionShort(bits[1])
-        
+
 def do_print_grouped_actions(parser, token):
     bits = token.contents.split()
     if len(bits) > 3:
@@ -152,7 +148,7 @@ def do_print_grouped_actions(parser, token):
         return DisplayAction(bits[1],bits[3])
     else:
         return DisplayAction(bits[1])
-        
+
 def do_print_action_label(parser, token):
     bits = token.contents.split()
     if len(bits) > 3:
@@ -163,14 +159,14 @@ def do_print_action_label(parser, token):
         return DisplayActionLabel(bits[1],bits[3])
     else:
         return DisplayActionLabel(bits[1])
-    
+
 def do_get_user_contenttype(parser, token):
     return UserContentTypeNode(*token.split_contents())
 
 class UserContentTypeNode(Node):
     def __init__(self, *args):
         self.args = args
-        
+
     def render(self, context):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
