@@ -32,6 +32,7 @@ Contents:
    actions
    follow
    streams
+   changelog
    api
 
 Indices and tables

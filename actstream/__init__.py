@@ -1,7 +1,5 @@
 try:
     from actstream.signals import action
-    from actstream.actions import follow, unfollow
-    from actstream.decorators import stream
 except ImportError:
     pass
 
