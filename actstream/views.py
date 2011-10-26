@@ -37,8 +37,8 @@ def stream(request):
     Index page for authenticated user's activity stream. (Eg: Your feed at github.com)
     """
     return render_to_response('activity/actor.html', {
-        'ctype': ContentType.objects.get_for_model(request.user),
-        'actor':request.user,'action_list':user_stream(request.user)
+        'ctype': ContentType.objects.get_for_model(User),
+        'actor': request.user,'action_list':user_stream(request.user)
     }, context_instance=RequestContext(request))
 
 def followers(request, content_type_id, object_id):
@@ -59,7 +59,7 @@ def user(request, username):
     user = get_object_or_404(User, username=username, is_active=True)
     return render_to_response('activity/actor.html', {
         'ctype': ContentType.objects.get_for_model(User),
-        'actor':user,'action_list':actor_stream(user)
+        'actor': user,'action_list':user_stream(user)
     }, context_instance=RequestContext(request))
 
 def detail(request, action_id):
