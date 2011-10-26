@@ -8,7 +8,6 @@ from actstream.signals import action
 from actstream.exceptions import check_actionable_model
 
 
-
 def follow(user, actor, send_action=True):
     """
     Creates a ``User`` -> ``Actor`` follow relationship such that the actor's activities appear in the user's stream.
@@ -55,6 +54,27 @@ def unfollow(user, actor, send_action=False):
         content_type = ContentType.objects.get_for_model(actor)).delete()
     if send_action:
         action.send(user, verb=_('stopped following'), target=actor)
+
+
+def is_following(user, actor):
+    """
+    Checks if a ``User`` -> ``Actor`` relationship exists.
+    Returns True if exists, False otherwise.
+
+    Syntax::
+
+        is_following(<user>, <actor>)
+
+    Example::
+
+        is_following(request.user, group)
+
+    """
+    from actstream.models import Follow
+
+    check_actionable_model(actor)
+    return bool(Follow.objects.filter(user=user, object_id=actor.pk,
+        content_type=ContentType.objects.get_for_model(actor)).count())
 
 def action_handler(verb, **kwargs):
     """

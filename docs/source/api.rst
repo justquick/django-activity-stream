@@ -17,7 +17,7 @@ Actions
 --------
 
 .. automodule:: actstream.actions
-    :members: follow, unfollow, action_handler
+    :members: follow, unfollow, is_following, action_handler
 
 Decorators
 -----------
