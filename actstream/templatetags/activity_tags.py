@@ -2,7 +2,47 @@ from django.template import Variable, Library, Node, TemplateSyntaxError, Templa
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from actstream.models import Follow
 
+register=Library()
+
+def is_following(context, instance):
+    try:
+        user=context['user']
+    except KeyError:
+        return False
+    content_type = ContentType.objects.get_for_model(instance).pk
+    try:
+        return Follow.objects.filter(content_type=content_type, user=user, object_id=instance.pk).count() > 0
+    except TypeError:
+        pass
+    return False
+
+@register.simple_tag(takes_context=True)
+def activity_follow_label(context, instance, follow, unfollow):
+    if is_following(context, instance):
+        return unfollow
+    return follow
+
+@register.simple_tag(takes_context=True)
+def activity_follow_url(context, instance):
+    content_type = ContentType.objects.get_for_model(instance).pk
+    if is_following(context, instance):
+        return reverse('actstream_unfollow', kwargs={'content_type_id': content_type, 'object_id': instance.pk})
+    return reverse('actstream_follow', kwargs={'content_type_id': content_type, 'object_id': instance.pk})
+
+@register.simple_tag
+def activity_followers_url(instance):
+    content_type = ContentType.objects.get_for_model(instance).pk
+    return reverse('actstream_followers', kwargs={'content_type_id': content_type, 'object_id': instance.pk})
+
+@register.simple_tag
+def activity_followers_count(instance):
+    content_type = ContentType.objects.get_for_model(instance).pk
+    val = Follow.objects.filter(content_type=content_type, object_id=instance.pk).count()
+    return val
+    
 
 class DisplayActionLabel(Node):
     def __init__(self, actor, varname=None):
@@ -135,7 +175,6 @@ class UserContentTypeNode(Node):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
 
-register = Library()     
 register.tag('display_action', do_print_action)
 register.tag('display_action_short', do_print_action_short)
 register.tag('display_grouped_actions', do_print_grouped_actions)
