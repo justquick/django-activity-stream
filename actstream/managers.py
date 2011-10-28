@@ -1,6 +1,7 @@
 from collections import defaultdict
 from operator import or_
 
+from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.contrib.contenttypes.models import ContentType
@@ -80,3 +81,24 @@ class ActionManager(GFKManager):
         qs = qs.filter(q)
         return qs
 
+
+class FollowManager(models.Manager):
+    """
+    Manager for Follow model.
+    """
+
+    def for_object(self, instance):
+        """
+        Filter to a specific instance.
+        """
+        content_type = ContentType.objects.get_for_model(instance).pk
+        return self.filter(content_type=content_type, object_id=instance.pk)
+
+    def is_following(self, user, instance):
+        """
+        Check if a user is following an instance.
+        """
+        if not user:
+            return False
+        queryset = self.for_object(instance)
+        return queryset.filter(user=user).exists()

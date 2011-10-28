@@ -1,9 +1,6 @@
 from datetime import datetime
-from operator import or_
 
 from django.db import models
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
@@ -12,8 +9,9 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
+from actstream import managers
 from actstream.settings import MODELS, TEMPLATE, MANAGER_MODULE
-from actstream.exceptions import check_actionable_model
+
 
 class Follow(models.Model):
     """
@@ -25,11 +23,14 @@ class Follow(models.Model):
     object_id = models.CharField(max_length=255)
     actor = generic.GenericForeignKey()
 
+    objects = managers.FollowManager
+
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
 
     def __unicode__(self):
         return u'%s -> %s' % (self.user, self.actor)
+
 
 class Action(models.Model):
     """
@@ -126,6 +127,7 @@ class Action(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
+
 
 # convenient accessors
 actor_stream = Action.objects.actor
