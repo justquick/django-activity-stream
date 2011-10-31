@@ -49,7 +49,7 @@ class GFKQuerySet(QuerySet):
                 ct_id_field = self.model._meta.get_field(gfk.ct_field).column
                 ct_map.setdefault(
                     getattr(item, ct_id_field), {}
-                    )[getattr(item, gfk.fk_field)] = (gfk.name, item.pk)
+                    )[smart_unicode(getattr(item, gfk.fk_field))] = (gfk.name, item.pk)
 
         ctypes = ContentType.objects.using(self.db).in_bulk(ct_map.keys())
 
