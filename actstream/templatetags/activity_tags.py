@@ -12,8 +12,8 @@ def is_following(context, instance):
         user = context['user']
     except KeyError:
         return False
-    content_type = ContentType.objects.get_for_model(instance).pk
-    return bool(Follow.objects.filter(content_type_id=content_type, user=user, object_id=instance.pk).count())
+    content_type = ContentType.objects.get_for_model(instance)
+    return bool(Follow.objects.filter(content_type=content_type, user=user, object_id=instance.pk).count())
 
 @register.simple_tag(takes_context=True)
 def activity_follow_label(context, instance, follow, unfollow):
