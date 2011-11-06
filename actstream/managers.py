@@ -62,9 +62,14 @@ class ActionManager(GFKManager):
         Stream of most recent actions by actors that the passed User object is following
         """
         from actstream.models import Follow
-
+        q = Q()
         qs = self.get_query_set()
         for follow in Follow.objects.filter(user=object).select_related('actor'):
             if follow.actor:
-                qs &= follow.actor.actor_actions.public(**kwargs)
+                q = q | Q(
+                    actor_content_type = follow.content_type,
+                    actor_object_id = follow.object_id,
+                    public = True
+                )
+        qs = qs.filter(q)
         return qs
