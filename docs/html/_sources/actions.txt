@@ -6,7 +6,7 @@ Generating actions is probably best done in a separate signal.
 .. code-block:: python
 
     from django.db.models.signals import post_save
-    from actstream import action
+    from actstream.actions import action
     from myapp.models import MyModel
 
     def my_handler(sender, instance, created, **kwargs):
@@ -18,7 +18,7 @@ To generate an action anywhere in your code, simply import the action signal and
 
 .. code-block:: python
 
-    from actstream import action
+    from actstream.actions import action
 
     action.send(request.user, verb='reached level 10')
     action.send(request.user, verb='joined', target=group)
