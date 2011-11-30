@@ -144,3 +144,6 @@ for model in MODELS.values():
             related_name='actions_with_%s_%s_as_%s' % (
                 model._meta.app_label, model._meta.module_name, field),
         ).contribute_to_class(model, '%s_actions' % field)
+        
+        # @@@ I'm not entirely sure why this works
+        setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label, model._meta.module_name, field), None)
