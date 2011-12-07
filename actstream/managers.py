@@ -1,3 +1,4 @@
+from collections import defaultdict
 from operator import or_
 
 from django.db.models import Q
@@ -63,13 +64,19 @@ class ActionManager(GFKManager):
         """
         from actstream.models import Follow
         q = Q()
-        qs = self.get_query_set()
-        for follow in Follow.objects.filter(user=object).select_related('actor'):
-            if follow.actor:
-                q = q | Q(
-                    actor_content_type = follow.content_type,
-                    actor_object_id = follow.object_id,
-                    public = True
-                )
+        qs = self.filter(public=True)
+        actors_by_content_type = defaultdict(lambda: [])
+
+        follow_gfks = Follow.objects.filter(user=object).values_list(
+            'content_type_id', 'object_id')
+        for content_type_id, object_id in follow_gfks.iterator():
+            actors_by_content_type[content_type_id].append(object_id)
+
+        for content_type_id, object_ids in actors_by_content_type.iteritems():
+            q = q | Q(
+                actor_content_type = content_type_id,
+                actor_object_id__in = object_ids,
+            )
         qs = qs.filter(q)
         return qs
+
