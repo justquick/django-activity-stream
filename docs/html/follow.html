@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+
     <title>Following/Unfollowing Actors &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
     <link rel="next" title="Action Streams" href="streams.html" />
-    <link rel="prev" title="Generating Actions" href="actions.html" /> 
+    <link rel="prev" title="Generating Actions" href="actions.html" />
   </head>
   <body>
     <div class="related">
@@ -39,15 +39,15 @@
         <li class="right" >
           <a href="actions.html" title="Generating Actions"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-            
+
   <div class="section" id="following-unfollowing-actors">
 <h1>Following/Unfollowing Actors<a class="headerlink" href="#following-unfollowing-actors" title="Permalink to this headline">¶</a></h1>
 <p>Creating or deleting the link between a <tt class="docutils literal"><span class="pre">User</span></tt> and any particular <tt class="docutils literal"><span class="pre">Actor</span></tt> is as easy as calling a function</p>
@@ -58,9 +58,10 @@
 <span class="n">unfollow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can also just make a <tt class="docutils literal"><span class="pre">GET</span></tt> request to the <tt class="docutils literal"><span class="pre">actstream_follow</span></tt> view while authenticated</p>
-<div class="highlight-curl"><pre>GET /activity/follow/&lt;content_type_id&gt;/&lt;object_id&gt;/ # Follow
-GET /activity/unfollow/&lt;content_type_id&gt;/&lt;object_id&gt;/?next=/blog/ # Unfollow and redirect</pre>
+<p>You can also just make a request to the <tt class="docutils literal"><span class="pre">actstream_follow</span></tt> view while authenticated.</p>
+<p>The request can use either <tt class="docutils literal"><span class="pre">GET</span></tt> or <tt class="docutils literal"><span class="pre">POST</span></tt>.</p>
+<div class="highlight-bash"><pre>curl -X GET http://localhost:8000/activity/follow/&lt;content_type_id&gt;/&lt;object_id&gt;/ # Follow
+curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;object_id&gt;/?next=/blog/ # Unfollow and redirect</pre>
 </div>
 <p>Then the current logged in user will follow the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt> &amp; <tt class="docutils literal"><span class="pre">object_id</span></tt>. Optional <tt class="docutils literal"><span class="pre">next</span></tt> parameter is URL to redirect to.</p>
 <p>There is also a function <tt class="docutils literal"><span class="pre">actstream.unfollow</span></tt> which removes the link and takes the same arguments as <tt class="docutils literal"><span class="pre">actstream.follow</span></tt></p>
@@ -112,7 +113,7 @@ GET /activity/unfollow/&lt;content_type_id&gt;/&lt;object_id&gt;/?next=/blog/ # 
         <li class="right" >
           <a href="actions.html" title="Generating Actions"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">

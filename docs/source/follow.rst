@@ -11,12 +11,13 @@ Creating or deleting the link between a ``User`` and any particular ``Actor`` is
     #OR
     unfollow(request.user, group)
 
-You can also just make a ``GET`` request to the ``actstream_follow`` view while authenticated
+You can also just make a request to the ``actstream_follow`` view while authenticated.
+The request can use either ``GET`` or ``POST``.
 
-.. code-block:: curl
+.. code-block:: bash
 
-    GET /activity/follow/<content_type_id>/<object_id>/ # Follow
-    GET /activity/unfollow/<content_type_id>/<object_id>/?next=/blog/ # Unfollow and redirect
+    curl -X GET http://localhost:8000/activity/follow/<content_type_id>/<object_id>/ # Follow
+    curl -X GET http://localhost:8000/activity/unfollow/<content_type_id>/<object_id>/?next=/blog/ # Unfollow and redirect
 
 Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
 
