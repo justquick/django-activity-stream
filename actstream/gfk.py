@@ -32,16 +32,19 @@ class GFKQuerySet(QuerySet):
     Extended in django-activity-stream to allow for multi db, text primary keys and empty querysets
 
     """
-    def fetch_generic_relations(self):
+    def fetch_generic_relations(self, *args):
         qs = self._clone()
 
         if not FETCH_RELATIONS:
             return qs
 
-        if USE_PREFETCH and hasattr(self, 'prefetch_related'):
-            return qs.prefetch_related('actor', 'target', 'action_object')
-
         gfk_fields = [g for g in self.model._meta.virtual_fields if isinstance(g, GenericForeignKey)]
+        if args:
+            gfk_fields = filter(lambda g: g.name in args, gfk_fields)
+
+        if USE_PREFETCH and hasattr(self, 'prefetch_related'):
+            return qs.prefetch_related(*[g.name for g in gfk_fields])
+
         ct_map, data_map = {}, {}
 
         for item in qs:
