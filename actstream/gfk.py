@@ -38,7 +38,8 @@ class GFKQuerySet(QuerySet):
         if not FETCH_RELATIONS:
             return qs
 
-        gfk_fields = [g for g in self.model._meta.virtual_fields if isinstance(g, GenericForeignKey)]
+        gfk_fields = [g for g in self.model._meta.virtual_fields
+                      if isinstance(g, GenericForeignKey)]
         if args:
             gfk_fields = filter(lambda g: g.name in args, gfk_fields)
 
@@ -50,8 +51,7 @@ class GFKQuerySet(QuerySet):
         for item in qs:
             for gfk in gfk_fields:
                 ct_id_field = self.model._meta.get_field(gfk.ct_field).column
-                ct_map.setdefault(
-                    getattr(item, ct_id_field), {}
+                ct_map.setdefault(getattr(item, ct_id_field), {}
                     )[smart_unicode(getattr(item, gfk.fk_field))] = (gfk.name, item.pk)
 
         ctypes = ContentType.objects.using(self.db).in_bulk(ct_map.keys())
@@ -60,7 +60,8 @@ class GFKQuerySet(QuerySet):
             if ct_id:
                 ct = ctypes[ct_id]
                 model_class = ct.model_class()
-                for o in model_class.objects.select_related().filter(pk__in=items_.keys()):
+                objects = model_class._default_manager.select_related()
+                for o in objects.filter(pk__in=items_.keys()):
                     (gfk_name, item_id) = items_[smart_unicode(o.pk)]
                     data_map[(ct_id, smart_unicode(o.pk))] = o
 
@@ -69,7 +70,7 @@ class GFKQuerySet(QuerySet):
                 if getattr(item, gfk.fk_field) != None:
                     ct_id_field = self.model._meta.get_field(gfk.ct_field).column
                     setattr(item, gfk.name, data_map[(getattr(item, ct_id_field),
-                                                      getattr(item, gfk.fk_field))])
+                                    smart_unicode(getattr(item, gfk.fk_field)))])
 
         return qs
 
