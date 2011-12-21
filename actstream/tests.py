@@ -7,8 +7,8 @@ from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
-from actstream.models import Action, Follow, model_stream
-from actstream.actions import follow, action
+from actstream.models import Action, Follow, model_stream, user_stream
+from actstream.actions import follow, action, unfollow
 from actstream.exceptions import ModelNotActionable
 
 
@@ -60,6 +60,10 @@ class ActivityTestCase(TestCase):
     def test_group(self):
         self.assertEqual(map(unicode, Action.objects.actor(self.group)),
             [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+
+    def test_empty_follow_stream(self):
+        unfollow(self.user1, self.user2)
+        self.assert_(not user_stream(self.user1))
 
     def test_stream(self):
         self.assertEqual(map(unicode, Action.objects.user(self.user1)),
