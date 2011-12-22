@@ -71,7 +71,7 @@ class ActionManager(GFKManager):
             'content_type_id', 'object_id')
 
         if not follow_gfks:
-            return EmptyGFKQuerySet()
+            return qs.none()
 
         for content_type_id, object_id in follow_gfks.iterator():
             actors_by_content_type[content_type_id].append(object_id)
