@@ -136,6 +136,8 @@ model_stream = Action.objects.model_actions
 
 # setup GenericRelations for actionable models
 for model in MODELS.values():
+    if not model:
+        continue
     opts = model._meta
     for field in ('actor', 'target', 'action_object'):
         generic.GenericRelation(Action,
@@ -144,6 +146,6 @@ for model in MODELS.values():
             related_name='actions_with_%s_%s_as_%s' % (
                 model._meta.app_label, model._meta.module_name, field),
         ).contribute_to_class(model, '%s_actions' % field)
-        
+
         # @@@ I'm not entirely sure why this works
         setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label, model._meta.module_name, field), None)
