@@ -2,7 +2,7 @@
 {% else %}<a href="{{ action.actor_url }}">{{ action.actor }}</a>{% endif %}
 {{ action.verb }}
 {% if action.target %}
-    {% if action.action_object.get_absolute_url %}<a href="{{ action.target.get_absolute_url }}">{{ action.action_object }}</a>
-    {% else %}<a href="{{ action.action_object.target_url }}">{{ action.action_object }}</a>{% endif %}
+    {% if action.target.get_absolute_url %}<a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
+    {% else %}<a href="{{ action.target_url }}">{{ action.target }}</a>{% endif %}
 {% endif %}
 {{ action.timestamp|timesince }} {% trans "ago" %}
