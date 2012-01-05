@@ -1,3 +1,3 @@
 {% load i18n %}
 <h2>{% include 'activity/action.html' %}</h2>
-<p>{% trans "On" %} {{ action.timestamp|date }} {% trans "at" %} {{ action.timestamp|time }}</p>
+<p>{% blocktrans with date=action.timestamp|date time=action.timestamp|time %}On {{ date }} at {{ time }}{% endblocktrans %}</p>

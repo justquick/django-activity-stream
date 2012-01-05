@@ -1,15 +1,17 @@
 {# Only used if USE_I18N=True to render unicode(Action) #}
 {% load i18n %}
-{% if action.target %}
-    {% if action.action_object %}
-        {{ action.actor }} {{ action.verb }} {{ action.action_object }} {% trans "on" %} {{ action.target }} {{ action.timesince }} {% trans "ago" %}
+{% with actor=action.actor verb=action.verb action_object=action.action_object target=action.target timesince=action.timesince %}
+{% if target %}
+    {% if action_object %}
+        {% blocktrans %}{{ actor }} {{ verb }} {{ action_object }} on {{ target }} {{ timesince }} ago{% endblocktrans %}
     {% else %}
-        {{ action.actor }} {{ action.verb }} {{ action.target }} {{ action.timesince }} {% trans "ago" %}
+        {% blocktrans %}{{ actor }} {{ verb }} {{ target }} {{ timesince }} ago{% endblocktrans %}
     {% endif %}
 {% else %}
     {% if action.action_object %}
-        {{ action.actor }} {{ action.verb }} {{ self.action_object }} {{ action.timesince }} {% trans "ago" %}
+        {% blocktrans %}{{ actor }} {{ verb }} {{ action_object }} {{ timesince }} ago{% endblocktrans %}
     {% else %}
-        {{ actor }} {{ action.verb }} {{ action.timesince }} {% trans "ago" %}
+        {% blocktrans %}{{ actor }} {{ verb }} {{ timesince }} ago {% endblocktrans %}
     {% endif %}
 {% endif %}
+{% endwith %}
