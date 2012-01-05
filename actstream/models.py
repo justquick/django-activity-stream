@@ -23,7 +23,7 @@ class Follow(models.Model):
     object_id = models.CharField(max_length=255)
     actor = generic.GenericForeignKey()
 
-    objects = managers.FollowManager
+    objects = managers.FollowManager()
 
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
