@@ -3,7 +3,7 @@
 {% with actor=action.actor verb=action.verb action_object=action.action_object target=action.target timesince=action.timesince %}
 {% if target %}
     {% if action_object %}
-        {% blocktrans %}{{ actor }} {{ verb }} {{ action_object }} on {{ action.target }} {{ timesince }} ago{% endblocktrans %}
+        {% blocktrans %}{{ actor }} {{ verb }} {{ action_object }} on {{ target }} {{ timesince }} ago{% endblocktrans %}
     {% else %}
         {% blocktrans %}{{ actor }} {{ verb }} {{ target }} {{ timesince }} ago{% endblocktrans %}
     {% endif %}
