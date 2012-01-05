@@ -1,9 +1,6 @@
 from datetime import datetime
-from operator import or_
 
 from django.db import models
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
@@ -13,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 from actstream.settings import MODELS, TEMPLATE, MANAGER_MODULE
-from actstream.exceptions import check_actionable_model
+
 
 class Follow(models.Model):
     """
@@ -31,9 +28,11 @@ class Follow(models.Model):
     def __unicode__(self):
         return u'%s -> %s' % (self.user, self.actor)
 
+
 class Action(models.Model):
     """
-    Action model describing the actor acting out a verb (on an optional target).
+    Action model describing the actor acting out a verb (on an optional
+    target).
     Nomenclature based on http://activitystrea.ms/specs/atom/1.0/
 
     Generalized Format::
@@ -47,7 +46,7 @@ class Action(models.Model):
         <justquick> <reached level 60> <1 minute ago>
         <brosner> <commented on> <pinax/pinax> <2 hours ago>
         <washingtontimes> <started follow> <justquick> <8 minutes ago>
-        <mitsuhiko> <closed> <issue 70> on <mitsuhiko/flask> <about 3 hours ago>
+        <mitsuhiko> <closed> <issue 70> on <mitsuhiko/flask> <about 2 hours ago>
 
     Unicode Representation::
 
@@ -59,20 +58,25 @@ class Action(models.Model):
         <a href="http://oebfare.com/">brosner</a> commented on <a href="http://github.com/pinax/pinax">pinax/pinax</a> 2 hours ago
 
     """
-    actor_content_type = models.ForeignKey(ContentType,related_name='actor')
+    actor_content_type = models.ForeignKey(ContentType, related_name='actor')
     actor_object_id = models.CharField(max_length=255)
-    actor = generic.GenericForeignKey('actor_content_type','actor_object_id')
+    actor = generic.GenericForeignKey('actor_content_type', 'actor_object_id')
 
     verb = models.CharField(max_length=255)
-    description = models.TextField(blank=True,null=True)
+    description = models.TextField(blank=True, null=True)
 
-    target_content_type = models.ForeignKey(ContentType,related_name='target',blank=True,null=True)
-    target_object_id = models.CharField(max_length=255,blank=True,null=True)
-    target = generic.GenericForeignKey('target_content_type','target_object_id')
+    target_content_type = models.ForeignKey(ContentType, related_name='target',
+        blank=True, null=True)
+    target_object_id = models.CharField(max_length=255, blank=True, null=True)
+    target = generic.GenericForeignKey('target_content_type',
+        'target_object_id')
 
-    action_object_content_type = models.ForeignKey(ContentType,related_name='action_object',blank=True,null=True)
-    action_object_object_id = models.CharField(max_length=255,blank=True,null=True)
-    action_object = generic.GenericForeignKey('action_object_content_type','action_object_object_id')
+    action_object_content_type = models.ForeignKey(ContentType,
+        related_name='action_object', blank=True, null=True)
+    action_object_object_id = models.CharField(max_length=255, blank=True,
+        null=True)
+    action_object = generic.GenericForeignKey('action_object_content_type',
+        'action_object_object_id')
 
     timestamp = models.DateTimeField(default=datetime.now)
 
@@ -81,44 +85,48 @@ class Action(models.Model):
     objects = MANAGER_MODULE()
 
     class Meta:
-        ordering = ('-timestamp',)
+        ordering = ('-timestamp', )
 
     def __unicode__(self):
         if settings.USE_I18N:
             return render_to_string(TEMPLATE, {'action': self}).strip()
         if self.target:
             if self.action_object:
-                return u'%s %s %s on %s %s ago' % (self.actor, self.verb, self.action_object, self.target, self.timesince())
-            else:
-                return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
+                return u'%s %s %s on %s %s ago' % (self.actor, self.verb,
+                    self.action_object, self.target, self.timesince())
+            return u'%s %s %s %s ago' % (self.actor, self.verb, self.target,
+                self.timesince())
         if self.action_object:
-            return u'%s %s %s %s %s ago' % (self.actor, self.verb, self.action_object, self.timesince())
+            return u'%s %s %s %s ago' % (self.actor, self.verb,
+                self.action_object, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
 
     def actor_url(self):
         """
-        Returns the URL to the ``actstream_actor`` view for the current actor
+        Returns the URL to the ``actstream_actor`` view for the current actor.
         """
         return reverse('actstream_actor', None,
                        (self.actor_content_type.pk, self.actor_object_id))
 
     def target_url(self):
         """
-        Returns the URL to the ``actstream_actor`` view for the current target
+        Returns the URL to the ``actstream_actor`` view for the current target.
         """
         return reverse('actstream_actor', None,
                        (self.target_content_type.pk, self.target_object_id))
 
     def action_object_url(self):
         """
-        Returns the URL to the ``actstream_actor`` view for the current action object
+        Returns the URL to the ``actstream_actor`` view for the current action
+        object.
         """
         return reverse('actstream_actor', None,
             (self.action_object_content_type.pk, self.action_object_object_id))
 
     def timesince(self, now=None):
         """
-        Shortcut for the ``django.utils.timesince.timesince`` function of the current timestamp
+        Shortcut for the ``django.utils.timesince.timesince`` function of the
+        current timestamp.
         """
         from django.utils.timesince import timesince as timesince_
         return timesince_(self.timestamp, now)
@@ -126,6 +134,7 @@ class Action(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
+
 
 # convenient accessors
 actor_stream = Action.objects.actor
@@ -148,4 +157,5 @@ for model in MODELS.values():
         ).contribute_to_class(model, '%s_actions' % field)
 
         # @@@ I'm not entirely sure why this works
-        setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label, model._meta.module_name, field), None)
+        setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label,
+            model._meta.module_name, field), None)
