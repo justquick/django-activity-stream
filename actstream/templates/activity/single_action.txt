@@ -14,3 +14,4 @@
         {% blocktrans %}{{ actor }} {{ verb }} {{ timesince }} ago {% endblocktrans %}
     {% endif %}
 {% endif %}
+{% endwith %}
