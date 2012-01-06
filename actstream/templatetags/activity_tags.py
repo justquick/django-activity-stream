@@ -53,7 +53,6 @@ def do_activity_follow_url(parser, tokens):
     else:
         return DisplayActivityFollowUrl(bits[1])
 
-
 @register.simple_tag
 def activity_followers_url(instance):
     content_type = ContentType.objects.get_for_model(instance).pk
