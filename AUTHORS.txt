@@ -17,3 +17,4 @@ Ryan Quigley
 Neelesh Shastry
 David Gouldin <david@gould.in>
 Donald Stufft
+Nolan Brubaker
