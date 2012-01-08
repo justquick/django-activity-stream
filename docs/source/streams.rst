@@ -101,12 +101,12 @@ To start writing your custom stream module, create a file in your app called ``m
     class MyActionManager(ActionManager):
 
         @stream
-        def mystream(self, object, verb='posted', time=None):
+        def mystream(self, obj, verb='posted', time=None):
             if time is None:
                 time = datetime.now()
-            return object.actor_actions.filter(verb = verb, timestamp__lte = time)
+            return obj.actor_actions.filter(verb = verb, timestamp__lte = time)
 
-This defines a manager with one stream which filters actions by verb and timestamp.
+This defines a manager with one custom stream which filters for 'posted' actions by verb and timestamp.
 
 Now that stream is available directly on the ``Action`` manager through ``Action.objects.mystream``
 or from the ``GenericRelation`` on any actionable model instance.
@@ -116,8 +116,5 @@ or from the ``GenericRelation`` on any actionable model instance.
     from django.contrib.auth.models import User
     from actstream.models import Action
 
-    user = User.objects.all()[0]
-
-    Action.objects.mystream(user, 'commented')
-    #OR
+    user_instance = User.objects.all()[0]
     user_instance.actor_actions.mystream('commented')

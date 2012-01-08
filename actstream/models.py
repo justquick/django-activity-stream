@@ -111,7 +111,7 @@ class Action(models.Model):
 
     def action_object_url(self):
         """
-        Returns the URL to the ``actstream_actor`` view for the current action object
+        Returns the URL to the ``actstream_action_object`` view for the current action object
         """
         return reverse('actstream_actor', None,
             (self.action_object_content_type.pk, self.action_object_object_id))
