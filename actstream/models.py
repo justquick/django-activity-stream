@@ -92,7 +92,7 @@ class Action(models.Model):
             else:
                 return u'%s %s %s %s ago' % (self.actor, self.verb, self.target, self.timesince())
         if self.action_object:
-            return u'%s %s %s %s %s ago' % (self.actor, self.verb, self.action_object, self.timesince())
+            return u'%s %s %s %s ago' % (self.actor, self.verb, self.action_object, self.timesince())
         return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
 
     def actor_url(self):
