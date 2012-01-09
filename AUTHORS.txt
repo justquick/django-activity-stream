@@ -18,3 +18,5 @@ Neelesh Shastry
 David Gouldin <david@gould.in>
 Donald Stufft
 Nolan Brubaker
+Herman Schaaf
+Walter Scheper
