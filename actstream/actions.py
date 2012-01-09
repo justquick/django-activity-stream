@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.utils.translation import ugettext_lazy as _
-
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.signals import action
@@ -10,7 +9,8 @@ from actstream.exceptions import check_actionable_model
 
 def follow(user, actor, send_action=True):
     """
-    Creates a ``User`` -> ``Actor`` follow relationship such that the actor's activities appear in the user's stream.
+    Creates a ``User`` -> ``Actor`` follow relationship such that the actor's
+    activities appear in the user's stream.
     Also sends the ``<user> started following <actor>`` action signal.
     Returns the created ``Follow`` instance.
     If ``send_action`` is false, no "started following" signal will be created
@@ -27,11 +27,13 @@ def follow(user, actor, send_action=True):
     from actstream.models import Follow
 
     check_actionable_model(actor)
-    follow,created = Follow.objects.get_or_create(user=user, object_id=actor.pk,
+    follow, created = Follow.objects.get_or_create(user=user,
+        object_id=actor.pk,
         content_type=ContentType.objects.get_for_model(actor))
     if send_action and created:
         action.send(user, verb=_('started following'), target=actor)
     return follow
+
 
 def unfollow(user, actor, send_action=False):
     """
@@ -50,8 +52,8 @@ def unfollow(user, actor, send_action=False):
     from actstream.models import Follow
 
     check_actionable_model(actor)
-    Follow.objects.filter(user = user, object_id = actor.pk,
-        content_type = ContentType.objects.get_for_model(actor)).delete()
+    Follow.objects.filter(user=user, object_id=actor.pk,
+        content_type=ContentType.objects.get_for_model(actor)).delete()
     if send_action:
         action.send(user, verb=_('stopped following'), target=actor)
 
@@ -76,6 +78,7 @@ def is_following(user, actor):
     return bool(Follow.objects.filter(user=user, object_id=actor.pk,
         content_type=ContentType.objects.get_for_model(actor)).count())
 
+
 def action_handler(verb, **kwargs):
     """
     Handler function to create Action instance upon action signal call.
@@ -85,12 +88,14 @@ def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
     check_actionable_model(actor)
-    newaction = Action(actor_content_type = ContentType.objects.get_for_model(actor),
-                    actor_object_id = actor.pk,
-                    verb = unicode(verb),
-                    public = bool(kwargs.pop('public', True)),
-                    description = kwargs.pop('description', None),
-                    timestamp = kwargs.pop('timestamp', datetime.now()))
+    newaction = Action(
+        actor_content_type=ContentType.objects.get_for_model(actor),
+        actor_object_id=actor.pk,
+        verb=unicode(verb),
+        public=bool(kwargs.pop('public', True)),
+        description=kwargs.pop('description', None),
+        timestamp=kwargs.pop('timestamp', datetime.now())
+    )
 
     for opt in ('target', 'action_object'):
         obj = kwargs.pop(opt, None)
@@ -101,5 +106,6 @@ def action_handler(verb, **kwargs):
                     ContentType.objects.get_for_model(obj))
 
     newaction.save()
+
 
 action.connect(action_handler, dispatch_uid='actstream.models')
