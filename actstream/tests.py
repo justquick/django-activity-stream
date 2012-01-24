@@ -93,7 +93,8 @@ class ActivityTestCase(TestCase):
     def test_atom(self):
         atom = self.client.get('/feed/atom/').content
         self.assert_(atom.startswith('<?xml version="1.0" encoding="utf-8"?>\n'
-            '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">'))
+            '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="%s">' %
+                                     settings.LANGUAGE_CODE))
         self.assert_(atom.find('Activity feed for your followed actors') > -1)
 
     def test_action_object(self):
