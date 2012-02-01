@@ -13,8 +13,6 @@ register = Library()
 def is_following(context, instance):
     return Follow.objects.is_following(context.get('user'), instance)
 
-
-<<<<<<< HEAD
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
         self.actor = Variable(actor)
@@ -52,24 +50,6 @@ def do_activity_follow_url(parser, tokens):
         raise TemplateSyntaxError, "Accepted format {% activity_follow_url [instance] %}"
     else:
         return DisplayActivityFollowUrl(bits[1])
-=======
-@register.simple_tag(takes_context=True)
-def activity_follow_label(context, instance, follow, unfollow):
-    if is_following(context, instance):
-        return unfollow
-    return follow
-
-
-@register.simple_tag(takes_context=True)
-def activity_follow_url(context, instance):
-    content_type = ContentType.objects.get_for_model(instance).pk
-    if is_following(context, instance):
-        return reverse('actstream_unfollow',
-            kwargs={'content_type_id': content_type, 'object_id': instance.pk})
-    return reverse('actstream_follow',
-        kwargs={'content_type_id': content_type, 'object_id': instance.pk})
-
->>>>>>> fa2dd7742f31e7870638b5893e20a99877b72ff0
 
 @register.simple_tag
 def activity_followers_url(instance):
@@ -195,15 +175,6 @@ class UserContentTypeNode(Node):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
 
-<<<<<<< HEAD
-register.tag('activity_follow_label', do_activity_follow_label)
-register.tag('activity_follow_url', do_activity_follow_url)
-register.tag('display_action', do_print_action)
-register.tag('display_action_short', do_print_action_short)
-register.tag('display_grouped_actions', do_print_grouped_actions)
-register.tag('action_label', do_print_action_label)
-register.tag('get_user_contenttype', do_get_user_contenttype)
-=======
 
 def display_action(parser, token):
     return DisplayAction.handle_token(parser, token)
@@ -231,4 +202,3 @@ register.tag(display_action_short)
 register.tag(display_grouped_actions)
 register.tag(action_label)
 register.tag(get_user_contenttype)
->>>>>>> fa2dd7742f31e7870638b5893e20a99877b72ff0
