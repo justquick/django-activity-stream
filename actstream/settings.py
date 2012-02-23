@@ -1,9 +1,6 @@
 from django.conf import settings
 from django.db.models import get_model
 
-TEMPLATE = getattr(settings, 'ACTSTREAM_ACTION_TEMPLATE',
-    'activity/single_action.txt')
-
 MODELS = {}
 for model in getattr(settings, 'ACTSTREAM_ACTION_MODELS', ('auth.User',)):
     MODELS[model.lower()] = model = get_model(*model.split('.'))

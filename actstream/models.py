@@ -3,14 +3,14 @@ from datetime import datetime
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template.loader import render_to_string
+from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 from actstream import managers
-from actstream.settings import MODELS, TEMPLATE, MANAGER_MODULE
+from actstream.settings import MODELS, MANAGER_MODULE
 from actstream.signals import action
 from actstream.actions import action_handler
 
@@ -92,18 +92,20 @@ class Action(models.Model):
         ordering = ('-timestamp', )
 
     def __unicode__(self):
-        if settings.USE_I18N:
-            return render_to_string(TEMPLATE, {'action': self}).strip()
+        ctx = {
+            'actor': self.actor,
+            'verb': self.verb,
+            'action_object': self.action_object,
+            'target': self.target,
+            'timesince': self.timesince()
+        }
         if self.target:
             if self.action_object:
-                return u'%s %s %s on %s %s ago' % (self.actor, self.verb,
-                    self.action_object, self.target, self.timesince())
-            return u'%s %s %s %s ago' % (self.actor, self.verb, self.target,
-                self.timesince())
+                return _('%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago') % ctx
+            return _('%(actor)s %(verb)s %(target)s %(timesince)s ago') % ctx
         if self.action_object:
-            return u'%s %s %s %s ago' % (self.actor, self.verb,
-                self.action_object, self.timesince())
-        return u'%s %s %s ago' % (self.actor, self.verb, self.timesince())
+            return _('%(actor)s %(verb)s %(action_object)s %(timesince)s ago') % ctx
+        return _('%(actor)s %(verb)s %(timesince)s ago') % ctx
 
     def actor_url(self):
         """
