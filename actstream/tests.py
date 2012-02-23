@@ -6,11 +6,12 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.template.loader import Template, Context
 
 from actstream.models import Action, Follow, model_stream, user_stream
-from actstream.actions import follow, action, unfollow
+from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
-
+from actstream.signals import action
 
 class ActivityTestCase(TestCase):
     urls = 'actstream.urls'
@@ -196,6 +197,13 @@ class ActivityTestCase(TestCase):
     @query_load
     def test_after_slice(self):
         return 10,  10
+
+    def test_follow_templates(self):
+        ct = ContentType.objects.get_for_model(User)
+        src = '{% load activity_tags %}{% activity_follow_url user %}{% activity_follow_label user yup nope %}'
+        self.assert_(Template(src).render(Context({
+            'user': self.user1
+        })).endswith('/%s/%s/nope' % (ct.id, self.user1.id)))
 
     def tearDown(self):
         Action.objects.all().delete()
