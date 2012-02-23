@@ -1,3 +1,5 @@
+{% load url from future %}
+{% load i18n %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
@@ -30,6 +32,11 @@
 			<ul id="navlist">
 				<li><b><a href="/">HOME</a></b></li>
 				{% block navlinks %}{% endblock %}
+				{% if request.user.is_authenticated %}
+				<li>
+					<a href="{% url 'django.contrib.auth.views.logout' %}">{% trans 'LOGOUT' %}</a>
+				</li>
+				{% endif %}
 			</ul>
 		</div>
 	</div>
@@ -37,6 +44,14 @@
 
 <div id="content">
 	<p><b>Active users</b>{% for user in users %} | <a href="{{ user.get_absolute_url }}">{{ user }}</a>{% endfor %}</p>
+
+	{% if request.user.is_authenticated %}
+		{% load comments %}
+		{% render_comment_form for request.user %}
+	{% else %}
+		<p>{% trans "Please login before you can start doing action" %}</p>
+	{% endif %}
+
 	<h2>{% block content_title %}{% endblock %}</h2>
 	{% block content %}{% endblock %}
 </div>

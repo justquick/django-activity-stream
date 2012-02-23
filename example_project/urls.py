@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^accounts/', include('registration.backends.default.urls')),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': os.path.join(os.path.dirname(__file__), 'media')}),
+    (r'auth/', include('django.contrib.auth.urls')),
     (r'', include('actstream.urls')),
 )
 
