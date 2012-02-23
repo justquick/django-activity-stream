@@ -9,9 +9,19 @@ from actstream.models import Follow
 
 register = Library()
 
-
-def is_following(context, instance):
-    return Follow.objects.is_following(context.get('user'), instance)
+@register.filter
+def is_following(user,instance):
+    """
+    try:
+        user = context['user']
+    except KeyError:
+        return False
+    """
+    content_type = ContentType.objects.get_for_model(instance).pk
+    return bool(Follow.objects.filter(content_type=content_type, user=user, object_id=instance.pk).count())
+    
+#def is_following(context, instance):
+#    return Follow.objects.is_following(context.get('user'), instance)
 
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
