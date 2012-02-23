@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-30 19:07-0400\n"
+"POT-Creation-Date: 2012-02-23 09:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,12 +16,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:146
+#: actions.py:33
 msgid "started following"
 msgstr ""
 
-#: models.py:167
+#: actions.py:57
 msgid "stopped following"
+msgstr ""
+
+#: models.py:104
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr ""
+
+#: models.py:105
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr ""
+
+#: models.py:107
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr ""
+
+#: models.py:108
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
 msgstr ""
 
 #: templates/activity/action.html:8
@@ -45,34 +65,11 @@ msgid "No actions yet"
 msgstr ""
 
 #: templates/activity/detail.html:3
-msgid "On"
-msgstr ""
-
-#: templates/activity/detail.html:3
-msgid "at"
-msgstr ""
-
-#: templates/activity/single_action.txt:4
 #, python-format
-msgid ""
-"%(action.actor)s %(action.verb)s %(action.action_object)s on %(action.target)"
-"s %(action.timesince)s ago"
+msgid "On %(date)s at %(time)s"
 msgstr ""
 
-#: templates/activity/single_action.txt:6
+#: templates/activity/followers.html:2
 #, python-format
-msgid ""
-"%(action.actor)s %(action.verb)s %(action.target)s %(action.timesince)s ago"
-msgstr ""
-
-#: templates/activity/single_action.txt:10
-#, python-format
-msgid ""
-"%(action.actor)s %(action.verb)s %(self.action_object)s %(action.timesince)s "
-"ago"
-msgstr ""
-
-#: templates/activity/single_action.txt:12
-#, python-format
-msgid "%(action.actor)s %(action.verb)s %(action.timesince)s ago"
+msgid "Users following %(actor)s"
 msgstr ""
