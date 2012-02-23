@@ -223,6 +223,15 @@ class ActivityTestCase(TestCase):
                 u'Two joined CoolGroup 0 minutes ago',
                 ])
 
+    def test_is_following_filter(self):
+        src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
+        self.assertEqual(Template(src).render(Context({
+            'user': self.user2, 'group': self.group
+        })), u'yup')
+        self.assertEqual(Template(src).render(Context({
+            'user': self.user1, 'group': self.group
+        })), u'')
+
     def tearDown(self):
         Action.objects.all().delete()
         User.objects.all().delete()

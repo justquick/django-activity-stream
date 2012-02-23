@@ -10,8 +10,8 @@ from actstream.models import Follow
 register = Library()
 
 
-def is_following(context, instance):
-    return Follow.objects.is_following(context.get('user'), instance)
+def _is_following_helper(context, actor):
+    return Follow.objects.is_following(context.get('user'), actor)
 
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
@@ -21,10 +21,9 @@ class DisplayActivityFollowLabel(Node):
 
     def render(self, context):
         actor_instance = self.actor.resolve(context)
-        if is_following(context, actor_instance):
+        if _is_following_helper(context, actor_instance):
             return self.follow
-        else:
-            return self.unfollow
+        return self.unfollow
 
 def do_activity_follow_label(parser, tokens):
     bits = tokens.contents.split()
@@ -40,7 +39,7 @@ class DisplayActivityFollowUrl(Node):
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         content_type = ContentType.objects.get_for_model(actor_instance).pk
-        if is_following(context, actor_instance):
+        if _is_following_helper(context, actor_instance):
             return reverse('actstream_unfollow', kwargs={'content_type_id': content_type, 'object_id': actor_instance.pk})
         return reverse('actstream_follow', kwargs={'content_type_id': content_type, 'object_id': actor_instance.pk})
 
@@ -196,7 +195,10 @@ def action_label(parser, token):
 def get_user_contenttype(parser, token):
     return UserContentTypeNode(*token.split_contents())
 
+def is_following(user, actor):
+    return Follow.objects.is_following(user, actor)
 
+register.filter(is_following)
 register.tag(display_action)
 register.tag(display_action_short)
 register.tag(display_grouped_actions)
