@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from actstream.models import Action
-from actstream.actions import action
+from actstream.signals import action
 
 class TestAppTests(TestCase):
 

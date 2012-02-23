@@ -11,7 +11,8 @@ from django.contrib.auth.models import User
 
 from actstream import managers
 from actstream.settings import MODELS, TEMPLATE, MANAGER_MODULE
-
+from actstream.signals import action
+from actstream.actions import action_handler
 
 class Follow(models.Model):
     """
@@ -161,3 +162,6 @@ for model in MODELS.values():
         # @@@ I'm not entirely sure why this works
         setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label,
             model._meta.module_name, field), None)
+
+# connect the signal
+action.connect(action_handler, dispatch_uid='actstream.models')

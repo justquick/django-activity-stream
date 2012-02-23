@@ -3,7 +3,6 @@ from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
-from actstream.signals import action
 from actstream.exceptions import check_actionable_model
 
 
@@ -24,7 +23,7 @@ def follow(user, actor, send_action=True):
         follow(request.user, group)
 
     """
-    from actstream.models import Follow
+    from actstream.models import Follow, action
 
     check_actionable_model(actor)
     follow, created = Follow.objects.get_or_create(user=user,
@@ -49,7 +48,7 @@ def unfollow(user, actor, send_action=False):
         unfollow(request.user, other_user)
 
     """
-    from actstream.models import Follow
+    from actstream.models import Follow, action
 
     check_actionable_model(actor)
     Follow.objects.filter(user=user, object_id=actor.pk,
@@ -106,6 +105,3 @@ def action_handler(verb, **kwargs):
                     ContentType.objects.get_for_model(obj))
 
     newaction.save()
-
-
-action.connect(action_handler, dispatch_uid='actstream.models')
