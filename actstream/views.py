@@ -1,9 +1,11 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.views.decorators.csrf import csrf_exempt
 
 from actstream import actions, models
 
@@ -19,6 +21,7 @@ def respond(request, code):
 
 
 @login_required
+@csrf_exempt
 def follow_unfollow(request, content_type_id, object_id, do_follow=True):
     """
     Creates or deletes the follow relationship between ``request.user`` and the
