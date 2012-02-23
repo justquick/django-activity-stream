@@ -197,6 +197,24 @@ class ActivityTestCase(TestCase):
     def test_after_slice(self):
         return 10,  10
 
+    def test_model_actions_with_kwargs(self):
+        """
+        Testing the model_actions method of the ActionManager
+        by passing kwargs
+        """
+        self.assertEqual(map(unicode, model_stream(self.user1, verb='commented on')), [
+                u'admin commented on CoolGroup 0 minutes ago',
+                ])
+
+    def test_user_stream_with_kwargs(self):
+        """
+        Testing the user method of the ActionManager by passing additional
+        filters in kwargs
+        """
+        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb='joined')), [
+                u'Two joined CoolGroup 0 minutes ago',
+                ])
+
     def tearDown(self):
         Action.objects.all().delete()
         User.objects.all().delete()
