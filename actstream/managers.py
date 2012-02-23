@@ -51,9 +51,10 @@ class ActionManager(GFKManager):
         """
         ctype = ContentType.objects.get_for_model(model)
         return self.public(
-            Q(target_content_type=ctype) |
+            (Q(target_content_type=ctype) |
             Q(action_object_content_type=ctype) |
-            Q(actor_content_type=ctype)
+            Q(actor_content_type=ctype)),
+            **kwargs
         )
 
     @stream
@@ -81,7 +82,7 @@ class ActionManager(GFKManager):
                 actor_content_type=content_type_id,
                 actor_object_id__in=object_ids,
             )
-        qs = qs.filter(q)
+        qs = qs.filter(q, **kwargs)
         return qs
 
 

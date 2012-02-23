@@ -116,7 +116,7 @@ ABSOLUTE_URL_OVERRIDES = {
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-ACTSTREAM_ACTION_MODELS = ('auth.user', 'auth.group', 'sites.site')
+ACTSTREAM_ACTION_MODELS = ('auth.user', 'auth.group', 'sites.site', 'comments.comment')
 
 ACTSTREAM_MANAGER = 'testapp.streams.MyActionManager'
 
