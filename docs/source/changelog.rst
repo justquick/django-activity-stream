@@ -11,6 +11,6 @@ Changelog
 - Generates Activity Stream 1.0 spec Atom feed
 - Deletes orphaned actions when referenced object is deleted
 - Custom, developer generated managers and streams
-- I18N using Django's framework through templating
+- I18N in unicode representation and through templating
 - Sphinx Docs
 - Duh, a changelog

@@ -6,14 +6,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <title>Following/Unfollowing Actors &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
+    
+    <title>Following/Unfollowing Actors &mdash; Django Activity Stream v0.4.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.0beta1',
+        VERSION:     '0.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,9 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream v0.4.0 documentation" href="index.html" />
     <link rel="next" title="Action Streams" href="streams.html" />
-    <link rel="prev" title="Generating Actions" href="actions.html" />
+    <link rel="prev" title="Generating Actions" href="actions.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,20 +34,23 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="streams.html" title="Action Streams"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="actions.html" title="Generating Actions"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-
+            
   <div class="section" id="following-unfollowing-actors">
 <h1>Following/Unfollowing Actors<a class="headerlink" href="#following-unfollowing-actors" title="Permalink to this headline">¶</a></h1>
 <p>Creating or deleting the link between a <tt class="docutils literal"><span class="pre">User</span></tt> and any particular <tt class="docutils literal"><span class="pre">Actor</span></tt> is as easy as calling a function</p>
@@ -58,10 +61,11 @@
 <span class="n">unfollow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can also just make a request to the <tt class="docutils literal"><span class="pre">actstream_follow</span></tt> view while authenticated.</p>
-<p>The request can use either <tt class="docutils literal"><span class="pre">GET</span></tt> or <tt class="docutils literal"><span class="pre">POST</span></tt>.</p>
-<div class="highlight-bash"><pre>curl -X GET http://localhost:8000/activity/follow/&lt;content_type_id&gt;/&lt;object_id&gt;/ # Follow
-curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;object_id&gt;/?next=/blog/ # Unfollow and redirect</pre>
+<p>You can also just make a request to the <tt class="docutils literal"><span class="pre">actstream_follow</span></tt> view while authenticated.
+The request can use either <tt class="docutils literal"><span class="pre">GET</span></tt> or <tt class="docutils literal"><span class="pre">POST</span></tt>.</p>
+<div class="highlight-bash"><div class="highlight"><pre>curl -X GET http://localhost:8000/activity/follow/&lt;content_type_id&gt;/&lt;object_id&gt;/ <span class="c"># Follow</span>
+curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;object_id&gt;/?next<span class="o">=</span>/blog/ <span class="c"># Unfollow and redirect</span>
+</pre></div>
 </div>
 <p>Then the current logged in user will follow the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt> &amp; <tt class="docutils literal"><span class="pre">object_id</span></tt>. Optional <tt class="docutils literal"><span class="pre">next</span></tt> parameter is URL to redirect to.</p>
 <p>There is also a function <tt class="docutils literal"><span class="pre">actstream.unfollow</span></tt> which removes the link and takes the same arguments as <tt class="docutils literal"><span class="pre">actstream.follow</span></tt></p>
@@ -87,7 +91,7 @@ curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -108,17 +112,20 @@ curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="streams.html" title="Action Streams"
              >next</a> |</li>
         <li class="right" >
           <a href="actions.html" title="Generating Actions"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li>
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Justin Quick.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
     </div>
   </body>
 </html>

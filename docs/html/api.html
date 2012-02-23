@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
+    <title>API &mdash; Django Activity Stream v0.4.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.0beta1',
+        VERSION:     '0.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream v0.4.0 documentation" href="index.html" />
     <link rel="prev" title="Changelog" href="changelog.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -91,7 +91,8 @@ Keyword arguments will be passed to Action.objects.filter</p>
 <dl class="method">
 <dt id="actstream.managers.ActionManager.user">
 <tt class="descname">user</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stream of most recent actions by actors that the passed User object is following</p>
+<dd><p>Stream of most recent actions by actors that the passed User object is
+following.</p>
 </dd></dl>
 
 </dd></dl>
@@ -103,25 +104,28 @@ Keyword arguments will be passed to Action.objects.filter</p>
 <dt id="actstream.views.respond">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">respond</tt><big>(</big><em>request</em>, <em>code</em><big>)</big><a class="headerlink" href="#actstream.views.respond" title="Permalink to this definition">¶</a></dt>
 <dd><p>Responds to the request with the given response code.
-If <tt class="docutils literal"><span class="pre">next</span></tt> is in the form, it will redirect instead</p>
+If <tt class="docutils literal"><span class="pre">next</span></tt> is in the form, it will redirect instead.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.views.follow_unfollow">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">follow_unfollow</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.views.follow_unfollow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates or deletes the follow relationship between <tt class="docutils literal"><span class="pre">request.user</span></tt> and the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+<dd><p>Creates or deletes the follow relationship between <tt class="docutils literal"><span class="pre">request.user</span></tt> and the
+actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.views.stream">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">stream</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.views.stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Index page for authenticated user&#8217;s activity stream. (Eg: Your feed at github.com)</p>
+<dd><p>Index page for authenticated user&#8217;s activity stream. (Eg: Your feed at
+github.com)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.views.followers">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">followers</tt><big>(</big><em>request</em>, <em>content_type_id</em>, <em>object_id</em><big>)</big><a class="headerlink" href="#actstream.views.followers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a listing of <tt class="docutils literal"><span class="pre">User``s</span> <span class="pre">that</span> <span class="pre">follow</span> <span class="pre">the</span> <span class="pre">actor</span> <span class="pre">defined</span> <span class="pre">by</span> <span class="pre">``content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+<dd><p>Creates a listing of <tt class="docutils literal"><span class="pre">User``s</span> <span class="pre">that</span> <span class="pre">follow</span> <span class="pre">the</span> <span class="pre">actor</span> <span class="pre">defined</span> <span class="pre">by</span>
+<span class="pre">``content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -139,13 +143,15 @@ If <tt class="docutils literal"><span class="pre">next</span></tt> is in the for
 <dl class="function">
 <dt id="actstream.views.actor">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">actor</tt><big>(</big><em>request</em>, <em>content_type_id</em>, <em>object_id</em><big>)</big><a class="headerlink" href="#actstream.views.actor" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>,
+<tt class="docutils literal"><span class="pre">object_id</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.views.model">
 <tt class="descclassname">actstream.views.</tt><tt class="descname">model</tt><big>(</big><em>request</em>, <em>content_type_id</em><big>)</big><a class="headerlink" href="#actstream.views.model" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>, <tt class="docutils literal"><span class="pre">object_id</span></tt></p>
+<dd><p><tt class="docutils literal"><span class="pre">Actor</span></tt> focused activity stream for actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt>,
+<tt class="docutils literal"><span class="pre">object_id</span></tt>.</p>
 </dd></dl>
 
 </div>
@@ -154,7 +160,8 @@ If <tt class="docutils literal"><span class="pre">next</span></tt> is in the for
 <dl class="function">
 <dt id="actstream.actions.follow">
 <tt class="descclassname">actstream.actions.</tt><tt class="descname">follow</tt><big>(</big><em>user</em>, <em>actor</em>, <em>send_action=True</em><big>)</big><a class="headerlink" href="#actstream.actions.follow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship such that the actor&#8217;s activities appear in the user&#8217;s stream.
+<dd><p>Creates a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship such that the actor&#8217;s
+activities appear in the user&#8217;s stream.
 Also sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">started</span> <span class="pre">following</span> <span class="pre">&lt;actor&gt;</span></tt> action signal.
 Returns the created <tt class="docutils literal"><span class="pre">Follow</span></tt> instance.
 If <tt class="docutils literal"><span class="pre">send_action</span></tt> is false, no &#8220;started following&#8221; signal will be created</p>
@@ -226,19 +233,21 @@ Returns True if exists, False otherwise.</p>
 <dl class="exception">
 <dt id="actstream.exceptions.ModelNotActionable">
 <em class="property">exception </em><tt class="descclassname">actstream.exceptions.</tt><tt class="descname">ModelNotActionable</tt><a class="headerlink" href="#actstream.exceptions.ModelNotActionable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when a Model not in <tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_MODELS</span></tt> setting is used in an Action</p>
+<dd><p>Raised when a Model not in <tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_MODELS</span></tt> setting is used in
+an Action.</p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="actstream.exceptions.BadQuerySet">
 <em class="property">exception </em><tt class="descclassname">actstream.exceptions.</tt><tt class="descname">BadQuerySet</tt><a class="headerlink" href="#actstream.exceptions.BadQuerySet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Action stream must return a QuerySet of Action items</p>
+<dd><p>Action stream must return a QuerySet of Action items.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.exceptions.check_actionable_model">
 <tt class="descclassname">actstream.exceptions.</tt><tt class="descname">check_actionable_model</tt><big>(</big><em>model</em><big>)</big><a class="headerlink" href="#actstream.exceptions.check_actionable_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>If the model is not defined in the <tt class="docutils literal"><span class="pre">MODELS</span></tt> setting this check raises the <tt class="docutils literal"><span class="pre">ModelNotActionable</span></tt> exception</p>
+<dd><p>If the model is not defined in the <tt class="docutils literal"><span class="pre">MODELS</span></tt> setting this check raises the
+<tt class="docutils literal"><span class="pre">ModelNotActionable</span></tt> exception.</p>
 </dd></dl>
 
 </div>
@@ -299,7 +308,7 @@ Returns True if exists, False otherwise.</p>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

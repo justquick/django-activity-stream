@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Action Streams &mdash; Django Activity Stream v0.4.0beta1 documentation</title>
+    <title>Action Streams &mdash; Django Activity Stream v0.4.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.0beta1',
+        VERSION:     '0.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,8 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream v0.4.0beta1 documentation" href="index.html" />
-    <link rel="prev" title="Following Actors" href="follow.html" /> 
+    <link rel="top" title="Django Activity Stream v0.4.0 documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Following/Unfollowing Actors" href="follow.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,9 +34,15 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="follow.html" title="Following Actors"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="follow.html" title="Following/Unfollowing Actors"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -123,22 +130,19 @@ Streams may return:</p>
 <span class="k">class</span> <span class="nc">MyActionManager</span><span class="p">(</span><span class="n">ActionManager</span><span class="p">):</span>
 
     <span class="nd">@stream</span>
-    <span class="k">def</span> <span class="nf">mystream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&#39;posted&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mystream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&#39;posted&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">object</span><span class="o">.</span><span class="n">actor_actions</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span><span class="p">,</span> <span class="n">timestamp__lte</span> <span class="o">=</span> <span class="n">time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">actor_actions</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span><span class="p">,</span> <span class="n">timestamp__lte</span> <span class="o">=</span> <span class="n">time</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This defines a manager with one stream which filters actions by verb and timestamp.</p>
+<p>This defines a manager with one custom stream which filters for &#8216;posted&#8217; actions by verb and timestamp.</p>
 <p>Now that stream is available directly on the <tt class="docutils literal"><span class="pre">Action</span></tt> manager through <tt class="docutils literal"><span class="pre">Action.objects.mystream</span></tt>
 or from the <tt class="docutils literal"><span class="pre">GenericRelation</span></tt> on any actionable model instance.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
 <span class="kn">from</span> <span class="nn">actstream.models</span> <span class="kn">import</span> <span class="n">Action</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="n">Action</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">mystream</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="s">&#39;commented&#39;</span><span class="p">)</span>
-<span class="c">#OR</span>
+<span class="n">user_instance</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">user_instance</span><span class="o">.</span><span class="n">actor_actions</span><span class="o">.</span><span class="n">mystream</span><span class="p">(</span><span class="s">&#39;commented&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -172,7 +176,10 @@ or from the <tt class="docutils literal"><span class="pre">GenericRelation</span
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="follow.html"
-                        title="previous chapter">Following Actors</a></p>
+                        title="previous chapter">Following/Unfollowing Actors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="next chapter">Changelog</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/streams.txt"
@@ -181,7 +188,7 @@ or from the <tt class="docutils literal"><span class="pre">GenericRelation</span
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -202,14 +209,20 @@ or from the <tt class="docutils literal"><span class="pre">GenericRelation</span
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="follow.html" title="Following Actors"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="follow.html" title="Following/Unfollowing Actors"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0beta1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Justin Quick.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
     </div>
   </body>
 </html>
