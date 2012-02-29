@@ -22,8 +22,8 @@ class DisplayActivityFollowLabel(Node):
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         if _is_following_helper(context, actor_instance):
-            return self.follow
-        return self.unfollow
+            return self.unfollow
+        return self.follow
 
 def do_activity_follow_label(parser, tokens):
     bits = tokens.contents.split()
