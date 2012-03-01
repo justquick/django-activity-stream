@@ -177,12 +177,29 @@ class ActivityTestCase(ActivityBaseTestCase):
         action.save()
         self.assert_(not action in self.user1.actor_actions.public())
 
-    def test_follow_templates(self):
+    def test_tag_follow_url(self):
+        src = '{% load activity_tags %}{% activity_follow_url user %}'
+        output = Template(src).render(Context({'user': self.user1}))
         ct = ContentType.objects.get_for_model(User)
-        src = '{% load activity_tags %}{% activity_follow_url user %}{% activity_follow_label user yup nope %}'
-        self.assert_(Template(src).render(Context({
-            'user': self.user1
-        })).endswith('/%s/%s/nope' % (ct.id, self.user1.id)))
+        self.assertEqual(output, '/follow/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_follow_label(self):
+        src = '{% load activity_tags %}'\
+            '{% activity_follow_label other_user yup nope %}'
+
+        # Anonymous.
+        output = Template(src).render(Context({'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        # Non follower (user2 does not follow user1).
+        output = Template(src).render(Context({'user': self.user2,
+            'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        # Follower (user1 follows user2).
+        output = Template(src).render(Context({'user': self.user1,
+            'other_user': self.user2}))
+        self.assertEqual(output, 'yup')
 
     def test_model_actions_with_kwargs(self):
         """
