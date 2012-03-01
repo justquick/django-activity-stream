@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.db import models
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
@@ -9,10 +8,10 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
-from actstream import managers
-from actstream.settings import MODELS, MANAGER_MODULE
+from actstream import managers, settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
+
 
 class Follow(models.Model):
     """
@@ -87,7 +86,7 @@ class Action(models.Model):
 
     public = models.BooleanField(default=True)
 
-    objects = MANAGER_MODULE()
+    objects = actstream_settings.MANAGER_MODULE()
 
     class Meta:
         ordering = ('-timestamp', )
@@ -149,22 +148,28 @@ target_stream = Action.objects.target
 user_stream = Action.objects.user
 model_stream = Action.objects.model_actions
 
-# setup GenericRelations for actionable models
-for model in MODELS.values():
-    if not model:
-        continue
-    opts = model._meta
-    for field in ('actor', 'target', 'action_object'):
-        generic.GenericRelation(Action,
-            content_type_field='%s_content_type' % field,
-            object_id_field='%s_object_id' % field,
-            related_name='actions_with_%s_%s_as_%s' % (
-                model._meta.app_label, model._meta.module_name, field),
-        ).contribute_to_class(model, '%s_actions' % field)
 
-        # @@@ I'm not entirely sure why this works
-        setattr(Action, 'actions_with_%s_%s_as_%s' % (model._meta.app_label,
-            model._meta.module_name, field), None)
+def setup_generic_relations():
+    """
+    Set up GenericRelations for actionable models.
+    """
+    for model in actstream_settings.MODELS.values():
+        if not model:
+            continue
+        for field in ('actor', 'target', 'action_object'):
+            generic.GenericRelation(Action,
+                content_type_field='%s_content_type' % field,
+                object_id_field='%s_object_id' % field,
+                related_name='actions_with_%s_%s_as_%s' % (
+                    model._meta.app_label, model._meta.module_name, field),
+            ).contribute_to_class(model, '%s_actions' % field)
+
+            # @@@ I'm not entirely sure why this works
+            setattr(Action, 'actions_with_%s_%s_as_%s' % (
+                model._meta.app_label, model._meta.module_name, field), None)
+
+
+setup_generic_relations()
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
