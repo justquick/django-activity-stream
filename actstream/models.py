@@ -22,15 +22,16 @@ class Follow(models.Model):
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
-    actor = generic.GenericForeignKey()
-
+    follow_object = generic.GenericForeignKey()
+    actor_only = models.BooleanField("Only follow actions where the object is "
+        "the target.", default=True)
     objects = managers.FollowManager()
 
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
 
     def __unicode__(self):
-        return u'%s -> %s' % (self.user, self.actor)
+        return u'%s -> %s' % (self.user, self.follow_object)
 
 
 class Action(models.Model):
