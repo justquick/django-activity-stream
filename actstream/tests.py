@@ -39,6 +39,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     def setUp(self):
         super(ActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
+        self.group2 = Group.objects.create(name='Nerds')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
         self.user1.is_superuser = self.user1.is_staff = True
@@ -59,6 +60,9 @@ class ActivityTestCase(ActivityBaseTestCase):
         # User2 follows group
         follow(self.user2, self.group)
 
+        # User2 follows the second group (not just as an actor).
+        follow(self.user2, self.group2, actor_only=False)
+
         # User1 comments on group
         # Use a site object here and predict the "__unicode__ method output"
         action.send(self.user1, verb='commented on', target=self.group)
@@ -77,6 +81,7 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_user2(self):
         self.assertEqual(map(unicode, Action.objects.actor(self.user2)), [
+            u'Two started following Nerds 0 minutes ago',
             u'Two started following CoolGroup 0 minutes ago',
             u'Two joined CoolGroup 0 minutes ago',
         ])
@@ -91,11 +96,14 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_stream(self):
         self.assertEqual(map(unicode, Action.objects.user(self.user1)), [
+            u'Two started following Nerds 0 minutes ago',
             u'Two started following CoolGroup 0 minutes ago',
             u'Two joined CoolGroup 0 minutes ago',
         ])
-        self.assertEqual(map(unicode, Action.objects.user(self.user2)),
-            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+        self.assertEqual(map(unicode, Action.objects.user(self.user2)), [
+            u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago',
+            u'Two started following Nerds 0 minutes ago',
+        ])
 
     def test_stream_stale_follows(self):
         """
@@ -158,7 +166,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEqual(actions, self.user1.actor_actions.count() + 1)
 
     def test_generic_relation_accessors(self):
-        self.assertEqual(self.user2.actor_actions.count(), 2)
+        self.assertEqual(self.user2.actor_actions.count(), 3)
         self.assertEqual(self.user2.target_actions.count(), 1)
         self.assertEqual(self.user2.action_object_actions.count(), 0)
 
