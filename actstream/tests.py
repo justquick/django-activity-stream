@@ -4,7 +4,7 @@ from django.db import connection
 from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, AnonymousUser, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
@@ -189,6 +189,10 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         # Anonymous.
         output = Template(src).render(Context({'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        output = Template(src).render(Context({'user': AnonymousUser(),
+            'other_user': self.user1}))
         self.assertEqual(output, 'nope')
 
         # Non follower (user2 does not follow user1).
