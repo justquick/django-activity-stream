@@ -102,7 +102,7 @@ class FollowManager(models.Manager):
         """
         Check if a user is following an instance.
         """
-        if not user:
+        if not user or user.is_anonymous():
             return False
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
