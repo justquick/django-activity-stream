@@ -26,6 +26,7 @@ class ActivityBaseTestCase(TestCase):
         for model in self.actstream_models:
             actstream_settings.MODELS[model.lower()] = \
                 get_model(*model.split('.'))
+        setup_generic_relations()
 
     def tearDown(self):
         actstream_settings.MODELS = self.old_MODELS
@@ -37,12 +38,6 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def setUp(self):
         super(ActivityTestCase, self).setUp()
-        self.old_MODELS = actstream_settings.MODELS
-        actstream_settings.MODELS = {}
-        for model in self.actstream_models:
-            actstream_settings.MODELS[model.lower()] = \
-                get_model(*model.split('.'))
-        setup_generic_relations()
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
