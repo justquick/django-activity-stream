@@ -10,7 +10,7 @@ class ModelNotActionable(ImproperlyConfigured):
 
     def __str__(self):
         model = self.args[0]
-        if not issubclass(model, ModelBase):
+        if not is_model(model):
             return 'Object %r must be a Django Model not %s' % (model,
                 type(model))
         opts = model._meta
@@ -24,6 +24,15 @@ class BadQuerySet(ValueError):
     Action stream must return a QuerySet of Action items.
     """
 
+def is_model(obj):
+    """
+    Returns True if the obj is a Django model
+    """
+    if not hasattr(obj, '_meta'):
+        return False
+    if not hasattr(obj._meta, 'db_table'):
+        return False
+    return True
 
 def check_actionable_model(model):
     """
