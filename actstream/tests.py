@@ -1,24 +1,44 @@
-from functools import wraps
+from random import choice
 
 from django.db import connection
+from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, AnonymousUser, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
 
-from actstream.models import Action, Follow, model_stream, user_stream
+from actstream.models import Action, Follow, model_stream, user_stream,\
+    setup_generic_relations
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
+from actstream import settings as actstream_settings
 
-class ActivityTestCase(TestCase):
-    urls = 'actstream.urls'
+
+class ActivityBaseTestCase(TestCase):
+    actstream_models = ()
 
     def setUp(self):
-        settings.DEBUG = True
-        self.group = Group.objects.get_or_create(name='CoolGroup')[0]
+        self.old_MODELS = actstream_settings.MODELS
+        actstream_settings.MODELS = {}
+        for model in self.actstream_models:
+            actstream_settings.MODELS[model.lower()] = \
+                get_model(*model.split('.'))
+        setup_generic_relations()
+
+    def tearDown(self):
+        actstream_settings.MODELS = self.old_MODELS
+
+
+class ActivityTestCase(ActivityBaseTestCase):
+    urls = 'actstream.urls'
+    actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
+
+    def setUp(self):
+        super(ActivityTestCase, self).setUp()
+        self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
         self.user1.is_superuser = self.user1.is_staff = True
@@ -138,10 +158,9 @@ class ActivityTestCase(TestCase):
         self.assertEqual(actions, self.user1.actor_actions.count() + 1)
 
     def test_generic_relation_accessors(self):
-        self.assertEqual((2, 1, 0), (
-            self.user2.actor_actions.count(),
-            self.user2.target_actions.count(),
-            self.user2.action_object_actions.count()))
+        self.assertEqual(self.user2.actor_actions.count(), 2)
+        self.assertEqual(self.user2.target_actions.count(), 1)
+        self.assertEqual(self.user2.action_object_actions.count(), 0)
 
     def test_bad_actionable_model(self):
         self.assertRaises(ModelNotActionable, follow, self.user1,
@@ -153,57 +172,33 @@ class ActivityTestCase(TestCase):
         action.save()
         self.assert_(not action in self.user1.actor_actions.public())
 
-    def _the_zombies_are_coming(self, nums={'human': 10, 'zombie': 2}):
-        from random import choice
-
-        player_generator = lambda n: [User.objects.create(
-            username='%s%d' % (n, i)) for i in range(nums[n])]
-
-        humans = player_generator('human')
-        zombies = player_generator('zombie')
-
-        while len(humans):
-            for z in zombies:
-                if not len(humans):
-                    break
-                victim = choice(humans)
-                humans.pop(humans.index(victim))
-                victim.save()
-                zombies.append(victim)
-                action.send(z, verb='killed', target=victim)
-
-        self.assertEqual(Action.objects.filter(verb='killed').count(),
-            nums['human'])
-
-    def query_load(f):
-        @wraps(f)
-        def inner(self):
-            self._the_zombies_are_coming({'human': 10, 'zombie': 1})
-            ci = len(connection.queries)
-            length, limit = f(self)
-            result = list([map(unicode, (x.actor, x.target, x.action_object))
-                for x in model_stream(User, _limit=limit)])
-            self.assert_(len(connection.queries) - ci <= 4,
-                'Too many queries, got %d expected no more than 4' %
-                    len(connection.queries))
-            self.assertEqual(len(result), length)
-            return result
-        return inner
-
-    @query_load
-    def test_load(self):
-        return 15, None
-
-    @query_load
-    def test_after_slice(self):
-        return 10,  10
-
-    def test_follow_templates(self):
+    def test_tag_follow_url(self):
+        src = '{% load activity_tags %}{% activity_follow_url user %}'
+        output = Template(src).render(Context({'user': self.user1}))
         ct = ContentType.objects.get_for_model(User)
-        src = '{% load activity_tags %}{% activity_follow_url user %}{% activity_follow_label user yup nope %}'
-        self.assert_(Template(src).render(Context({
-            'user': self.user1
-        })).endswith('/%s/%s/yup' % (ct.id, self.user1.id)))
+        self.assertEqual(output, '/follow/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_follow_label(self):
+        src = '{% load activity_tags %}'\
+            '{% activity_follow_label other_user yup nope %}'
+
+        # Anonymous.
+        output = Template(src).render(Context({'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        output = Template(src).render(Context({'user': AnonymousUser(),
+            'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        # Non follower (user2 does not follow user1).
+        output = Template(src).render(Context({'user': self.user2,
+            'other_user': self.user1}))
+        self.assertEqual(output, 'nope')
+
+        # Follower (user1 follows user2).
+        output = Template(src).render(Context({'user': self.user1,
+            'other_user': self.user2}))
+        self.assertEqual(output, 'yup')
 
     def test_model_actions_with_kwargs(self):
         """
@@ -232,12 +227,59 @@ class ActivityTestCase(TestCase):
             'user': self.user1, 'group': self.group
         })), u'')
 
+
+class ZombieTest(ActivityBaseTestCase):
+    actstream_models = ('auth.User',)
+    human = 10
+    zombie = 1
+
+    def setUp(self):
+        super(ZombieTest, self).setUp()
+        settings.DEBUG = True
+
+        player_generator = lambda n, count: [User.objects.create(
+            username='%s%d' % (n, i)) for i in range(count)]
+
+        self.humans = player_generator('human', self.human)
+        self.zombies = player_generator('zombie', self.zombie)
+
+        self.zombie_apocalypse()
+
     def tearDown(self):
-        Action.objects.all().delete()
-        User.objects.all().delete()
-        self.comment.delete()
-        Group.objects.all().delete()
-        Follow.objects.all().delete()
+        settings.DEBUG = False
+        super(ZombieTest, self).tearDown()
+
+    def zombie_apocalypse(self):
+        humans = self.humans[:]
+        zombies = self.zombies[:]
+        while humans:
+            for z in self.zombies:
+                victim = choice(humans)
+                humans.remove(victim)
+                zombies.append(victim)
+                action.send(z, verb='killed', target=victim)
+                if not humans:
+                    break
+
+    def check_query_count(self, queryset):
+        ci = len(connection.queries)
+
+        result = list([map(unicode, (x.actor, x.target, x.action_object))
+            for x in queryset])
+        self.assertTrue(len(connection.queries) - ci <= 4,
+            'Too many queries, got %d expected no more than 4' %
+                len(connection.queries))
+        return result
+
+    def test_query_count(self):
+        queryset = model_stream(User)
+        result = self.check_query_count(queryset)
+        self.assertEqual(len(result), 10)
+
+    def test_query_count_sliced(self):
+        queryset = model_stream(User)[:5]
+        result = self.check_query_count(queryset)
+        self.assertEqual(len(result), 5)
 
 
 class GFKManagerTestCase(TestCase):
@@ -325,8 +367,3 @@ class GFKManagerTestCase(TestCase):
                 actions().fetch_generic_relations('target')]
         self.assertEqual(action_actor_targets,
             action_actor_targets_fetch_generic_target)
-
-    def tearDown(self):
-        Action.objects.all().delete()
-        User.objects.all().delete()
-        Group.objects.all().delete()
