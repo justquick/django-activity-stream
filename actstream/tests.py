@@ -203,7 +203,7 @@ class ActivityTestCase(TestCase):
         src = '{% load activity_tags %}{% activity_follow_url user %}{% activity_follow_label user yup nope %}'
         self.assert_(Template(src).render(Context({
             'user': self.user1
-        })).endswith('/%s/%s/nope' % (ct.id, self.user1.id)))
+        })).endswith('/%s/%s/yup' % (ct.id, self.user1.id)))
 
     def test_model_actions_with_kwargs(self):
         """
