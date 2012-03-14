@@ -12,7 +12,7 @@ class ActionAdmin(admin.ModelAdmin):
 
 
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'user', 'actor')
+    list_display = ('__unicode__', 'user', 'follow_object')
     list_editable = ('user',)
     list_filter = ('user',)
     raw_id_fields = ('user', 'content_type')
