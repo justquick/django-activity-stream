@@ -1,9 +1,15 @@
-from datetime import datetime
+import datetime
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.exceptions import check_actionable_model
+
+try:
+    from django.utils import timezone
+    now = timezone.now
+except ImportError:
+    now = datetime.datetime.now
 
 
 def follow(user, obj, send_action=True, actor_only=True):
@@ -89,7 +95,7 @@ def action_handler(verb, **kwargs):
         verb=unicode(verb),
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
-        timestamp=kwargs.pop('timestamp', datetime.now())
+        timestamp=kwargs.pop('timestamp', now())
     )
 
     for opt in ('target', 'action_object'):
