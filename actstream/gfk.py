@@ -8,7 +8,7 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 
 USE_PREFETCH = getattr(settings, 'USE_PREFETCH', False)
 FETCH_RELATIONS = getattr(settings, 'FETCH_RELATIONS', True)
-
+GFK_FETCH_DEPTH = getattr(settings, 'GFK_FETCH_DEPTH', 0)
 
 class GFKManager(Manager):
     """
@@ -63,7 +63,8 @@ class GFKQuerySet(QuerySet):
             if ct_id:
                 ct = ctypes[ct_id]
                 model_class = ct.model_class()
-                objects = model_class._default_manager.select_related()
+                objects = model_class._default_manager.select_related(
+                    depth=GFK_FETCH_DEPTH)
                 for o in objects.filter(pk__in=items_.keys()):
                     (gfk_name, item_id) = items_[smart_unicode(o.pk)]
                     data_map[(ct_id, smart_unicode(o.pk))] = o
