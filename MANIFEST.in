@@ -1,2 +1,2 @@
-include setup.py README.rst AUTHORS.txt LICENSE.txt
+include setup.py README.rst AUTHORS.txt LICENSE.txt CHANGELOG.rst
 recursive-include actstream *.py *.html *.txt *.po
