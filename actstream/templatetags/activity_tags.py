@@ -25,13 +25,6 @@ class DisplayActivityFollowLabel(Node):
             return self.follow
         return self.unfollow
 
-def do_activity_follow_label(parser, tokens):
-    bits = tokens.contents.split()
-    if len(bits) != 4:
-        raise TemplateSyntaxError, "Accepted format {% activity_follow_label [instance] [follow_string] [unfollow_string] %}"
-    else:
-        return DisplayActivityFollowLabel(*bits[1:])
-
 class DisplayActivityFollowUrl(Node):
     def __init__(self, actor):
         self.actor = Variable(actor)
@@ -42,25 +35,6 @@ class DisplayActivityFollowUrl(Node):
         if _is_following_helper(context, actor_instance):
             return reverse('actstream_unfollow', kwargs={'content_type_id': content_type, 'object_id': actor_instance.pk})
         return reverse('actstream_follow', kwargs={'content_type_id': content_type, 'object_id': actor_instance.pk})
-
-def do_activity_follow_url(parser, tokens):
-    bits = tokens.contents.split()
-    if len(bits) != 2:
-        raise TemplateSyntaxError, "Accepted format {% activity_follow_url [instance] %}"
-    else:
-        return DisplayActivityFollowUrl(bits[1])
-
-@register.simple_tag
-def activity_followers_url(instance):
-    content_type = ContentType.objects.get_for_model(instance).pk
-    return reverse('actstream_followers',
-        kwargs={'content_type_id': content_type, 'object_id': instance.pk})
-
-
-@register.simple_tag
-def activity_followers_count(instance):
-    return Follow.objects.for_object(instance).count()
-
 
 class AsNode(Node):
     """
@@ -105,26 +79,6 @@ class AsNode(Node):
         raise NotImplementedError("Must be implemented by a subclass")
 
 
-class DisplayActionLabel(AsNode):
-
-    def render_result(self, context):
-        actor_instance = self.args[0].resolve(context)
-        try:
-            user = Variable("request.user").resolve(context)
-        except VariableDoesNotExist:
-            user = None
-        try:
-            if user and user == actor_instance.user:
-                result = " your "
-            else:
-                result = " %s's " % (actor_instance.user.get_full_name() or
-                    actor_instance.user.username)
-        except ValueError:
-            result = ""
-        result += actor_instance.get_label()
-        return result
-
-
 class DisplayAction(AsNode):
 
     def render_result(self, context):
@@ -137,34 +91,6 @@ class DisplayAction(AsNode):
             context)
 
 
-class DisplayActionShort(Node):
-    def __init__(self, action, varname=None):
-        self.action = Variable(action)
-        self.varname = varname
-
-    def render(self, context):
-        action_instance = self.args[0].resolve(context)
-        templates = [
-            'activity/%s/action.html' % action_instance.verb.replace(' ', '_'),
-            'activity/action.html',
-        ]
-        return render_to_string(templates, {'action': action_instance,
-            'hide_actor': True}, context)
-
-
-class DisplayGroupedActions(AsNode):
-
-    def render(self, context):
-        actions_instance = self.args[0].resolve(context)
-        templates = [
-            'activity/%s/action.html' %
-                actions_instance.verb.replace(' ', '_'),
-            'activity/action.html',
-        ]
-        return render_to_string(templates, {'actions': actions_instance},
-            context)
-
-
 class UserContentTypeNode(Node):
 
     def __init__(self, *args):
@@ -174,35 +100,62 @@ class UserContentTypeNode(Node):
         context[self.args[-1]] = ContentType.objects.get_for_model(User)
         return ''
 
-
 def display_action(parser, token):
+    """
+    Renders the template for the action description
+
+    Example::
+
+        {% display_action action %}
+    """
     return DisplayAction.handle_token(parser, token)
 
-
-def display_action_short(parser, token):
-    return DisplayActionShort.handle_token(parser, token)
-
-
-def display_grouped_actions(parser, token):
-    return DisplayGroupedActions.handle_token(parser, token)
-
-
-def action_label(parser, token):
-    return DisplayActionLabel.handle_token(parser, token)
-
-
-# TODO: remove this, it's heinous
-def get_user_contenttype(parser, token):
-    return UserContentTypeNode(*token.split_contents())
-
 def is_following(user, actor):
+    """
+    Returns true if the given user is following the actor
+
+    Example::
+
+        {% if request.user|is_following:another_user %}
+            You are already following {{ another_user }}
+        {% endif %}
+    """
     return Follow.objects.is_following(user, actor)
+
+
+def follow_url(parser, tokens):
+    """
+    Renders the URL of the follow view for a particular actor instance
+
+    Example::
+
+        <a href="{% activity_follow_url user %}">{% actstream_follow_label user 'follow' 'stop following' %}</a>
+
+    """
+    bits = tokens.contents.split()
+    if len(bits) != 2:
+        raise TemplateSyntaxError, "Accepted format {% activity_follow_url [instance] %}"
+    else:
+        return DisplayActivityFollowUrl(bits[1])
+
+
+def follow_label(parser, tokens):
+    """
+    Renders the label for following/unfollowing for a particular actor instance
+
+    Example::
+
+        <a href="{% activity_follow_url user %}">{% actstream_follow_label user 'follow' 'stop following' %}</a>
+
+    """
+    bits = tokens.contents.split()
+    if len(bits) != 4:
+        raise TemplateSyntaxError, "Accepted format {% activity_follow_label [instance] [follow_string] [unfollow_string] %}"
+    else:
+        return DisplayActivityFollowLabel(*bits[1:])
+
 
 register.filter(is_following)
 register.tag(display_action)
-register.tag(display_action_short)
-register.tag(display_grouped_actions)
-register.tag(action_label)
-register.tag(get_user_contenttype)
-register.tag('activity_follow_url', do_activity_follow_url)
-register.tag('activity_follow_label', do_activity_follow_label)
+register.tag(follow_url)
+register.tag(follow_label)
