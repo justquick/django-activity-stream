@@ -33,6 +33,17 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
+deploy:
+
+	make html
+	mv $(BUILDDIR)/html/_static $(BUILDDIR)/html/static
+	mv $(BUILDDIR)/html/_sources $(BUILDDIR)/html/sources
+	find $(BUILDDIR)/html/*.* $(BUILDDIR)/html/static/* -type f -exec perl -pi -e 's/\_static/static/g' {} \;
+	find $(BUILDDIR)/html/*.* $(BUILDDIR)/html/static/* -type f -exec perl -pi -e 's/\_sources/sources/g' {} \;
+	rm -rf html
+	mv -f $(BUILDDIR)/html .
+	make clean
+
 clean:
 	-rm -rf $(BUILDDIR)/*
 

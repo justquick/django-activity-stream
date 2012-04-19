@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; Django Activity Stream v0.4.0 documentation</title>
+    <title>API &mdash; Django Activity Stream 0.4.2 documentation</title>
+    
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.0',
+        VERSION:     '0.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream v0.4.0 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream 0.4.2 documentation" href="index.html" />
     <link rel="prev" title="Changelog" href="changelog.html" /> 
   </head>
   <body>
@@ -38,7 +41,7 @@
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -91,7 +94,7 @@ Keyword arguments will be passed to Action.objects.filter</p>
 <dl class="method">
 <dt id="actstream.managers.ActionManager.user">
 <tt class="descname">user</tt><big>(</big><em>manager</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#actstream.managers.ActionManager.user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stream of most recent actions by actors that the passed User object is
+<dd><p>Stream of most recent actions by objects that the passed User object is
 following.</p>
 </dd></dl>
 
@@ -159,29 +162,28 @@ github.com)</p>
 <span id="actions"></span><h2>Actions<a class="headerlink" href="#module-actstream.actions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="actstream.actions.follow">
-<tt class="descclassname">actstream.actions.</tt><tt class="descname">follow</tt><big>(</big><em>user</em>, <em>actor</em>, <em>send_action=True</em><big>)</big><a class="headerlink" href="#actstream.actions.follow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship such that the actor&#8217;s
-activities appear in the user&#8217;s stream.
-Also sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">started</span> <span class="pre">following</span> <span class="pre">&lt;actor&gt;</span></tt> action signal.
-Returns the created <tt class="docutils literal"><span class="pre">Follow</span></tt> instance.
-If <tt class="docutils literal"><span class="pre">send_action</span></tt> is false, no &#8220;started following&#8221; signal will be created</p>
-<p>Syntax:</p>
-<div class="highlight-python"><pre>follow(&lt;user&gt;, &lt;actor&gt;)</pre>
-</div>
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">follow</tt><big>(</big><em>user</em>, <em>obj</em>, <em>send_action=True</em>, <em>actor_only=True</em><big>)</big><a class="headerlink" href="#actstream.actions.follow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a relationship allowing the object&#8217;s activities to appear in the
+user&#8217;s stream.</p>
+<p>Returns the created <tt class="docutils literal"><span class="pre">Follow</span></tt> instance.</p>
+<p>If <tt class="docutils literal"><span class="pre">send_action</span></tt> is <tt class="docutils literal"><span class="pre">True</span></tt> (the default) then a
+<tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">started</span> <span class="pre">following</span> <span class="pre">&lt;object&gt;</span></tt> action signal is sent.</p>
+<p>If <tt class="docutils literal"><span class="pre">actor_only</span></tt> is <tt class="docutils literal"><span class="pre">True</span></tt> (the default) then only actions where the
+object is the actor will appear in the user&#8217;s activity stream. Set to
+<tt class="docutils literal"><span class="pre">False</span></tt> to also include actions where this object is the action_object or
+the target.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">actor_only</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="function">
 <dt id="actstream.actions.unfollow">
-<tt class="descclassname">actstream.actions.</tt><tt class="descname">unfollow</tt><big>(</big><em>user</em>, <em>actor</em>, <em>send_action=False</em><big>)</big><a class="headerlink" href="#actstream.actions.unfollow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> follow relationship.
-Optionally sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;</span> <span class="pre">stopped</span> <span class="pre">following</span> <span class="pre">&lt;actor&gt;</span></tt> action signal.</p>
-<p>Syntax:</p>
-<div class="highlight-python"><pre>unfollow(&lt;user&gt;, &lt;actor&gt;)</pre>
-</div>
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">unfollow</tt><big>(</big><em>user</em>, <em>obj</em>, <em>send_action=False</em><big>)</big><a class="headerlink" href="#actstream.actions.unfollow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a &#8220;follow&#8221; relationship.</p>
+<p>Set <tt class="docutils literal"><span class="pre">send_action</span></tt> to <tt class="docutils literal"><span class="pre">True</span></tt> (<tt class="docutils literal"><span class="pre">False</span> <span class="pre">is</span> <span class="pre">default)</span> <span class="pre">to</span> <span class="pre">also</span> <span class="pre">send</span> <span class="pre">a</span>
+<span class="pre">``&lt;user&gt;</span> <span class="pre">stopped</span> <span class="pre">following</span> <span class="pre">&lt;object&gt;</span></tt> action signal.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">unfollow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">other_user</span><span class="p">)</span>
 </pre></div>
@@ -190,12 +192,9 @@ Optionally sends the <tt class="docutils literal"><span class="pre">&lt;user&gt;
 
 <dl class="function">
 <dt id="actstream.actions.is_following">
-<tt class="descclassname">actstream.actions.</tt><tt class="descname">is_following</tt><big>(</big><em>user</em>, <em>actor</em><big>)</big><a class="headerlink" href="#actstream.actions.is_following" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if a <tt class="docutils literal"><span class="pre">User</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Actor</span></tt> relationship exists.
-Returns True if exists, False otherwise.</p>
-<p>Syntax:</p>
-<div class="highlight-python"><pre>is_following(&lt;user&gt;, &lt;actor&gt;)</pre>
-</div>
+<tt class="descclassname">actstream.actions.</tt><tt class="descname">is_following</tt><big>(</big><em>user</em>, <em>obj</em><big>)</big><a class="headerlink" href="#actstream.actions.is_following" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a &#8220;follow&#8221; relationship exists.</p>
+<p>Returns True if exists, False otherwise.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">is_following</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
 </pre></div>
@@ -251,6 +250,47 @@ an Action.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-actstream.templatetags.activity_tags">
+<span id="templatetags"></span><h2>Templatetags<a class="headerlink" href="#module-actstream.templatetags.activity_tags" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="actstream.templatetags.activity_tags.is_following">
+<tt class="descclassname">actstream.templatetags.activity_tags.</tt><tt class="descname">is_following</tt><big>(</big><em>user</em>, <em>actor</em><big>)</big><a class="headerlink" href="#actstream.templatetags.activity_tags.is_following" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the given user is following the actor</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>{% if request.user|is_following:another_user %}
+    You are already following {{ another_user }}
+{% endif %}</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.templatetags.activity_tags.display_action">
+<tt class="descclassname">actstream.templatetags.activity_tags.</tt><tt class="descname">display_action</tt><big>(</big><em>parser</em>, <em>token</em><big>)</big><a class="headerlink" href="#actstream.templatetags.activity_tags.display_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the template for the action description</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>{% display_action action %}</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.templatetags.activity_tags.follow_url">
+<tt class="descclassname">actstream.templatetags.activity_tags.</tt><tt class="descname">follow_url</tt><big>(</big><em>parser</em>, <em>tokens</em><big>)</big><a class="headerlink" href="#actstream.templatetags.activity_tags.follow_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the URL of the follow view for a particular actor instance</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>&lt;a href="{% activity_follow_url user %}"&gt;{% actstream_follow_label user 'follow' 'stop following' %}&lt;/a&gt;</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="actstream.templatetags.activity_tags.follow_label">
+<tt class="descclassname">actstream.templatetags.activity_tags.</tt><tt class="descname">follow_label</tt><big>(</big><em>parser</em>, <em>tokens</em><big>)</big><a class="headerlink" href="#actstream.templatetags.activity_tags.follow_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the label for following/unfollowing for a particular actor instance</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>&lt;a href="{% activity_follow_url user %}"&gt;{% actstream_follow_label user 'follow' 'stop following' %}&lt;/a&gt;</pre>
+</div>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -267,6 +307,7 @@ an Action.</p>
 <li><a class="reference internal" href="#module-actstream.actions">Actions</a></li>
 <li><a class="reference internal" href="#module-actstream.decorators">Decorators</a></li>
 <li><a class="reference internal" href="#module-actstream.exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#module-actstream.templatetags.activity_tags">Templatetags</a></li>
 </ul>
 </li>
 </ul>
@@ -308,12 +349,12 @@ an Action.</p>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream v0.4.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Justin Quick.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

@@ -30,3 +30,9 @@ Exceptions
 
 .. automodule:: actstream.exceptions
     :members: ModelNotActionable, BadQuerySet, check_actionable_model
+
+Templatetags
+-------------
+
+.. automodule:: actstream.templatetags.activity_tags
+    :members: is_following,display_action,follow_url,follow_label

@@ -14,3 +14,19 @@ Changelog
 - I18N in unicode representation and through templating
 - Sphinx Docs
 - Duh, a changelog
+
+0.4.1
+------
+
+ - Templatetag updates
+ - Follow anything
+ - Test improvements
+ - Loads of fixes
+
+0.4.2
+-----
+
+  - Query improvement supporting Django 1.4 prefetch_related (falls back to it's own prefetch also for older Django versions)
+  - Admin fixes
+  - Packaging fixes
+  - Templatetag cleanup and documentation
