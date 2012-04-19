@@ -124,7 +124,7 @@ ACTSTREAM_MANAGER = 'testapp.streams.MyActionManager'
 
 FETCH_RELATIONS = True
 
-USE_PREFETCH = False
+USE_PREFETCH = True
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.template.TemplateDebugPanel',

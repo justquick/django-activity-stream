@@ -1,3 +1,4 @@
+import django
 from django.conf import settings
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
@@ -6,7 +7,8 @@ from django.utils.encoding import smart_unicode
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 
-USE_PREFETCH = getattr(settings, 'USE_PREFETCH', False)
+USE_PREFETCH = getattr(settings, 'USE_PREFETCH',
+                       django.VERSION[0] == 1 and django.VERSION[1] >= 4)
 FETCH_RELATIONS = getattr(settings, 'FETCH_RELATIONS', True)
 
 
