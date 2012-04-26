@@ -28,9 +28,8 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-{% get_user_contenttype as user_ctype %}
 {% if request.user.is_authenticated %}
-<p><b><a href="{% url actstream_actor content_type_id=user_ctype.pk object_id=request.user.pk %}">{% trans "View my actions" %}</a></b></p>
+<p><b><a href="{% actor_url request.user %}">{% trans "View my actions" %}</a></b></p>
 {% endif %}
 <ul>
 {% for action in action_list %}
