@@ -290,6 +290,16 @@ an Action.</p>
 </div>
 </dd></dl>
 
+<dl class="function">
+<dt id="actstream.templatetags.activity_tags.actor_url">
+<tt class="descclassname">actstream.templatetags.activity_tags.</tt><tt class="descname">actor_url</tt><big>(</big><em>parser</em>, <em>token</em><big>)</big><a class="headerlink" href="#actstream.templatetags.activity_tags.actor_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the URL for a particular actor instance</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>&lt;a href="{% actor_url request.user %}"&gt;View your actions&lt;/a&gt;
+&lt;a href="{% actor_url another_user %}"&gt;{{ another_user }}'s actions&lt;/a&gt;</pre>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
