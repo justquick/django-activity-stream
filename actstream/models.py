@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -11,6 +11,12 @@ from django.contrib.auth.models import User
 from actstream import managers, settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
+
+try:
+    from django.utils import timezone
+    now = timezone.now
+except ImportError:
+    now = datetime.datetime.now
 
 
 class Follow(models.Model):
@@ -82,7 +88,7 @@ class Action(models.Model):
     action_object = generic.GenericForeignKey('action_object_content_type',
         'action_object_object_id')
 
-    timestamp = models.DateTimeField(default=datetime.now)
+    timestamp = models.DateTimeField(default=now)
 
     public = models.BooleanField(default=True)
 
