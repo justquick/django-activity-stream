@@ -60,7 +60,7 @@ class AsNode(Node):
         """
         Class method to parse and return a Node.
         """
-        bits = token.contents.split()
+        bits = token.split_contents()
         args_count = len(bits) - 1
         if args_count >= 2 and bits[-2] == 'as':
             as_var = bits[-1]
@@ -130,12 +130,13 @@ def follow_url(parser, token):
 
     Example::
 
-        <a href="{% activity_follow_url request.user %}">{% actstream_follow_label request.user 'follow' 'stop following' %}</a>
+        <a href="{% follow_url request.user %}">{% follow_label request.user 'stop following' 'follow' %}</a>
 
     """
+    bits = token.split_contents()
     bits = token.contents.split()
     if len(bits) != 2:
-        raise TemplateSyntaxError, "Accepted format {% activity_follow_url [instance] %}"
+        raise TemplateSyntaxError, "Accepted format {% follow_url [instance] %}"
     else:
         return DisplayActivityFollowUrl(bits[1])
 
@@ -146,12 +147,12 @@ def follow_label(parser, token):
 
     Example::
 
-        <a href="{% activity_follow_url request.user %}">{% actstream_follow_label request.user 'follow' 'stop following' %}</a>
+        <a href="{% follow_url request.user %}">{% follow_label request.user 'stop following' 'follow' %}</a>
 
     """
-    bits = token.contents.split()
+    bits = token.split_contents()
     if len(bits) != 4:
-        raise TemplateSyntaxError, "Accepted format {% activity_follow_label [instance] [follow_string] [unfollow_string] %}"
+        raise TemplateSyntaxError, "Accepted format {% follow_label [instance] [follow_string] [unfollow_string] %}"
     else:
         return DisplayActivityFollowLabel(*bits[1:])
 
@@ -165,7 +166,7 @@ def actor_url(parser, token):
         <a href="{% actor_url another_user %}">{{ another_user }}'s actions</a>
 
     """
-    bits = token.contents.split()
+    bits = token.split_contents()
     if len(bits) != 4:
         raise TemplateSyntaxError, "Accepted format {% actor_url [actor_instance] %}"
     else:
