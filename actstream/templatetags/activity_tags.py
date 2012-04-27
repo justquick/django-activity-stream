@@ -130,7 +130,7 @@ def follow_url(parser, tokens):
 
     Example::
 
-        <a href="{% follow_url request.user %}">{% follow_label request.user 'follow' 'stop following' %}</a>
+        <a href="{% follow_url request.user %}">{% follow_label request.user 'stop following' 'follow' %}</a>
 
     """
     bits = tokens.split_contents()
@@ -146,7 +146,7 @@ def follow_label(parser, tokens):
 
     Example::
 
-        <a href="{% follow_url request.user %}">{% follow_label request.user 'follow' 'stop following' %}</a>
+        <a href="{% follow_url request.user %}">{% follow_label request.user 'stop following' 'follow' %}</a>
 
     """
     bits = tokens.split_contents()
