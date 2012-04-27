@@ -134,7 +134,6 @@ def follow_url(parser, token):
 
     """
     bits = token.split_contents()
-    bits = token.contents.split()
     if len(bits) != 2:
         raise TemplateSyntaxError, "Accepted format {% follow_url [instance] %}"
     else:
