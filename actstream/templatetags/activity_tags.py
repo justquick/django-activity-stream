@@ -124,7 +124,7 @@ def is_following(user, actor):
     return Follow.objects.is_following(user, actor)
 
 
-def follow_url(parser, tokens):
+def follow_url(parser, token):
     """
     Renders the URL of the follow view for a particular actor instance
 
@@ -133,14 +133,14 @@ def follow_url(parser, tokens):
         <a href="{% activity_follow_url request.user %}">{% actstream_follow_label request.user 'follow' 'stop following' %}</a>
 
     """
-    bits = tokens.contents.split()
+    bits = token.contents.split()
     if len(bits) != 2:
         raise TemplateSyntaxError, "Accepted format {% activity_follow_url [instance] %}"
     else:
         return DisplayActivityFollowUrl(bits[1])
 
 
-def follow_label(parser, tokens):
+def follow_label(parser, token):
     """
     Renders the label for following/unfollowing for a particular actor instance
 
@@ -149,7 +149,7 @@ def follow_label(parser, tokens):
         <a href="{% activity_follow_url request.user %}">{% actstream_follow_label request.user 'follow' 'stop following' %}</a>
 
     """
-    bits = tokens.contents.split()
+    bits = token.contents.split()
     if len(bits) != 4:
         raise TemplateSyntaxError, "Accepted format {% activity_follow_label [instance] [follow_string] [unfollow_string] %}"
     else:
@@ -165,7 +165,7 @@ def actor_url(parser, token):
         <a href="{% actor_url another_user %}">{{ another_user }}'s actions</a>
 
     """
-    bits = tokens.contents.split()
+    bits = token.contents.split()
     if len(bits) != 4:
         raise TemplateSyntaxError, "Accepted format {% actor_url [actor_instance] %}"
     else:
