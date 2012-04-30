@@ -1,7 +1,5 @@
-from django.template import Variable, Library, Node, TemplateSyntaxError,\
-    VariableDoesNotExist
+from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.loader import render_to_string
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
@@ -12,6 +10,7 @@ register = Library()
 
 def _is_following_helper(context, actor):
     return Follow.objects.is_following(context.get('user'), actor)
+
 
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
@@ -24,6 +23,7 @@ class DisplayActivityFollowLabel(Node):
         if _is_following_helper(context, actor_instance):
             return self.follow
         return self.unfollow
+
 
 class DisplayActivityFollowUrl(Node):
     def __init__(self, actor):
@@ -38,6 +38,7 @@ class DisplayActivityFollowUrl(Node):
         return reverse('actstream_follow', kwargs={
             'content_type_id': content_type, 'object_id': actor_instance.pk})
 
+
 class DisplayActivityActorUrl(Node):
     def __init__(self, actor):
         self.actor = Variable(actor)
@@ -47,6 +48,7 @@ class DisplayActivityActorUrl(Node):
         content_type = ContentType.objects.get_for_model(actor_instance).pk
         return reverse('actstream_actor', kwargs={
             'content_type_id': content_type, 'object_id': actor_instance.pk})
+
 
 class AsNode(Node):
     """
@@ -90,6 +92,7 @@ class AsNode(Node):
     def render_result(self, context):
         raise NotImplementedError("Must be implemented by a subclass")
 
+
 class DisplayAction(AsNode):
 
     def render_result(self, context):
@@ -101,6 +104,7 @@ class DisplayAction(AsNode):
         return render_to_string(templates, {'action': action_instance},
             context)
 
+
 def display_action(parser, token):
     """
     Renders the template for the action description
@@ -110,6 +114,7 @@ def display_action(parser, token):
         {% display_action action %}
     """
     return DisplayAction.handle_token(parser, token)
+
 
 def is_following(user, actor):
     """
@@ -155,6 +160,7 @@ def follow_label(parser, token):
     else:
         return DisplayActivityFollowLabel(*bits[1:])
 
+
 def actor_url(parser, token):
     """
     Renders the URL for a particular actor instance
@@ -170,6 +176,7 @@ def actor_url(parser, token):
         raise TemplateSyntaxError, "Accepted format {% actor_url [actor_instance] %}"
     else:
         return DisplayActivityActorUrl(*bits[1:])
+
 
 register.filter(is_following)
 register.tag(display_action)
