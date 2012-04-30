@@ -140,9 +140,9 @@ def follow_url(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError, "Accepted format {% follow_url [instance] %}"
-    else:
-        return DisplayActivityFollowUrl(bits[1])
+        raise TemplateSyntaxError("Accepted format "
+            "{% follow_url [instance] %}")
+    return DisplayActivityFollowUrl(bits[1])
 
 
 def follow_label(parser, token):
@@ -156,9 +156,9 @@ def follow_label(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 4:
-        raise TemplateSyntaxError, "Accepted format {% follow_label [instance] [follow_string] [unfollow_string] %}"
-    else:
-        return DisplayActivityFollowLabel(*bits[1:])
+        raise TemplateSyntaxError("Accepted format "
+            "{% follow_label [instance] [follow_string] [unfollow_string] %}")
+    return DisplayActivityFollowLabel(*bits[1:])
 
 
 def actor_url(parser, token):
@@ -173,9 +173,9 @@ def actor_url(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 4:
-        raise TemplateSyntaxError, "Accepted format {% actor_url [actor_instance] %}"
-    else:
-        return DisplayActivityActorUrl(*bits[1:])
+        raise TemplateSyntaxError("Accepted format "
+            "{% actor_url [actor_instance] %}")
+    return DisplayActivityActorUrl(*bits[1:])
 
 
 register.filter(is_following)
