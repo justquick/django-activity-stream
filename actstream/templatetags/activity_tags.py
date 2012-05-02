@@ -166,7 +166,7 @@ def actor_url(parser, token):
 
     """
     bits = token.split_contents()
-    if len(bits) != 4:
+    if len(bits) != 2:
         raise TemplateSyntaxError, "Accepted format {% actor_url [actor_instance] %}"
     else:
         return DisplayActivityActorUrl(*bits[1:])
