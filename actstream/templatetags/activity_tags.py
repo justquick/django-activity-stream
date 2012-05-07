@@ -13,6 +13,12 @@ register = Library()
 def _is_following_helper(context, actor):
     return Follow.objects.is_following(context.get('user'), actor)
 
+def _remove_quotes(parameter):
+    if parameter[0] in ["'", '"']:
+        return parameter[1:-1]
+    else:
+        return parameter
+    
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
         self.actor = Variable(actor)
@@ -22,8 +28,8 @@ class DisplayActivityFollowLabel(Node):
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         if _is_following_helper(context, actor_instance):
-            return self.follow
-        return self.unfollow
+            return _remove_quotes(self.follow)
+        return _remove_quotes(self.unfollow)
 
 class DisplayActivityFollowUrl(Node):
     def __init__(self, actor):
