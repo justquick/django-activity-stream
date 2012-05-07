@@ -45,7 +45,7 @@
 
 <div id="content">
 	<p><b>Active users</b>{% for user in users %} | <a href="{{ user.get_absolute_url }}">{{ user }}</a>{% endfor %}</p>
-	<a href="{% follow_url request.user %}">{% follow_label user 'stop following' 'follow' %}</a>
+	<a href="{% follow_all_url request.user %}">{% follow_label user 'stop following' 'follow' %}</a>
 	{% if request.user.is_authenticated %}
 		{% load comments %}
 		{% render_comment_form for request.user %}
