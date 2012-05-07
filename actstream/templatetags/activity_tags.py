@@ -13,6 +13,12 @@ register = Library()
 def _is_following_helper(context, actor):
     return Follow.objects.is_following(context.get('user'), actor)
 
+def _remove_quotes(parameter):
+    if parameter[0] in ["'", '"']:
+        return parameter[1:-1]
+    else:
+        return parameter
+
 class DisplayActivityFollowLabel(Node):
     def __init__(self, actor, follow, unfollow):
         self.actor = Variable(actor)
@@ -22,12 +28,13 @@ class DisplayActivityFollowLabel(Node):
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         if _is_following_helper(context, actor_instance):
-            return self.follow
-        return self.unfollow
+            return _remove_quotes(self.follow)
+        return _remove_quotes(self.unfollow)
 
 class DisplayActivityFollowUrl(Node):
-    def __init__(self, actor):
+    def __init__(self, actor, actor_only=True):
         self.actor = Variable(actor)
+        self.actor_only = actor_only
 
     def render(self, context):
         actor_instance = self.actor.resolve(context)
@@ -35,7 +42,10 @@ class DisplayActivityFollowUrl(Node):
         if _is_following_helper(context, actor_instance):
             return reverse('actstream_unfollow', kwargs={
                 'content_type_id': content_type, 'object_id': actor_instance.pk})
-        return reverse('actstream_follow', kwargs={
+        if self.actor_only:
+            return reverse('actstream_follow', kwargs={
+                'content_type_id': content_type, 'object_id': actor_instance.pk})
+        return reverse('actstream_follow_all', kwargs={
             'content_type_id': content_type, 'object_id': actor_instance.pk})
 
 class DisplayActivityActorUrl(Node):
@@ -139,6 +149,20 @@ def follow_url(parser, token):
     else:
         return DisplayActivityFollowUrl(bits[1])
 
+def follow_all_url(parser, token):
+    """
+    Renders the URL to follow an object as both actor and target
+
+    Example::
+
+        <a href="{% follow_all_url request.user %}">{% follow_label request.user 'stop following' 'follow' %}</a>
+
+    """
+    bits = token.split_contents()
+    if len(bits) != 2:
+        raise TemplateSyntaxError, "Accepted format {% follow_all_url [instance] %}"
+    else:
+        return DisplayActivityFollowUrl(bits[1], actor_only=False)
 
 def follow_label(parser, token):
     """
@@ -174,5 +198,6 @@ def actor_url(parser, token):
 register.filter(is_following)
 register.tag(display_action)
 register.tag(follow_url)
+register.tag(follow_all_url)
 register.tag(follow_label)
 register.tag(actor_url)
