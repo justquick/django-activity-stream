@@ -76,11 +76,12 @@ class GFKQuerySet(QuerySet):
                 if getattr(item, gfk.fk_field) != None:
                     ct_id_field = self.model._meta.get_field(gfk.ct_field)\
                         .column
-                    setattr(item, gfk.name,
-                        data_map[(
-                            getattr(item, ct_id_field),
-                            smart_unicode(getattr(item, gfk.fk_field))
-                        )])
+                    ctype = getattr(item, ct_id_field)
+                    gfk_pk = smart_unicode(getattr(item, gfk.fk_field))
+                    key = smart_unicode(getattr(item, gfk.fk_field))
+                    if key in data_map:
+                        setattr(item, gfk.name, data_map[key])
+                    # If the value isn't found, we leave it as is
 
         return qs
 
