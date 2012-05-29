@@ -5,7 +5,7 @@ Creating or deleting the link between a ``User`` and any particular object is as
 
 .. code-block:: python
 
-    from actstream import follow, unfollow
+    from actstream.actions import follow, unfollow
 
     # Follow the group (where it is an actor).
     follow(request.user, group)
@@ -32,4 +32,4 @@ The request can use either ``GET`` or ``POST``.
 
 Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
 
-There is also a function ``actstream.unfollow`` which removes the link and takes the same arguments as ``actstream.follow``
+There is also a function ``actstream.actions.unfollow`` which removes the link and takes the same arguments as ``actstream.actions.follow``.
