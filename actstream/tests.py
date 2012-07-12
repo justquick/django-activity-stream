@@ -163,10 +163,15 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEquals(f1, f2, "Should have received the same Follow "
             "object that I first submitted")
 
-    def test_zzzz_no_orphaned_actions(self):
+    def test_y_no_orphaned_follows(self):
+        follows = Follow.objects.count()
+        self.user2.delete()
+        self.assertEqual(follows - 1, Follow.objects.count())
+
+    def test_z_no_orphaned_actions(self):
         actions = self.user1.actor_actions.count()
         self.user2.delete()
-        self.assertEqual(actions, self.user1.actor_actions.count() + 1)
+        self.assertEqual(actions - 1, self.user1.actor_actions.count())
 
     def test_generic_relation_accessors(self):
         self.assertEqual(self.user2.actor_actions.count(), 2)
