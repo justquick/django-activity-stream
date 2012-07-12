@@ -12,3 +12,7 @@ class MyActionManager(ActionManager):
         if time is None:
             time = datetime.now()
         return object.actor_actions.filter(timestamp__lte = time)
+
+    @stream
+    def testbar(self, verb):
+        return self.filter(verb=verb)

@@ -15,3 +15,7 @@ class TestAppTests(TestCase):
     def test_accessor(self):
         self.assertEqual(len(Action.objects.testfoo(self.user)), 1)
         self.assertEqual(len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))), 0)
+
+    def test_mystream(self):
+        self.assertEqual(len(self.user.actor_actions.testbar('was created')), 1)
+        self.assertEqual(len(self.user.action_object_actions.testbar('was created')), 0)
