@@ -122,6 +122,8 @@ ACTSTREAM_ACTION_MODELS = ('auth.user', 'auth.group', 'sites.site', 'comments.co
 
 ACTSTREAM_MANAGER = 'testapp.streams.MyActionManager'
 
+ACTSTREAM_USE_JSONFIELD = True
+
 FETCH_RELATIONS = True
 
 USE_PREFETCH = True

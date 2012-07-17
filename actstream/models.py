@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
@@ -176,6 +177,15 @@ def setup_generic_relations():
 
 
 setup_generic_relations()
+
+
+if actstream_settings.USE_JSONFIELD:
+    try:
+        from django_extensions.db.fields.json import JSONField
+    except ImportError:
+        raise ImproperlyConfigured('You must have django-extensions installed '
+                                'if you wish to use a JSONField on your actions')
+    JSONField().contribute_to_class(Action, 'data')
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
