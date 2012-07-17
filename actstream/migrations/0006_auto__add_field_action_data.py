@@ -4,22 +4,14 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from actstream.settings import USE_JSONFIELD
-
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        if not USE_JSONFIELD:
-            return
-
         # Adding field 'Action.data'
-        db.add_column('actstream_action', 'data', self.gf('django.db.models.fields.TextField')(default='{}'), keep_default=False)
+        db.add_column('actstream_action', 'data', self.gf('django.db.models.fields.TextField')(default='{}', null=True, blank=True), keep_default=False)
 
     def backwards(self, orm):
-        if not USE_JSONFIELD:
-            return
-
         # Deleting field 'Action.data'
         db.delete_column('actstream_action', 'data')
 
@@ -30,6 +22,7 @@ class Migration(SchemaMigration):
             'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': "orm['contenttypes.ContentType']"}),
             'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'data': ('django.db.models.fields.TextField', [], {'default': "'{}'", 'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -83,8 +76,5 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         }
     }
-
-    if USE_JSONFIELD:
-        models['actstream.action']['data'] = ('django.db.models.fields.TextField', [], {'default': "'{}'"})
 
     complete_apps = ['actstream']

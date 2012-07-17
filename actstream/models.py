@@ -185,7 +185,7 @@ if actstream_settings.USE_JSONFIELD:
     except ImportError:
         raise ImproperlyConfigured('You must have django-extensions installed '
                                 'if you wish to use a JSONField on your actions')
-    JSONField().contribute_to_class(Action, 'data')
+    JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
