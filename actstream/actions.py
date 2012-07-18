@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.exceptions import check_actionable_model
+from actstream import settings
 
 try:
     from django.utils import timezone
@@ -105,5 +106,6 @@ def action_handler(verb, **kwargs):
             setattr(newaction, '%s_object_id' % opt, obj.pk)
             setattr(newaction, '%s_content_type' % opt,
                     ContentType.objects.get_for_model(obj))
-
+    if settings.USE_JSONFIELD and len(kwargs):
+        newaction.data = kwargs
     newaction.save()

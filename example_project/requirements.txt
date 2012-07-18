@@ -1,4 +1,6 @@
 Django>=1.2
+South
 django-activity-stream
-django-lint
 django-jsonfield
+django-registration
+django-debug-toolbar
