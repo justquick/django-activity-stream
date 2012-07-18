@@ -1,0 +1,4 @@
+Django>=1.2
+django-activity-stream
+django-lint
+django-jsonfield

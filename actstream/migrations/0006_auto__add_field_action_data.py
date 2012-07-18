@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Action.data'
-        db.add_column('actstream_action', 'data', self.gf('django.db.models.fields.TextField')(default='{}', null=True, blank=True), keep_default=False)
+        db.add_column('actstream_action', 'data', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
 
     def backwards(self, orm):
         # Deleting field 'Action.data'
@@ -22,7 +22,7 @@ class Migration(SchemaMigration):
             'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': "orm['contenttypes.ContentType']"}),
             'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'data': ('django.db.models.fields.TextField', [], {'default': "'{}'", 'null': 'True', 'blank': 'True'}),
+            'data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

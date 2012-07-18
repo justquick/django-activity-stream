@@ -181,7 +181,7 @@ setup_generic_relations()
 
 if actstream_settings.USE_JSONFIELD:
     try:
-        from django_extensions.db.fields.json import JSONField
+        from jsonfield.fields import JSONField
     except ImportError:
         raise ImproperlyConfigured('You must have django-extensions installed '
                                 'if you wish to use a JSONField on your actions')
