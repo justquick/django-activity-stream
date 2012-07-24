@@ -1,6 +1,15 @@
 Changelog
 ==========
 
+0.4.4
+-----
+
+  - Added support for custom Action data using JSONField.
+  - User of django.timezone.now when available.
+  - Templatetag fixes and removal of the follow_label tag.
+  - More tests
+  - Packaging fixes to include locale & migrations.
+
 0.4.3
 -----
 

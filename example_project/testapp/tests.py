@@ -19,3 +19,11 @@ class TestAppTests(TestCase):
     def test_mystream(self):
         self.assertEqual(len(self.user.actor_actions.testbar('was created')), 1)
         self.assertEqual(len(self.user.action_object_actions.testbar('was created')), 0)
+
+    def test_jsonfield(self):
+        action.send(self.user, verb='said', text='foobar', tags=['sayings'],
+                    more_data={'pk': self.user.pk})
+        newaction = Action.objects.filter(verb='said')[0]
+        self.assertEqual(newaction.data['text'], 'foobar')
+        self.assertEqual(newaction.data['tags'], ['sayings'])
+        self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})

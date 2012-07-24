@@ -30,6 +30,7 @@ Contents:
    installation
    configuration
    actions
+   data
    follow
    streams
    changelog
