@@ -97,7 +97,7 @@ class ActionManager(GFKManager):
         return qs
 
 
-class FollowManager(models.Manager):
+class FollowManager(GFKManager):
     """
     Manager for Follow model.
     """

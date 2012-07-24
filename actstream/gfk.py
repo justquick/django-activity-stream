@@ -10,7 +10,7 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 USE_PREFETCH = getattr(settings, 'USE_PREFETCH',
                        django.VERSION[0] == 1 and django.VERSION[1] >= 4)
 FETCH_RELATIONS = getattr(settings, 'FETCH_RELATIONS', True)
-
+GFK_FETCH_DEPTH = getattr(settings, 'GFK_FETCH_DEPTH', 0)
 
 class GFKManager(Manager):
     """
@@ -56,6 +56,7 @@ class GFKQuerySet(QuerySet):
             for gfk in gfk_fields:
                 ct_id_field = self.model._meta.get_field(gfk.ct_field).column
                 if getattr(item, ct_id_field) is None: continue
+                if getattr(item, gfk.fk_field) is None: continue
                 ct_map.setdefault(getattr(item, ct_id_field), {}
                     )[smart_unicode(getattr(item, gfk.fk_field))] = (gfk.name,
                         item.pk)
@@ -66,7 +67,8 @@ class GFKQuerySet(QuerySet):
             if ct_id:
                 ct = ctypes[ct_id]
                 model_class = ct.model_class()
-                objects = model_class._default_manager.select_related()
+                objects = model_class._default_manager.select_related(
+                    depth=GFK_FETCH_DEPTH)
                 for o in objects.filter(pk__in=items_.keys()):
                     (gfk_name, item_id) = items_[smart_unicode(o.pk)]
                     data_map[(ct_id, smart_unicode(o.pk))] = o
@@ -76,11 +78,12 @@ class GFKQuerySet(QuerySet):
                 if getattr(item, gfk.fk_field) != None:
                     ct_id_field = self.model._meta.get_field(gfk.ct_field)\
                         .column
-                    setattr(item, gfk.name,
-                        data_map[(
-                            getattr(item, ct_id_field),
-                            smart_unicode(getattr(item, gfk.fk_field))
-                        )])
+                    ctype = getattr(item, ct_id_field)
+                    gfk_pk = smart_unicode(getattr(item, gfk.fk_field))
+                    key = smart_unicode(getattr(item, gfk.fk_field))
+                    if key in data_map:
+                        setattr(item, gfk.name, data_map[key])
+                    # If the value isn't found, we leave it as is
 
         return qs
 
