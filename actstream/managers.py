@@ -63,14 +63,14 @@ class ActionManager(GFKManager):
         Stream of most recent actions by objects that the passed User object is
         following.
         """
-        from actstream.models import Follow
         q = Q()
         qs = self.filter(public=True)
         actors_by_content_type = defaultdict(lambda: [])
         others_by_content_type = defaultdict(lambda: [])
 
-        follow_gfks = Follow.objects.filter(user=object).values_list(
-            'content_type_id', 'object_id', 'actor_only')
+        follow_gfks = models.get_model('actstream', 'follow').objects.filter(
+            user=object).values_list('content_type_id',
+                                     'object_id', 'actor_only')
 
         if not follow_gfks:
             return qs.none()

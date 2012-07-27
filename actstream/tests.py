@@ -14,7 +14,7 @@ from actstream.models import Action, Follow, model_stream, user_stream,\
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
-from actstream import settings as actstream_settings
+from actstream.settings import get_models, SETTINGS
 
 class LTE(int):
     def __new__(cls, n):
@@ -32,15 +32,14 @@ class ActivityBaseTestCase(TestCase):
     actstream_models = ()
 
     def setUp(self):
-        self.old_MODELS = actstream_settings.MODELS
-        actstream_settings.MODELS = {}
+        self.old_models = get_models()
+        SETTINGS['MODELS'] = {}
         for model in self.actstream_models:
-            actstream_settings.MODELS[model.lower()] = \
-                get_model(*model.split('.'))
+            SETTINGS['MODELS'][model.lower()] = get_model(*model.split('.'))
         setup_generic_relations()
 
     def tearDown(self):
-        actstream_settings.MODELS = self.old_MODELS
+        SETTINGS['MODELS'] = self.old_models
 
 
 class ActivityTestCase(ActivityBaseTestCase):

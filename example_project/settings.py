@@ -118,15 +118,14 @@ ABSOLUTE_URL_OVERRIDES = {
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-ACTSTREAM_ACTION_MODELS = ('auth.user', 'auth.group', 'sites.site', 'comments.comment')
+ACTSTREAM_SETTINGS = {
+    'MANAGER': 'testapp.streams.MyActionManager',
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 0,
+}
 
-ACTSTREAM_MANAGER = 'testapp.streams.MyActionManager'
-
-ACTSTREAM_USE_JSONFIELD = True
-
-FETCH_RELATIONS = True
-
-USE_PREFETCH = True
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.template.TemplateDebugPanel',

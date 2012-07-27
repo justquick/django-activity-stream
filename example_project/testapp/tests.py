@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from actstream.models import Action
 from actstream.signals import action
 
+
 class TestAppTests(TestCase):
 
     def setUp(self):

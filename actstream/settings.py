@@ -1,31 +1,33 @@
+import django
 from django.conf import settings
 from django.db.models import get_model
-from django.db.models.signals import class_prepared
 
-ACTSTREAM_ACTION_MODELS = [m.lower() for m in getattr(settings,
-    'ACTSTREAM_ACTION_MODELS', ('auth.User',))]
 
-MODELS = {}
+SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
 
-# Certain application configurations can lead to models not being available
-# to get_model at import time. To overcome this problem, we register a
-# class_prepared listener. This needs to be done before we do the initial
-# population of MODELS, since we cannot predict what is already available,
-# what will be available later, and what will be discovered during model
-# loading.
-def late_registration(sender, **kwargs):
-    opts = sender._meta
-    key = "%s.%s" % (opts.app_label,opts.module_name)
-    if key in ACTSTREAM_ACTION_MODELS:
-        MODELS[key] = sender
-class_prepared.connect(late_registration)
+def get_models():
+    """
+    Returns a lookup of 'app_label.model': <model class> from ACTSTREAM_SETTINGS['MODELS']
+    Only call this right before you need to inspect the models
+    """
+    models = {}
+    for model in SETTINGS.get('MODELS', ('auth.User',)):
+        models[model.lower()] = get_model(*model.split('.'))
+    return models
 
-for model in ACTSTREAM_ACTION_MODELS:
-    MODELS[model.lower()] = model = get_model(*model.split('.'))
+def get_action_manager():
+    """
+    Returns the class of the action manager to use from ACTSTREAM_SETTINGS['MANAGER']
+    """
+    mod = SETTINGS.get('MANAGER', 'actstream.managers.ActionManager')
+    a, j = mod.split('.'), lambda l: '.'.join(l)
+    return getattr(__import__(j(a[:-1]), {}, {}, [a[-1]]), a[-1])()
 
-MANAGER_MODULE = getattr(settings, 'ACTSTREAM_MANAGER',
-    'actstream.managers.ActionManager')
-a, j = MANAGER_MODULE.split('.'), lambda l: '.'.join(l)
-MANAGER_MODULE = getattr(__import__(j(a[:-1]), {}, {}, [a[-1]]), a[-1])
+USE_PREFETCH = SETTINGS.get('USE_PREFETCH',
+                            django.VERSION[0] == 1 and django.VERSION[1] >= 4)
 
-USE_JSONFIELD = getattr(settings, 'ACTSTREAM_USE_JSONFIELD', False)
+FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
+
+GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
+
+USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)

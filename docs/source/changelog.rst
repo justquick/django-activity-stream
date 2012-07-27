@@ -9,6 +9,7 @@ Changelog
   - Templatetag fixes and removal of the follow_label tag.
   - More tests
   - Packaging fixes to include locale & migrations.
+  - App settings provided by ACTSTREAM_SETTINGS dictionary.
 
 0.4.3
 -----

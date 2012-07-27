@@ -1,5 +1,3 @@
-import datetime
-
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
@@ -9,16 +7,17 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
-from actstream import managers, settings as actstream_settings
-from actstream.signals import action
-from actstream.actions import action_handler
-
 try:
     from django.utils import timezone
     now = timezone.now
 except ImportError:
-    now = datetime.datetime.now
+    from datetime import datetime
+    now = datetime.now
 
+from actstream import settings as actstream_settings
+from actstream.signals import action
+from actstream.actions import action_handler
+from actstream.managers import FollowManager
 
 class Follow(models.Model):
     """
@@ -31,7 +30,8 @@ class Follow(models.Model):
     follow_object = generic.GenericForeignKey()
     actor_only = models.BooleanField("Only follow actions where the object is "
         "the target.", default=True)
-    objects = managers.FollowManager()
+    started = models.DateTimeField(default=now)
+    objects = FollowManager()
 
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
@@ -93,7 +93,7 @@ class Action(models.Model):
 
     public = models.BooleanField(default=True)
 
-    objects = actstream_settings.MANAGER_MODULE()
+    objects = actstream_settings.get_action_manager()
 
     class Meta:
         ordering = ('-timestamp', )
@@ -160,7 +160,7 @@ def setup_generic_relations():
     """
     Set up GenericRelations for actionable models.
     """
-    for model in actstream_settings.MODELS.values():
+    for model in actstream_settings.get_models().values():
         if not model:
             continue
         for field in ('actor', 'target', 'action_object'):

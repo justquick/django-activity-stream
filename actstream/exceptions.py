@@ -1,6 +1,8 @@
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
 
+from actstream.settings import get_models
+
 
 class ModelNotActionable(ImproperlyConfigured):
     """
@@ -14,9 +16,8 @@ class ModelNotActionable(ImproperlyConfigured):
             return 'Object %r must be a Django Model not %s' % (model,
                 type(model))
         opts = model._meta
-        return 'Model %s not recognized, add "%s.%s" to '\
-            'ACTSTREAM_ACTION_MODELS' % (model.__name__, opts.app_label,
-                opts.module_name)
+        return 'Model %s not recognized, add "%s.%s" to the ACTSTREAM_SETTINGS["MODELS"] settings' % (
+            model.__name__, opts.app_label, opts.module_name)
 
 
 class BadQuerySet(ValueError):
@@ -39,8 +40,6 @@ def check_actionable_model(model):
     If the model is not defined in the ``MODELS`` setting this check raises the
     ``ModelNotActionable`` exception.
     """
-    from actstream.settings import MODELS
-
     model = model if hasattr(model, 'objects') else model.__class__
-    if not model in MODELS.values():
+    if not model in get_models().values():
         raise ModelNotActionable(model)
