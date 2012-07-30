@@ -5,7 +5,7 @@ Creating or deleting the link between a ``User`` and any particular object is as
 
 .. code-block:: python
 
-    from actstream import follow, unfollow
+    from actstream.actions import follow, unfollow
 
     # Follow the group (where it is an actor).
     follow(request.user, group)
@@ -32,4 +32,22 @@ The request can use either ``GET`` or ``POST``.
 
 Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
 
-There is also a function ``actstream.unfollow`` which removes the link and takes the same arguments as ``actstream.follow``
+There is also a function ``actstream.actions.unfollow`` which removes the link and takes the same arguments as ``actstream.actions.follow``
+
+Now to retrive the follower/following relationships you can use the convient accessors
+
+.. code-block:: python
+
+    from actstream.models import following, followers
+
+    followers(request.user) # returns a list of Users who follow request.user
+    following(request.user) # returns a list of actors who request.user is following
+
+To limit the actor models for the following relationship, just pass the model classes
+
+.. code-block:: python
+
+    from django.contrib.auth.models import User, Group
+
+    following(request.user, User) # returns a list of users who request.user is following
+    following(request.user, User) # returns a list of groups who request.user is following

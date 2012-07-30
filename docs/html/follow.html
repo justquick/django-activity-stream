@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Following/Unfollowing Objects &mdash; Django Activity Stream 0.4.3 documentation</title>
+    <title>Following/Unfollowing Objects &mdash; Django Activity Stream 0.4.4 documentation</title>
     
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.3',
+        VERSION:     '0.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,9 +25,9 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream 0.4.3 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream 0.4.4 documentation" href="index.html" />
     <link rel="next" title="Action Streams" href="streams.html" />
-    <link rel="prev" title="Generating Actions" href="actions.html" /> 
+    <link rel="prev" title="Adding Custom Data to your Actions" href="data.html" /> 
   </head>
   <body>
     <div class="related">
@@ -43,9 +43,9 @@
           <a href="streams.html" title="Action Streams"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="actions.html" title="Generating Actions"
+          <a href="data.html" title="Adding Custom Data to your Actions"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,7 +57,7 @@
   <div class="section" id="following-unfollowing-objects">
 <h1>Following/Unfollowing Objects<a class="headerlink" href="#following-unfollowing-objects" title="Permalink to this headline">¶</a></h1>
 <p>Creating or deleting the link between a <tt class="docutils literal"><span class="pre">User</span></tt> and any particular object is as easy as calling a function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream</span> <span class="kn">import</span> <span class="n">follow</span><span class="p">,</span> <span class="n">unfollow</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream.actions</span> <span class="kn">import</span> <span class="n">follow</span><span class="p">,</span> <span class="n">unfollow</span>
 
 <span class="c"># Follow the group (where it is an actor).</span>
 <span class="n">follow</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
@@ -80,7 +80,21 @@ curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;
 </pre></div>
 </div>
 <p>Then the current logged in user will follow the actor defined by <tt class="docutils literal"><span class="pre">content_type_id</span></tt> &amp; <tt class="docutils literal"><span class="pre">object_id</span></tt>. Optional <tt class="docutils literal"><span class="pre">next</span></tt> parameter is URL to redirect to.</p>
-<p>There is also a function <tt class="docutils literal"><span class="pre">actstream.unfollow</span></tt> which removes the link and takes the same arguments as <tt class="docutils literal"><span class="pre">actstream.follow</span></tt></p>
+<p>There is also a function <tt class="docutils literal"><span class="pre">actstream.actions.unfollow</span></tt> which removes the link and takes the same arguments as <tt class="docutils literal"><span class="pre">actstream.actions.follow</span></tt></p>
+<p>Now to retrive the follower/following relationships you can use the convient accessors</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">actstream.models</span> <span class="kn">import</span> <span class="n">following</span><span class="p">,</span> <span class="n">followers</span>
+
+<span class="n">followers</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span> <span class="c"># returns a list of Users who follow request.user</span>
+<span class="n">following</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span> <span class="c"># returns a list of actors who request.user is following</span>
+</pre></div>
+</div>
+<p>To limit the actor models for the following relationship, just pass the model classes</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Group</span>
+
+<span class="n">following</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span> <span class="c"># returns a list of users who request.user is following</span>
+<span class="n">following</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span> <span class="c"># returns a list of groups who request.user is following</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -90,8 +104,8 @@ curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="actions.html"
-                        title="previous chapter">Generating Actions</a></p>
+  <p class="topless"><a href="data.html"
+                        title="previous chapter">Adding Custom Data to your Actions</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="streams.html"
                         title="next chapter">Action Streams</a></p>
@@ -130,9 +144,9 @@ curl -X GET http://localhost:8000/activity/unfollow/&lt;content_type_id&gt;/&lt;
           <a href="streams.html" title="Action Streams"
              >next</a> |</li>
         <li class="right" >
-          <a href="actions.html" title="Generating Actions"
+          <a href="data.html" title="Adding Custom Data to your Actions"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

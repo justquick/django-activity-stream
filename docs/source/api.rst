@@ -7,11 +7,17 @@ Action Manager
 .. autoclass:: actstream.managers.ActionManager
     :members: public, actor, target, model_actions, action_object, user
 
+Follow Manager
+--------------
+
+.. autoclass:: actstream.managers.FollowManager
+    :members: followers, following, is_following, for_object
+
 Views
 ------
 
 .. automodule:: actstream.views
-    :members: respond, follow_unfollow, stream, followers, user, detail, actor, model
+    :members: respond, follow_unfollow, stream, followers, following, user, detail, actor, model
 
 Actions
 --------

@@ -10,6 +10,7 @@ Changelog
   - More tests
   - Packaging fixes to include locale & migrations.
   - App settings provided by ACTSTREAM_SETTINGS dictionary.
+  - Added following/followers to model accessors and views.
 
 0.4.3
 -----

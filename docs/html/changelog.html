@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog &mdash; Django Activity Stream 0.4.3 documentation</title>
+    <title>Changelog &mdash; Django Activity Stream 0.4.4 documentation</title>
     
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.3',
+        VERSION:     '0.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream 0.4.3 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream 0.4.4 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="Action Streams" href="streams.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="streams.html" title="Action Streams"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,7 +57,21 @@
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.4.3<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.4.4<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Added support for custom Action data using JSONField.</li>
+<li>User of django.timezone.now when available.</li>
+<li>Templatetag fixes and removal of the follow_label tag.</li>
+<li>More tests</li>
+<li>Packaging fixes to include locale &amp; migrations.</li>
+<li>App settings provided by ACTSTREAM_SETTINGS dictionary.</li>
+<li>Added following/followers to model accessors and views.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id2">
+<h2>0.4.3<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
 <li>Fixed default templatetags to not require auth.User ContentType</li>
@@ -65,8 +79,8 @@
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id2">
-<h2>0.4.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>0.4.2<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
 <li>Query improvement supporting Django 1.4 prefetch_related (falls back to it&#8217;s own prefetch also for older Django versions)</li>
@@ -76,8 +90,8 @@
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id3">
-<h2>0.4.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.4.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
 <li>Templatetag updates</li>
@@ -87,8 +101,8 @@
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id4">
-<h2>0.4.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.4.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Scalability thanks to GFK lookup to prefetch actor, target &amp; action_object in Action streams</li>
 <li>Limit number models that will be involved in actions</li>
@@ -112,10 +126,11 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#id1">0.4.3</a></li>
-<li><a class="reference internal" href="#id2">0.4.2</a></li>
-<li><a class="reference internal" href="#id3">0.4.1</a></li>
-<li><a class="reference internal" href="#id4">0.4.0</a></li>
+<li><a class="reference internal" href="#id1">0.4.4</a></li>
+<li><a class="reference internal" href="#id2">0.4.3</a></li>
+<li><a class="reference internal" href="#id3">0.4.2</a></li>
+<li><a class="reference internal" href="#id4">0.4.1</a></li>
+<li><a class="reference internal" href="#id5">0.4.0</a></li>
 </ul>
 </li>
 </ul>
@@ -163,7 +178,7 @@
         <li class="right" >
           <a href="streams.html" title="Action Streams"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

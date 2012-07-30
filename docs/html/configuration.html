@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; Django Activity Stream 0.4.3 documentation</title>
+    <title>Configuration &mdash; Django Activity Stream 0.4.4 documentation</title>
     
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.3',
+        VERSION:     '0.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream 0.4.3 documentation" href="index.html" />
+    <link rel="top" title="Django Activity Stream 0.4.4 documentation" href="index.html" />
     <link rel="next" title="Generating Actions" href="actions.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,19 +56,56 @@
             
   <div class="section" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>Update these settings in your project&#8217;s <tt class="docutils literal"><span class="pre">settings.py</span></tt>.  Supported settings are defined below.</p>
-<div class="section" id="action-models">
-<h2>Action Models<a class="headerlink" href="#action-models" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">ACTSTREAM_ACTION_MODELS</span> <span class="pre">=</span> <span class="pre">['auth.User']</span></tt></p>
+<p>Update these settings in your project&#8217;s <tt class="docutils literal"><span class="pre">settings.py</span></tt>.
+As of v0.4.4, all settings are contained inside the <tt class="docutils literal"><span class="pre">ACTSTREAM_SETTINGS</span></tt> dictionary.
+Here is an example of what you can set in your <tt class="docutils literal"><span class="pre">settings.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ACTSTREAM_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;MODELS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;auth.user&#39;</span><span class="p">,</span> <span class="s">&#39;auth.group&#39;</span><span class="p">,</span> <span class="s">&#39;sites.site&#39;</span><span class="p">,</span> <span class="s">&#39;comments.comment&#39;</span><span class="p">),</span>
+    <span class="s">&#39;MANAGER&#39;</span><span class="p">:</span> <span class="s">&#39;myapp.streams.MyActionManager&#39;</span><span class="p">,</span>
+    <span class="s">&#39;FETCH_RELATIONS&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">&#39;USE_PREFETCH&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">&#39;USE_JSONFIELD&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">&#39;GFK_FETCH_DEPTH&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Supported settings are defined below.</p>
+<div class="section" id="models">
+<h2>MODELS<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h2>
 <p>A list the models that you want to enable actions for. Models must be in the format <tt class="docutils literal"><span class="pre">app_label.model_name</span></tt> .
 In the background, django-activity-stream sets up <tt class="docutils literal"><span class="pre">GenericRelations</span></tt> to handle stream generation.</p>
+<p>Defaults to <tt class="docutils literal"><span class="pre">('auth.user',)</span></tt></p>
 </div>
-<div class="section" id="stream-modules">
-<h2>Stream Modules<a class="headerlink" href="#stream-modules" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">ACTSTREAM_MANAGER</span> <span class="pre">=</span> <span class="pre">'actstream.managers.ActionManager'</span></tt></p>
-<p>The name of the manager to use for <tt class="docutils literal"><span class="pre">Action.objects</span></tt>.
+<div class="section" id="manager">
+<h2>MANAGER<a class="headerlink" href="#manager" title="Permalink to this headline">¶</a></h2>
+<p>The Python import path of the manager to use for <tt class="docutils literal"><span class="pre">Action.objects</span></tt>.
 Add your own manager here to create custom streams.</p>
 <p>For more info, see <a class="reference internal" href="streams.html#custom-streams"><em>Writing Custom Streams</em></a></p>
+<p>Defaults to <tt class="docutils literal"><span class="pre">actstream.managers.ActionManager</span></tt></p>
+</div>
+<div class="section" id="fetch-relations">
+<h2>FETCH_RELATIONS<a class="headerlink" href="#fetch-relations" title="Permalink to this headline">¶</a></h2>
+<p>Set this to <tt class="docutils literal"><span class="pre">False</span></tt> to disable <tt class="docutils literal"><span class="pre">select_related</span></tt> and <tt class="docutils literal"><span class="pre">prefetch_related</span></tt> when querying for any streams.
+When <tt class="docutils literal"><span class="pre">True</span></tt>, related generic foreign keys will be prefetched for stream generation (preferrable).</p>
+<p>Defaults to <tt class="docutils literal"><span class="pre">True</span></tt></p>
+</div>
+<div class="section" id="use-prefetch">
+<h2>USE_PREFETCH<a class="headerlink" href="#use-prefetch" title="Permalink to this headline">¶</a></h2>
+<p>Set this to <tt class="docutils literal"><span class="pre">True</span></tt> to forcefully enable <tt class="docutils literal"><span class="pre">prefetch_related</span></tt> (Django&gt;=1.4 only).
+On earlier versions, the generic foreign key prefetch fallback contained within <tt class="docutils literal"><span class="pre">actstream.gfk</span></tt> will be enabled.</p>
+<p>Defaults to whatever version you have.</p>
+</div>
+<div class="section" id="use-jsonfield">
+<h2>USE_JSONFIELD<a class="headerlink" href="#use-jsonfield" title="Permalink to this headline">¶</a></h2>
+<p>Set this setting to <tt class="docutils literal"><span class="pre">True</span></tt> to enable the <tt class="docutils literal"><span class="pre">Action.data</span></tt> JSONField for all actions.
+Lets you add custom data to any of your actions, see <a class="reference internal" href="data.html#custom-data"><em>Adding Custom Data to your Actions</em></a></p>
+<p>Defaults to <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div>
+<div class="section" id="gfk-fetch-depth">
+<h2>GFK_FETCH_DEPTH<a class="headerlink" href="#gfk-fetch-depth" title="Permalink to this headline">¶</a></h2>
+<p>Number of levels of relations that <tt class="docutils literal"><span class="pre">select_related</span></tt> will perform.
+Only matters if you are not running <tt class="docutils literal"><span class="pre">prefetch_related</span></tt> (Django&lt;=1.3).</p>
+<p>Defaults to <tt class="docutils literal"><span class="pre">0</span></tt></p>
 </div>
 </div>
 
@@ -81,8 +118,12 @@ Add your own manager here to create custom streams.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Configuration</a><ul>
-<li><a class="reference internal" href="#action-models">Action Models</a></li>
-<li><a class="reference internal" href="#stream-modules">Stream Modules</a></li>
+<li><a class="reference internal" href="#models">MODELS</a></li>
+<li><a class="reference internal" href="#manager">MANAGER</a></li>
+<li><a class="reference internal" href="#fetch-relations">FETCH_RELATIONS</a></li>
+<li><a class="reference internal" href="#use-prefetch">USE_PREFETCH</a></li>
+<li><a class="reference internal" href="#use-jsonfield">USE_JSONFIELD</a></li>
+<li><a class="reference internal" href="#gfk-fetch-depth">GFK_FETCH_DEPTH</a></li>
 </ul>
 </li>
 </ul>
@@ -130,7 +171,7 @@ Add your own manager here to create custom streams.</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li><a href="index.html">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

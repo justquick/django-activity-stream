@@ -33,3 +33,9 @@ Add the activity urls to your urlconf::
         ('^activity/', include('actstream.urls')),
         ...
     )
+
+If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://github.com/bradjasper/django-jsonfield/>`_ installed::
+
+    pip install django-jsonfield
+
+You can learn more at :ref:`custom-data`

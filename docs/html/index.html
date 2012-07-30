@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Django Activity Stream Documentation &mdash; Django Activity Stream 0.4.3 documentation</title>
+    <title>Django Activity Stream Documentation &mdash; Django Activity Stream 0.4.4 documentation</title>
     
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.3',
+        VERSION:     '0.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Django Activity Stream 0.4.3 documentation" href="#" />
+    <link rel="top" title="Django Activity Stream 0.4.4 documentation" href="#" />
     <link rel="next" title="Installation" href="installation.html" /> 
   </head>
   <body>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="#">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,7 +58,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Justin Quick &lt;<a class="reference external" href="mailto:justquick&#37;&#52;&#48;gmail&#46;com">justquick<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt; and many others listed in AUTHORS.txt</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">0.4.3</td>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">0.4.4</td>
 </tr>
 </tbody>
 </table>
@@ -81,11 +81,16 @@ An action is a description of an action that was performed (<tt class="docutils 
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#action-models">Action Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#stream-modules">Stream Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#models">MODELS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#manager">MANAGER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#fetch-relations">FETCH_RELATIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#use-prefetch">USE_PREFETCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#use-jsonfield">USE_JSONFIELD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#gfk-fetch-depth">GFK_FETCH_DEPTH</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Generating Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Adding Custom Data to your Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="follow.html">Following/Unfollowing Objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Action Streams</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="streams.html#using-builtin-streams">Using Builtin Streams</a></li>
@@ -93,14 +98,16 @@ An action is a description of an action that was performed (<tt class="docutils 
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.4.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.4.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.4.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.4.0</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#action-manager">Action Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#follow-manager">Follow Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-actstream.views">Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-actstream.actions">Actions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-actstream.decorators">Decorators</a></li>
@@ -171,7 +178,7 @@ An action is a description of an action that was performed (<tt class="docutils 
         <li class="right" >
           <a href="installation.html" title="Installation"
              >next</a> |</li>
-        <li><a href="#">Django Activity Stream 0.4.3 documentation</a> &raquo;</li> 
+        <li><a href="#">Django Activity Stream 0.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
