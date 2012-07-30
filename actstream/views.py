@@ -55,11 +55,19 @@ def followers(request, content_type_id, object_id):
     ``content_type_id``, ``object_id``.
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
-    follows = models.Follow.objects.filter(content_type=ctype,
-        object_id=object_id)
     actor = get_object_or_404(ctype.model_class(), pk=object_id)
     return render_to_response('activity/followers.html', {
-        'followers': (f.user for f in follows), 'actor': actor
+        'followers': models.followers(actor), 'actor': actor
+    }, context_instance=RequestContext(request))
+
+
+def following(request, user_id):
+    """
+    Returns a list of actors that the user identified by ``user_id`` is following (eg who im following).
+    """
+    user = get_object_or_404(User, pk=user_id)
+    return render_to_response('activity/following.html', {
+        'following': models.following(user), 'user': user
     }, context_instance=RequestContext(request))
 
 

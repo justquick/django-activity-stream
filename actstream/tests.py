@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
 
 from actstream.models import Action, Follow, model_stream, user_stream,\
-    setup_generic_relations
+    setup_generic_relations, following, followers
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
@@ -94,6 +94,13 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_group(self):
         self.assertEqual(map(unicode, Action.objects.actor(self.group)),
             [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+
+    def test_following(self):
+        self.assertEqual(list(following(self.user1)), [self.user2])
+        self.assertEqual(len(following(self.user2, User)), 0)
+
+    def test_followers(self):
+        self.assertEqual(list(followers(self.group)), [self.user2])
 
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)

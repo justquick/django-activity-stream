@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 15:00-0400\n"
+"POT-Creation-Date: 2012-07-30 14:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,30 +17,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: actions.py:36
+#: actions.py:43
 msgid "started following"
 msgstr ""
 
-#: actions.py:57
+#: actions.py:64
 msgid "stopped following"
 msgstr ""
 
-#: models.py:104
+#: models.py:111
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:105
+#: models.py:112
 #, python-format
 msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:107
+#: models.py:114
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:108
+#: models.py:115
 #, python-format
 msgid "%(actor)s %(verb)s %(timesince)s ago"
 msgstr ""
@@ -57,11 +57,11 @@ msgstr ""
 msgid "FOLLOW"
 msgstr ""
 
-#: templates/activity/actor.html:33
+#: templates/activity/actor.html:32
 msgid "View my actions"
 msgstr ""
 
-#: templates/activity/actor.html:39
+#: templates/activity/actor.html:38
 msgid "No actions yet"
 msgstr ""
 
@@ -73,4 +73,9 @@ msgstr ""
 #: templates/activity/followers.html:2
 #, python-format
 msgid "Users following %(actor)s"
+msgstr ""
+
+#: templates/activity/following.html:2
+#, python-format
+msgid "Actors that %(user)s follows"
 msgstr ""

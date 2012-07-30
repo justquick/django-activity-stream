@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.db import models
+from django.db.models import get_model
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
@@ -68,7 +68,7 @@ class ActionManager(GFKManager):
         actors_by_content_type = defaultdict(lambda: [])
         others_by_content_type = defaultdict(lambda: [])
 
-        follow_gfks = models.get_model('actstream', 'follow').objects.filter(
+        follow_gfks = get_model('actstream', 'follow').objects.filter(
             user=object).values_list('content_type_id',
                                      'object_id', 'actor_only')
 
@@ -117,3 +117,25 @@ class FollowManager(GFKManager):
             return False
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
+
+    def followers(self, actor):
+        """
+        Returns a list of User objects who are following the given actor (eg my followers).
+        """
+        return [follow.user for follow in self.filter(
+            content_type=ContentType.objects.get_for_model(actor),
+            object_id=actor.pk
+        ).select_related('user')]
+
+    def following(self, user, *models):
+        """
+        Returns a list of actors that the given user is following (eg who im following).
+        Items in the list can be of any model unless a list of restricted models are passed.
+        Eg following(user, User) will only return users following the given user
+        """
+        qs = self.filter(user=user)
+        if len(models):
+            qs = qs.filter(content_type__in=(
+                ContentType.objects.get_for_model(model) for model in models)
+            )
+        return [follow.follow_object for follow in qs.fetch_generic_relations()]

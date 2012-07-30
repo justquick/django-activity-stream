@@ -1,0 +1,7 @@
+{% load i18n %}
+<h2>{% blocktrans %}Actors that {{ user }} follows{% endblocktrans %}</h2>
+<ul>
+    {% for actor in following %}
+    <li>{{ actor }}</li>
+    {% endfor %}
+</ul>
