@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from actstream.exceptions import check_actionable_model
 from actstream import settings
+from django.conf import settings as django_settings
 
 try:
     from django.utils import timezone
@@ -42,6 +43,67 @@ def follow(user, obj, send_action=True, actor_only=True):
     if send_action and created:
         action.send(user, verb=_('started following'), target=obj)
     return follow
+
+
+def safe_bulk_create(objects):
+    """
+    Method that paginates objects to be saved using bulk_create so that
+    bulk_create work with SQLite backend.
+
+    Code adapted from a workaround proposed by alpar in:
+    https://code.djangoproject.com/ticket/17788
+    """
+    if objects:
+        number_fields = len(objects[0].__class__._meta.fields)
+        number_objs = len(objects)
+
+        BULK_SIZE = 900 // number_fields
+        for i in range(0, number_objs, BULK_SIZE):
+            objects[0].__class__.objects.bulk_create(objects[i:i+BULK_SIZE])
+
+
+def follow_bulk(user, *objects, **kwargs):
+    """
+    It does the same as `follow`, but doing a `bulk_create`.
+
+    This way we can follow several objects doing one single INSERT in the db,
+    necessary when dealing with large amounts of follows together.
+    """
+    actor_only = kwargs.get('actor_only', True)
+    send_action = kwargs.get('send_action', True)
+    from actstream.models import Follow, Action
+
+    follows = []
+    for obj in objects:
+        check_actionable_model(obj)
+        follows.append(Follow(
+            user=user,
+            object_id=obj.pk,
+            content_type=ContentType.objects.get_for_model(obj),
+            actor_only=actor_only
+        ))
+
+    actions = []
+    if send_action:
+        for obj in objects:
+            actions.append(Action(
+                actor_content_type=ContentType.objects.get_for_model(user),
+                actor_object_id=user.pk,
+                target_object_id=obj.pk,
+                target_content_type=ContentType.objects.get_for_model(obj),
+                verb=unicode(_('started following')),
+                public=True,
+                timestamp=now()
+            ))
+
+    # SQLite is limited to a max of 999 variables
+    # This will be fixed in django 1.5, until then
+    if 'sqlite' in django_settings.DATABASES['default']['ENGINE']:
+        safe_bulk_create(follows)
+        safe_bulk_create(actions)
+    else:
+        Follow.objects.bulk_create(follows)
+        Follow.objects.bulk_create(actions)
 
 
 def unfollow(user, obj, send_action=False):
