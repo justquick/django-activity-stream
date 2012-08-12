@@ -119,6 +119,7 @@ ABSOLUTE_URL_OVERRIDES = {
 ACCOUNT_ACTIVATION_DAYS = 7
 
 ACTSTREAM_SETTINGS = {
+    'MODELS': ('auth.user', 'auth.group', 'sites.site', 'comments.comment'),
     'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
