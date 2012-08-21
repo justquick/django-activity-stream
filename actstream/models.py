@@ -184,7 +184,7 @@ if actstream_settings.USE_JSONFIELD:
     try:
         from jsonfield.fields import JSONField
     except ImportError:
-        raise ImproperlyConfigured('You must have django-extensions installed '
+        raise ImproperlyConfigured('You must have django-jsonfield installed '
                                 'if you wish to use a JSONField on your actions')
     JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
 
