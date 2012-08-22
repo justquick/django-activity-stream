@@ -7,47 +7,23 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
-        # Changing field 'Follow.object_id'
-        db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.TextField')())
-
-        # Changing field 'Action.action_object_object_id'
-        db.alter_column('actstream_action', 'action_object_object_id', self.gf('django.db.models.fields.TextField')(null=True))
-
-        # Changing field 'Action.actor_object_id'
-        db.alter_column('actstream_action', 'actor_object_id', self.gf('django.db.models.fields.TextField')())
-
-        # Changing field 'Action.target_object_id'
-        db.alter_column('actstream_action', 'target_object_id', self.gf('django.db.models.fields.TextField')(null=True))
-
+        pass
 
     def backwards(self, orm):
-
-        # Changing field 'Follow.object_id'
-        db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.PositiveIntegerField')())
-
-        # Changing field 'Action.action_object_object_id'
-        db.alter_column('actstream_action', 'action_object_object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True))
-
-        # Changing field 'Action.actor_object_id'
-        db.alter_column('actstream_action', 'actor_object_id', self.gf('django.db.models.fields.PositiveIntegerField')())
-
-        # Changing field 'Action.target_object_id'
-        db.alter_column('actstream_action', 'target_object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True))
-
+        pass
 
     models = {
         'actstream.action': {
             'Meta': {'object_name': 'Action'},
             'action_object_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'action_object'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
-            'action_object_object_id': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'action_object_object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': "orm['contenttypes.ContentType']"}),
-            'actor_object_id': ('django.db.models.fields.TextField', [], {}),
+            'actor_object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
-            'target_object_id': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'target_object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
@@ -55,7 +31,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('user', 'content_type', 'object_id'),)", 'object_name': 'Follow'},
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.TextField', [], {}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
         'auth.group': {
