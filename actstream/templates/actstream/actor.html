@@ -33,7 +33,7 @@ $(function () {
 {% endif %}
 <ul>
 {% for action in action_list %}
-    <li>{% include 'activity/action.html' %}</li>
+    <li>{% include 'actstream/action.html'|backwards_compatibility_check %}</li>
 {% empty %}
 {% trans "No actions yet" %}
 {% endfor %}

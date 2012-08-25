@@ -1,9 +1,10 @@
-from django.template import Variable, Library, Node, TemplateSyntaxError
-from django.template.loader import render_to_string
+from actstream.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.template import Variable, Library, Node, TemplateSyntaxError
+from django.template.base import TemplateDoesNotExist
+from django.template.loader import render_to_string, find_template
 
-from actstream.models import Follow
 
 register = Library()
 
@@ -89,6 +90,8 @@ class DisplayAction(AsNode):
     def render_result(self, context):
         action_instance = self.args[0].resolve(context)
         templates = [
+            'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
+            'actstream/action.html',
             'activity/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'activity/action.html',
         ]
@@ -184,3 +187,14 @@ register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
 register.tag(actor_url)
+
+@register.filter
+def backwards_compatibility_check(template_name):
+    backwards = False
+    try:
+        find_template('actstream/action.html')
+    except TemplateDoesNotExist:
+        backwards = True
+    if backwards:
+        template_name = template_name.replace('actstream/', 'activity/')
+    return template_name
