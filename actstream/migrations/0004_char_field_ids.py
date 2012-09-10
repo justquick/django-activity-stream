@@ -22,20 +22,20 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+ 
         # Changing field 'Follow.object_id'
-        db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.TextField')())
+        db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.PositiveIntegerField')())
 
         # Changing field 'Action.action_object_object_id'
-        db.alter_column('actstream_action', 'action_object_object_id', self.gf('django.db.models.fields.TextField')(null=True))
+        db.alter_column('actstream_action', 'action_object_object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True))
 
         # Changing field 'Action.actor_object_id'
-        db.alter_column('actstream_action', 'actor_object_id', self.gf('django.db.models.fields.TextField')())
+        db.alter_column('actstream_action', 'actor_object_id', self.gf('django.db.models.fields.PositiveIntegerField')())
 
         # Changing field 'Action.target_object_id'
-        db.alter_column('actstream_action', 'target_object_id', self.gf('django.db.models.fields.TextField')(null=True))
+        db.alter_column('actstream_action', 'target_object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True))
 
-
+       
     models = {
         'actstream.action': {
             'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
