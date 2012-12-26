@@ -14,6 +14,12 @@ try:
 except ImportError:
     from datetime import datetime
     now = datetime.now
+    
+if settings.AUTH_USER_MODEL is None:
+    from django.contrib.auth.models import User
+    the_user_model = User
+else:
+    the_user_model = settings.AUTH_USER_MODEL
 
 from actstream import settings as actstream_settings
 from actstream.signals import action
@@ -24,7 +30,7 @@ class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(the_user_model)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
