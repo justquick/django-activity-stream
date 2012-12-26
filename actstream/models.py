@@ -1,11 +1,12 @@
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+
 
 try:
     from django.utils import timezone
@@ -13,6 +14,12 @@ try:
 except ImportError:
     from datetime import datetime
     now = datetime.now
+    
+if settings.AUTH_USER_MODEL is None:
+    from django.contrib.auth.models import User
+    the_user_model = User
+else:
+    the_user_model = settings.AUTH_USER_MODEL
 
 from actstream import settings as actstream_settings
 from actstream.signals import action
@@ -23,7 +30,7 @@ class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(the_user_model)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
