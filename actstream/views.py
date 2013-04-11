@@ -3,9 +3,10 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import auth
+User = auth.get_user_model()
 
 from actstream import actions, models
 
