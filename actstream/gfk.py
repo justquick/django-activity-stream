@@ -74,14 +74,17 @@ class GFKQuerySet(QuerySet):
 
         for item in qs:
             for gfk in gfk_fields:
-                if getattr(item, gfk.fk_field) != None:
-                    ct_id_field = self.model._meta.get_field(gfk.ct_field)\
-                        .column
-                    setattr(item, gfk.name,
-                        data_map[(
-                            getattr(item, ct_id_field),
-                            smart_unicode(getattr(item, gfk.fk_field))
-                        )])
+                try:
+                    if getattr(item, gfk.fk_field) is not None:
+                        ct_id_field = self.model._meta.get_field(gfk.ct_field)\
+                            .column
+                        setattr(item, gfk.name,
+                            data_map[(
+                                getattr(item, ct_id_field),
+                                smart_unicode(getattr(item, gfk.fk_field))
+                            )])
+                except KeyError:
+                    continue
 
         return qs
 
