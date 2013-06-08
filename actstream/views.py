@@ -113,5 +113,5 @@ def model(request, content_type_id):
     actor = ctype.model_class()
     return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
         'action_list': models.model_stream(actor), 'ctype': ctype,
-        'actor': ctype
+        'actor': actor
     }, context_instance=RequestContext(request))
