@@ -4,11 +4,18 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+try:
+    # timezone support for django > 1.4
+    from django.utils import timezone
+    tz = timezone                                                                
+except ImportError:
+    tz = datetime.datetime  
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Follow.started'
-        db.add_column('actstream_follow', 'started', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now), keep_default=False)
+        db.add_column('actstream_follow', 'started', self.gf('django.db.models.fields.DateTimeField')(default=tz.now), keep_default=False)
 
     def backwards(self, orm):
         # Deleting field 'Follow.started'
