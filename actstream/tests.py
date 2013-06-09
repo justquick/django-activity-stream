@@ -4,10 +4,12 @@ from django.db import connection
 from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser, Group
+from django.contrib.auth.models import AnonymousUser, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
+from django.contrib import auth
+User = auth.get_user_model()
 
 from actstream.models import Action, Follow, model_stream, user_stream,\
     setup_generic_relations, following, followers
