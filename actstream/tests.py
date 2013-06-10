@@ -4,12 +4,10 @@ from django.db import connection
 from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, Group
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
-from django.contrib import auth
-User = auth.get_user_model()
 
 from actstream.models import Action, Follow, model_stream, user_stream,\
     setup_generic_relations, following, followers
@@ -17,6 +15,10 @@ from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
 from actstream.settings import get_models, SETTINGS
+from actstream.compat import get_user_model
+
+User = get_user_model()
+
 
 class LTE(int):
     def __new__(cls, n):
@@ -29,6 +31,7 @@ class LTE(int):
 
     def __repr__(self):
         return "<= %s" % self.n
+
 
 class ActivityBaseTestCase(TestCase):
     actstream_models = ()
