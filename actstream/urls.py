@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from actstream import feeds
 
 urlpatterns = patterns('actstream.views',

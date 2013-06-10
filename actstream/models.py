@@ -5,7 +5,8 @@ from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib import auth
+User = auth.get_user_model()
 
 try:
     from django.utils import timezone
