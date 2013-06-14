@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 class Migration(SchemaMigration):
 

@@ -4,19 +4,19 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'Action.timestamp'
         db.alter_column('actstream_action', 'timestamp', self.gf('django.db.models.fields.DateTimeField')())
 
 
     def backwards(self, orm):
-        
+
         # Changing field 'Action.timestamp'
         db.alter_column('actstream_action', 'timestamp', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
 

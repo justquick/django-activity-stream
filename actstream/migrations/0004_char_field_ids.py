@@ -4,12 +4,12 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'Follow.object_id'
         db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.CharField')(max_length=255))
 
@@ -24,7 +24,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
- 
+
         # Changing field 'Follow.object_id'
         db.alter_column('actstream_follow', 'object_id', self.gf('django.db.models.fields.PositiveIntegerField')())
 
@@ -37,7 +37,7 @@ class Migration(SchemaMigration):
         # Changing field 'Action.target_object_id'
         db.alter_column('actstream_action', 'target_object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True))
 
-       
+
     models = {
         'actstream.action': {
             'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
