@@ -94,6 +94,8 @@ class Action(models.Model):
 
     public = models.BooleanField(default=True)
 
+    preposition = models.CharField(max_length=32, blank=True, null=True)
+
     objects = actstream_settings.get_action_manager()
 
     class Meta:

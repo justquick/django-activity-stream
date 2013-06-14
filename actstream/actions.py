@@ -97,6 +97,7 @@ def action_handler(verb, **kwargs):
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())
+        preposition=kwargs.pop('preposition', 'to'),
     )
 
     for opt in ('target', 'action_object'):
