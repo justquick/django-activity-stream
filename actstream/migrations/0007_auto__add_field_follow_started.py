@@ -10,7 +10,7 @@ try:
 except ImportError:
     tz = datetime.datetime
 
-from actstream.migrations.compat import User, USER_ORM
+from actstream.migrations import User, USER_ORM
 
 
 class Migration(SchemaMigration):
