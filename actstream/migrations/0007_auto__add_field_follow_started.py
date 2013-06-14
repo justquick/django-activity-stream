@@ -4,14 +4,14 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
-
 try:
     # timezone support for django > 1.4
-    from django.utils import timezone
-    tz = timezone                                                                
+    from django.utils import timezone as tz
 except ImportError:
-    tz = datetime.datetime  
+    tz = datetime.datetime
+
+from actstream.migrations import User, USER_ORM
+
 
 class Migration(SchemaMigration):
 
@@ -46,7 +46,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'started': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 7, 25, 18, 9, 44, 906684)'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['%s']" % user_model_label})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['%s']" % USER_ORM})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -61,8 +61,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        user_model_label: {
-            'Meta': {'object_name': user_model_label.split('.')[-1]},
+        USER_ORM: {
+            'Meta': {'object_name': User.__name__},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 7, 25, 18, 9, 44, 903165)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
