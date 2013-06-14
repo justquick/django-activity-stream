@@ -4,18 +4,18 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'Follow.actor_only'
         db.add_column('actstream_follow', 'actor_only', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'Follow.actor_only'
         db.delete_column('actstream_follow', 'actor_only')
 
