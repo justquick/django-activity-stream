@@ -106,12 +106,13 @@ class Action(models.Model):
             'actor': self.actor,
             'verb': self.verb,
             'action_object': self.action_object,
+            'preposition': self.preposition,
             'target': self.target,
             'timesince': self.timesince()
         }
         if self.target:
             if self.action_object:
-                return _('%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago') % ctx
+                return _('%(actor)s %(verb)s %(action_object)s %(preposition)s %(target)s %(timesince)s ago') % ctx
             return _('%(actor)s %(verb)s %(target)s %(timesince)s ago') % ctx
         if self.action_object:
             return _('%(actor)s %(verb)s %(action_object)s %(timesince)s ago') % ctx
