@@ -4,14 +4,14 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 try:
     # timezone support for django > 1.4
     from django.utils import timezone
-    tz = timezone                                                                
+    tz = timezone
 except ImportError:
-    tz = datetime.datetime  
+    tz = datetime.datetime
 
 class Migration(SchemaMigration):
 

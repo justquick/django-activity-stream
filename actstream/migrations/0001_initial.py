@@ -4,13 +4,13 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from djangoratings.compat import user_model_label
+from actstream.compat import user_model_label
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Follow'
         db.create_table('actstream_follow', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -41,7 +41,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'Follow', fields ['user', 'content_type', 'object_id']
         db.delete_unique('actstream_follow', ['user_id', 'content_type_id', 'object_id'])
 
