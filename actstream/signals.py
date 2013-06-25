@@ -1,4 +1,4 @@
 from django.dispatch import Signal
 
-action = Signal(providing_args=['verb', 'action_object', 'target',
+action = Signal(providing_args=['verb', 'action_object', 'target', 'preposition',
                                 'description', 'timestamp'])
