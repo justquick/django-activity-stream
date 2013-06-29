@@ -1,7 +1,9 @@
 # Django settings for example_project project.
-import os,sys
+import os, sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import django
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -44,13 +46,8 @@ MEDIA_ROOT = 'media'
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/admin/'
-
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'wzf0h@r2u%m^_zgj^39-y(kd%+n+j0r7=du(q0^s@q10t%^2!p'
+SECRET_KEY = 'wzf0h@r2u%m^_zgj^39-y(kd%+n+j0r7=du(q0^s@q1asdfasdfasdft%^2!p'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -86,6 +83,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'actstream',
+    'testapp'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -102,10 +100,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.user', 'auth.group', 'sites.site', 'comments.comment'),
-#    'MANAGER': 'testapp.streams.MyActionManager',
+    'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
 }
 
+if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
+    AUTH_USER_MODEL = 'testapp.MyUser'
+    ACTSTREAM_SETTINGS['MODELS'] += ('testapp.myuser',)

@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
-from django.utils.encoding import smart_unicode
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
+
+from actstream.compat import smart_text
 
 
 class GFKManager(Manager):
@@ -13,7 +13,7 @@ class GFKManager(Manager):
 
     """
     def get_query_set(self):
-        return GFKQuerySet(self.model, using=self.db)
+        return GFKQuerySet(self.model)
 
     def none(self):
         return self.get_query_set().none()
@@ -41,6 +41,7 @@ class GFKQuerySet(QuerySet):
 
         gfk_fields = [g for g in self.model._meta.virtual_fields
                       if isinstance(g, GenericForeignKey)]
+
         if args:
             gfk_fields = filter(lambda g: g.name in args, gfk_fields)
 
@@ -57,10 +58,10 @@ class GFKQuerySet(QuerySet):
                 if getattr(item, ct_id_field) is None:
                     continue
                 ct_map.setdefault(getattr(item, ct_id_field), {}
-                    )[smart_unicode(getattr(item, gfk.fk_field))] = (gfk.name,
+                    )[smart_text(getattr(item, gfk.fk_field))] = (gfk.name,
                         item.pk)
 
-        ctypes = ContentType.objects.using(self.db).in_bulk(ct_map.keys())
+        ctypes = ContentType.objects.in_bulk(ct_map.keys())
 
         for ct_id, items_ in ct_map.items():
             if ct_id:
@@ -69,19 +70,22 @@ class GFKQuerySet(QuerySet):
                 objects = model_class._default_manager.select_related(
                     depth=actstream_settings.GFK_FETCH_DEPTH)
                 for o in objects.filter(pk__in=items_.keys()):
-                    (gfk_name, item_id) = items_[smart_unicode(o.pk)]
-                    data_map[(ct_id, smart_unicode(o.pk))] = o
+                    (gfk_name, item_id) = items_[smart_text(o.pk)]
+                    data_map[(ct_id, smart_text(o.pk))] = o
 
         for item in qs:
             for gfk in gfk_fields:
-                if getattr(item, gfk.fk_field) != None:
-                    ct_id_field = self.model._meta.get_field(gfk.ct_field)\
-                        .column
-                    setattr(item, gfk.name,
-                        data_map[(
-                            getattr(item, ct_id_field),
-                            smart_unicode(getattr(item, gfk.fk_field))
-                        )])
+                try:
+                    if getattr(item, gfk.fk_field) is not None:
+                        ct_id_field = self.model._meta.get_field(gfk.ct_field)\
+                            .column
+                        setattr(item, gfk.name,
+                            data_map[(
+                                getattr(item, ct_id_field),
+                                smart_text(getattr(item, gfk.fk_field))
+                            )])
+                except KeyError:
+                    continue
 
         return qs
 

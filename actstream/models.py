@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
 
 try:
     from django.utils import timezone
@@ -18,6 +17,9 @@ from actstream import settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.managers import FollowManager
+from actstream.compat import get_user_model
+
+User = get_user_model()
 
 
 class Follow(models.Model):
