@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'actstream',
+    'testapp'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -97,7 +98,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.user', 'auth.group', 'sites.site', 'comments.comment'),
-#    'MANAGER': 'testapp.streams.MyActionManager',
+    'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
