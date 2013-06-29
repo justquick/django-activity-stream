@@ -1,6 +1,8 @@
 Activity Stream Documentation
 ==============================
 
+.. image:: https://travis-ci.org/callowayproject/django-categories.png?branch=master
+
 :Authors:
    Justin Quick <justquick@gmail.com> and many others listed in AUTHORS.txt
 :Version: 0.4.5
