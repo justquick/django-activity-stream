@@ -1,14 +1,10 @@
-from django.conf import settings
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
 
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
+
+from actstream.compat import smart_text
 
 
 class GFKManager(Manager):
@@ -48,7 +44,6 @@ class GFKQuerySet(QuerySet):
 
         if args:
             gfk_fields = filter(lambda g: g.name in args, gfk_fields)
-
 
         if actstream_settings.USE_PREFETCH and hasattr(self, 'prefetch_related'):
             return qs.prefetch_related(*[g.name for g in gfk_fields])
