@@ -1,3 +1,4 @@
+import django
 from django.db import models
 from django.contrib.comments.signals import comment_was_posted
 
@@ -16,3 +17,15 @@ class Player(models.Model):
 
     def __unicode__(self):
         return '#%d' % self.pk
+
+if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
+    from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+
+
+    class MyUser(AbstractBaseUser, PermissionsMixin):
+        username = models.CharField(max_length=30, unique=True)
+
+        USERNAME_FIELD = 'username'
+
+        def get_full_name(self):
+            return 'full'

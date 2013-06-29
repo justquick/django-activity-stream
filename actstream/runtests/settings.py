@@ -1,7 +1,9 @@
 # Django settings for example_project project.
-import os,sys
+import os, sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import django
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -105,3 +107,6 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
+if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
+    AUTH_USER_MODEL = 'testapp.MyUser'
+    ACTSTREAM_SETTINGS['MODELS'] += ('testapp.myuser',)

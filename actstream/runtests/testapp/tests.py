@@ -1,10 +1,15 @@
 from datetime import datetime
 
+import django
+from django.utils.unittest import skipUnless
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from actstream.models import Action
 from actstream.signals import action
+from actstream.compat import get_user_model
+
+
+User = get_user_model()
 
 
 class TestAppTests(TestCase):
@@ -28,3 +33,10 @@ class TestAppTests(TestCase):
         self.assertEqual(newaction.data['text'], 'foobar')
         self.assertEqual(newaction.data['tags'], ['sayings'])
         self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
+
+    @skipUnless(django.VERSION[0] == 1 and django.VERSION[1] >= 5, 'Django>=1.5 Required')
+    def test_customuser(self):
+        from testapp.models import MyUser
+
+        self.assertEqual(User, MyUser)
+        self.assertEqual(self.user.get_full_name(), 'full')

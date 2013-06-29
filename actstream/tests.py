@@ -38,9 +38,6 @@ class ActivityBaseTestCase(TestCase):
 
     def setUp(self):
         self.old_models = get_models()
-        SETTINGS['MODELS'] = {}
-        for model in self.actstream_models:
-            SETTINGS['MODELS'][model.lower()] = get_model(*model.split('.'))
         setup_generic_relations()
 
     def tearDown(self):
