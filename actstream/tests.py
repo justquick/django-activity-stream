@@ -4,7 +4,7 @@ from django.db import connection
 from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser, Group
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
@@ -15,6 +15,10 @@ from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
 from actstream.settings import get_models, SETTINGS
+from actstream.compat import get_user_model
+
+User = get_user_model()
+
 
 class LTE(int):
     def __new__(cls, n):
@@ -28,14 +32,12 @@ class LTE(int):
     def __repr__(self):
         return "<= %s" % self.n
 
+
 class ActivityBaseTestCase(TestCase):
     actstream_models = ()
 
     def setUp(self):
         self.old_models = get_models()
-        SETTINGS['MODELS'] = {}
-        for model in self.actstream_models:
-            SETTINGS['MODELS'][model.lower()] = get_model(*model.split('.'))
         setup_generic_relations()
 
     def tearDown(self):
