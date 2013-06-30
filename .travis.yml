@@ -12,3 +12,7 @@ script:
   - tox -e $TOX_ENV
 notifications:
   email: false
+branches:
+  only:
+    - master
+    - stable
