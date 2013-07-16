@@ -90,6 +90,12 @@ def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
     check_actionable_model(actor)
+
+    # We must store the unstranslated string
+    # If verb is an ugettext_lazyed string, fetch the original string
+    if hasattr(verb, '_proxy____args'):
+        verb = verb._proxy____args[0]
+
     newaction = Action(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
