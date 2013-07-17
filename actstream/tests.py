@@ -8,6 +8,8 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import activate, get_language
 
 from actstream.models import Action, Follow, model_stream, user_stream,\
     setup_generic_relations, following, followers
@@ -228,6 +230,18 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEqual(Template(src).render(Context({
             'user': self.user1, 'group': self.group
         })), u'')
+
+    def test_store_untranslated_string(self):
+        lang = get_language()
+        activate("fr")
+        verb = _(u'English')
+
+        assert unicode(verb) == u"Anglais"
+        action.send(self.user1, verb=verb, action_object=self.comment,
+                    target=self.group)
+        self.assertTrue(Action.objects.filter(verb=u'English'))
+        # restore language
+        activate(lang)
 
 
 class ZombieTest(ActivityBaseTestCase):
