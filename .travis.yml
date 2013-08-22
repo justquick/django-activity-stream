@@ -1,0 +1,18 @@
+language: python
+python: 2.7
+env:
+  - TOX_ENV=py2.7-dj1.5
+  - TOX_ENV=py2.6-dj1.5
+  - TOX_ENV=py2.7-dj1.4
+  - TOX_ENV=py2.6-dj1.4
+  - TOX_ENV=py2.7-dj1.3
+install:
+  - pip install tox
+script:
+  - tox -e $TOX_ENV
+notifications:
+  email: false
+branches:
+  only:
+    - master
+    - stable

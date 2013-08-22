@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
 
 try:
     from django.utils import timezone
@@ -18,6 +17,10 @@ from actstream import settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.managers import FollowManager
+from actstream.compat import get_user_model
+
+User = get_user_model()
+
 
 class Follow(models.Model):
     """
@@ -157,6 +160,7 @@ model_stream = Action.objects.model_actions
 followers = Follow.objects.followers
 following = Follow.objects.following
 
+
 def setup_generic_relations():
     """
     Set up GenericRelations for actionable models.
@@ -165,12 +169,16 @@ def setup_generic_relations():
         if not model:
             continue
         for field in ('actor', 'target', 'action_object'):
+            attr = '%s_actions' % field
+            if isinstance(getattr(model, attr, None),
+                          generic.ReverseGenericRelatedObjectsDescriptor):
+                break
             generic.GenericRelation(Action,
                 content_type_field='%s_content_type' % field,
                 object_id_field='%s_object_id' % field,
                 related_name='actions_with_%s_%s_as_%s' % (
                     model._meta.app_label, model._meta.module_name, field),
-            ).contribute_to_class(model, '%s_actions' % field)
+            ).contribute_to_class(model, attr)
 
             # @@@ I'm not entirely sure why this works
             setattr(Action, 'actions_with_%s_%s_as_%s' % (

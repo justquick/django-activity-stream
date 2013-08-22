@@ -3,11 +3,12 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.csrf import csrf_exempt
 
-from actstream import actions, models
+from actstream import actions, models, compat
+
+User = compat.get_user_model()
 
 
 def respond(request, code):
@@ -113,5 +114,5 @@ def model(request, content_type_id):
     actor = ctype.model_class()
     return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
         'action_list': models.model_stream(actor), 'ctype': ctype,
-        'actor': ctype
+        'actor': actor
     }, context_instance=RequestContext(request))

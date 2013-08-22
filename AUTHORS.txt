@@ -1,26 +1,41 @@
-Justin Quick <justquick@gmail.com>
-Aaron Williamson
-Jordan Reiter
-Manuel Aristaran
-Darrell Hoy
-Ken "Elf" Mathieu Sternberg
-Josh Ourisman
-Trever Shick
-Sandip Agrawal
-Piet Delport
-Steve Ivy
-Ben Slavin
-Jason Culverhouse
-Dave Harrington
-Pedro Bur�n
-Ryan Quigley
-Neelesh Shastry
-David Gouldin <david@gould.in>
-Donald Stufft
-Nolan Brubaker
-Herman Schaaf
-Walter Scheper
-Chris Beaven
-Vineet Naik
-Walter Scheper
-Bolster Labs <ops@bolsterlabs.com>
+   211	Justin Quick            65.3%
+    25	Chris Beaven            7.7%
+     6	Deepak Prakash          1.9%
+     6	Ben Slavin              1.9%
+     5	Manuel Aristarán       1.5%
+     5	jordan                  1.5%
+     4	Trever Shick            1.2%
+     4	Jason Culverhouse       1.2%
+     4	Alexey Boriskin         1.2%
+     4	Wade Williams           1.2%
+     4	Piet Delport            1.2%
+     3	Nolan Brubaker          0.9%
+     3	Josh Ourisman           0.9%
+     2	neelesh                 0.6%
+     2	Benjamin Kampmann       0.6%
+     2	Chris                   0.6%
+     2	David Gouldin           0.6%
+     2	Herman Schaaf           0.6%
+     2	Matt Katz               0.6%
+     2	Natan Yellin            0.6%
+     2	Patrick Altman          0.6%
+     2	Rob Terhaar             0.6%
+     2	Steve Ivy               0.6%
+     2	Walter Scheper          0.6%
+     1	Aziz M. Bookwala        0.3%
+     1	Pedro Burón            0.3%
+     1	Donald Stufft           0.3%
+     1	jpic                    0.3%
+     1	Sandip Agrawal          0.3%
+     1	laginha                 0.3%
+     1	Tamas Leposa            0.3%
+     1	Tom Clancy              0.3%
+     1	Can Burak Cilingir      0.3%
+     1	Vineet                  0.3%
+     1	Ben Lopatin             0.3%
+     1	Jj                      0.3%
+     1	Filip Wasilewski        0.3%
+     1	Aaron Williamson        0.3%
+     1	artscoop                0.3%
+     1	Elf M. Sternberg        0.3%
+     1	Pedro Alcocer           0.3%

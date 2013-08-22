@@ -11,9 +11,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'example_project')))
-sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
+import sys
+import os
+from datetime import datetime
+
+sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'actstream', 'runtests')))
+
 import settings
 from django.core.management import setup_environ
 setup_environ(settings)
@@ -48,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Django Activity Stream'
-copyright = u'2011, Justin Quick'
+copyright = u'%s, Justin Quick' % datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

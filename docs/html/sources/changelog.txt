@@ -1,6 +1,16 @@
 Changelog
 ==========
 
+0.4.5
+-----
+
+  - Django 1.5 support including custom User model
+  - Translations and templates install fixes
+  - Fixes for MySQL migrations
+  - Tox testing for Py 2.6, 2.7 and Django 1.3, 1.4, 1.5
+  - Various other bug fixes
+
+
 0.4.4
 -----
 
