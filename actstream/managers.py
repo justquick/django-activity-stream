@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from django.db.models import get_model
 from django.db.models import Q
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
@@ -139,3 +140,24 @@ class FollowManager(GFKManager):
                 ContentType.objects.get_for_model(model) for model in models)
             )
         return [follow.follow_object for follow in qs.fetch_generic_relations()]
+
+    def friends(self, actor, **kwargs):
+        """
+        Return a list of User objects who and the given actor follows each other
+        """
+        q = Q()
+        followers = self.filter(content_type = ContentType.objects.get_for_model(actor),
+                object_id = actor.pk).select_related('user')
+        followings = self.following(actor, User)
+
+        if len(followings):
+            friends = followers.filter(user__in=(followings))
+            return [friend.user for friend in friends.select_related('user')]
+        else:
+            return list()
+
+#        for following in followings:
+#            q = q | Q( user = following )
+#
+#        friends = followers.filter(q, **kwargs)
+#        return [friend.user for friend in friends.select_related('user')]
