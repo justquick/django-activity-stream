@@ -50,4 +50,4 @@ To limit the actor models for the following relationship, just pass the model cl
     from django.contrib.auth.models import User, Group
 
     following(request.user, User) # returns a list of users who request.user is following
-    following(request.user, User) # returns a list of groups who request.user is following
+    following(request.user, Group) # returns a list of groups who request.user is following
