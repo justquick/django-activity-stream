@@ -156,8 +156,23 @@ class FollowManager(GFKManager):
         else:
             return list()
 
-#        for following in followings:
-#            q = q | Q( user = following )
-#
-#        friends = followers.filter(q, **kwargs)
-#        return [friend.user for friend in friends.select_related('user')]
+    def followers_without_friends(self, actor, **kwargs):
+        """
+        Returns a list of User objects who are following the given actor (eg my followers)
+        but not friends with the given actor.
+        """
+        followers = self.filter(content_type = ContentType.objects.get_for_model(actor),
+                object_id = actor.pk).select_related('user')
+        followers_without_friends = followers.exclude(user__in=friends(actor))
+        return [follower.user for follower in followers_without_friends]
+
+    def following_without_friends(self, user):
+        """
+        Returns a list of actors that the given user is following (eg who im following).
+        Items in the list can be of any model unless a list of restricted models are passed.
+        Eg following(user, User) will only return users following the given user
+        """
+        qs = self.filter(user=user)
+        qs = qs.exclude(object_id__in=(friend.id for friend in self.friends(user)))
+
+        return [follow.follow_object for follow in qs.fetch_generic_relations()]
