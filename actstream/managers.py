@@ -70,8 +70,7 @@ class ActionManager(GFKManager):
         others_by_content_type = defaultdict(lambda: [])
 
         follow_gfks = get_model('actstream', 'follow').objects.filter(
-            user=object).values_list('content_type_id',
-                                     'object_id', 'actor_only')
+            user=object).values_list('content_type_id', 'object_id', 'actor_only')
 
         if not follow_gfks:
             return qs.none()
@@ -85,7 +84,7 @@ class ActionManager(GFKManager):
             q = q | Q(
                 actor_content_type=content_type_id,
                 actor_object_id__in=object_ids,
-            )
+            ) 
         for content_type_id, object_ids in others_by_content_type.iteritems():
             q = q | Q(
                 target_content_type=content_type_id,
@@ -151,7 +150,7 @@ class FollowManager(GFKManager):
         followings = self.following(actor, User)
 
         if len(followings):
-            friends = followers.filter(user__in=(followings))
+            friends = followers.filter(user__in=(followings)).exclude(user=actor)
             return [friend.user for friend in friends.select_related('user')]
         else:
             return list()
@@ -163,7 +162,7 @@ class FollowManager(GFKManager):
         """
         followers = self.filter(content_type = ContentType.objects.get_for_model(actor),
                 object_id = actor.pk).select_related('user')
-        followers_without_friends = followers.exclude(user__in=friends(actor))
+        followers_without_friends = followers.exclude(user__in=self.friends(actor)).exclude(user=actor)
         return [follower.user for follower in followers_without_friends]
 
     def following_without_friends(self, user):
@@ -173,6 +172,6 @@ class FollowManager(GFKManager):
         Eg following(user, User) will only return users following the given user
         """
         qs = self.filter(user=user)
-        qs = qs.exclude(object_id__in=(friend.id for friend in self.friends(user)))
+        qs = qs.exclude(object_id__in=(friend.id for friend in self.friends(user))).exclude(object_id=user.id)
 
         return [follow.follow_object for follow in qs.fetch_generic_relations()]
