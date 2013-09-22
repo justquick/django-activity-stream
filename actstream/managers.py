@@ -118,6 +118,9 @@ class FollowManager(GFKManager):
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
 
+    def are_friends(self, user1, user2):
+        return self.is_following(user1, user2) and self.is_following(user2, user1)
+
     def followers(self, actor):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
