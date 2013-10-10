@@ -68,6 +68,10 @@ class ActionManager(GFKManager):
         actors_by_content_type = defaultdict(lambda: [])
         others_by_content_type = defaultdict(lambda: [])
 
+        if kwargs.pop('with_user_activity', None):
+            object_content_type = ContentType.objects.get_for_model(object)
+            actors_by_content_type[object_content_type.id].append(object.pk)
+
         follow_gfks = get_model('actstream', 'follow').objects.filter(
             user=object).values_list('content_type_id',
                                      'object_id', 'actor_only')
