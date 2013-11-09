@@ -17,9 +17,9 @@ from actstream import settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.managers import FollowManager
-from actstream.compat import get_user_model
+from actstream.compat import user_model_label
 
-User = get_user_model()
+User = user_model_label
 
 
 class Follow(models.Model):
