@@ -34,11 +34,11 @@ Add the activity urls to your urlconf::
         ...
     )
 
-If you have South installed you have to migrate actstream tables
+If you have `South <http://south.aeracode.org/>`_ installed you have to migrate actstream tables
 
 .. code-block:: bash
 
-     $ ./manage.py migrate actream
+     $ django-admin.py migrate actstream
 
 If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://github.com/bradjasper/django-jsonfield/>`_ installed::
 
