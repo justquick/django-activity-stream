@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from django.db.models import get_model
 from django.db.models import Q
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
@@ -69,8 +70,7 @@ class ActionManager(GFKManager):
         others_by_content_type = defaultdict(lambda: [])
 
         follow_gfks = get_model('actstream', 'follow').objects.filter(
-            user=object).values_list('content_type_id',
-                                     'object_id', 'actor_only')
+            user=object).values_list('content_type_id', 'object_id', 'actor_only')
 
         if not follow_gfks:
             return qs.none()
@@ -84,7 +84,7 @@ class ActionManager(GFKManager):
             q = q | Q(
                 actor_content_type=content_type_id,
                 actor_object_id__in=object_ids,
-            )
+            ) 
         for content_type_id, object_ids in others_by_content_type.iteritems():
             q = q | Q(
                 target_content_type=content_type_id,
@@ -118,6 +118,9 @@ class FollowManager(GFKManager):
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
 
+    def are_friends(self, user1, user2):
+        return self.is_following(user1, user2) and self.is_following(user2, user1)
+
     def followers(self, actor):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
@@ -138,4 +141,40 @@ class FollowManager(GFKManager):
             qs = qs.filter(content_type__in=(
                 ContentType.objects.get_for_model(model) for model in models)
             )
+        return [follow.follow_object for follow in qs.fetch_generic_relations()]
+
+    def friends(self, actor, **kwargs):
+        """
+        Return a list of User objects who and the given actor follows each other
+        """
+        q = Q()
+        followers = self.filter(content_type = ContentType.objects.get_for_model(actor),
+                object_id = actor.pk).select_related('user')
+        followings = self.following(actor, User)
+
+        if len(followings):
+            friends = followers.filter(user__in=(followings)).exclude(user=actor)
+            return [friend.user for friend in friends.select_related('user')]
+        else:
+            return list()
+
+    def followers_without_friends(self, actor, **kwargs):
+        """
+        Returns a list of User objects who are following the given actor (eg my followers)
+        but not friends with the given actor.
+        """
+        followers = self.filter(content_type = ContentType.objects.get_for_model(actor),
+                object_id = actor.pk).select_related('user')
+        followers_without_friends = followers.exclude(user__in=self.friends(actor)).exclude(user=actor)
+        return [follower.user for follower in followers_without_friends]
+
+    def following_without_friends(self, user):
+        """
+        Returns a list of actors that the given user is following (eg who im following).
+        Items in the list can be of any model unless a list of restricted models are passed.
+        Eg following(user, User) will only return users following the given user
+        """
+        qs = self.filter(user=user)
+        qs = qs.exclude(object_id__in=(friend.id for friend in self.friends(user))).exclude(object_id=user.id)
+
         return [follow.follow_object for follow in qs.fetch_generic_relations()]

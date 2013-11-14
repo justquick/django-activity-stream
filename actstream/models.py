@@ -158,7 +158,12 @@ target_stream = Action.objects.target
 user_stream = Action.objects.user
 model_stream = Action.objects.model_actions
 followers = Follow.objects.followers
+followers_without_friends = Follow.objects.followers_without_friends
 following = Follow.objects.following
+following_without_friends = Follow.objects.following_without_friends
+friends   = Follow.objects.friends
+are_friends = Follow.objects.are_friends
+is_following = Follow.objects.is_following
 
 
 def setup_generic_relations():
