@@ -72,7 +72,7 @@ Writing Custom Streams
 ***********************
 
 You can override and extend the Action manager ``Action.objects`` to add your own streams.
-The setting ``ACTSTREAM_MANAGER`` tells the app which manager to import and use.
+The setting ``ACTSTREAM_SETTINGS['MANAGER']`` tells the app which manager to import and use.
 The builtin streams are defined in ``actstream/managers.py`` and you should check out how they are written.
 Streams must use the ``@stream`` decorator.
 They must take at least one argument which is a model instance to be used for reference when creating streams.
