@@ -383,3 +383,8 @@ class GFKManagerTestCase(TestCase):
                 actions().fetch_generic_relations('target')]
         self.assertEqual(action_actor_targets,
             action_actor_targets_fetch_generic_target)
+
+    def test_none_returns_an_empty_queryset(self):
+        qs = Action.objects.none()
+        self.assertFalse(qs.exists())
+        self.assertEqual(qs.count(), 0)
