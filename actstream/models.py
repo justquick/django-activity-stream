@@ -1,3 +1,4 @@
+import django
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
@@ -184,6 +185,9 @@ def setup_generic_relations():
             setattr(Action, 'actions_with_%s_%s_as_%s' % (
                 model._meta.app_label, model._meta.module_name, field), None)
 
+
+if django.VERSION < (1, 7):
+    setup_generic_relations()
 
 if actstream_settings.USE_JSONFIELD:
     try:
