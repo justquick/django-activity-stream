@@ -18,7 +18,7 @@ from actstream import settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.managers import FollowManager
-from actstream.compat import user_model_label
+from actstream.compat import user_model_label, ReverseGenericRelatedObjectsDescriptor
 
 User = user_model_label
 
@@ -172,7 +172,7 @@ def setup_generic_relations():
         for field in ('actor', 'target', 'action_object'):
             attr = '%s_actions' % field
             if isinstance(getattr(model, attr, None),
-                          generic.ReverseGenericRelatedObjectsDescriptor):
+                          ReverseGenericRelatedObjectsDescriptor):
                 break
             generic.GenericRelation(Action,
                 content_type_field='%s_content_type' % field,
