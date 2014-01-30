@@ -1,3 +1,4 @@
+import django
 from django.conf import settings
 
 
@@ -18,3 +19,11 @@ try:
     from django.utils.encoding import smart_text
 except ImportError:
     from django.utils.encoding import smart_unicode as smart_text
+
+# Django 1.7 compatibility utilities
+
+# django.contrib.contenttypes.generic is deprecated and some internal API bits have already moved
+if django.VERSION < (1, 7):
+    from django.contrib.contenttypes.generic import ReverseGenericRelatedObjectsDescriptor
+else:
+    from django.contrib.contenttypes.fields import ReverseGenericRelatedObjectsDescriptor
