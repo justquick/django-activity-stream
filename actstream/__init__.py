@@ -23,3 +23,4 @@ def get_version(release_level=True):
 
 
 __version__ = get_version()
+default_app_config = 'actstream.apps.ActstreamConfig'

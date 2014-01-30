@@ -185,9 +185,6 @@ def setup_generic_relations():
                 model._meta.app_label, model._meta.module_name, field), None)
 
 
-setup_generic_relations()
-
-
 if actstream_settings.USE_JSONFIELD:
     try:
         from jsonfield.fields import JSONField
