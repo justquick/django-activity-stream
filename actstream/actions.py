@@ -115,3 +115,4 @@ def action_handler(verb, **kwargs):
     if settings.USE_JSONFIELD and len(kwargs):
         newaction.data = kwargs
     newaction.save()
+    return newaction
