@@ -104,7 +104,12 @@ def action_handler(verb, **kwargs):
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())
     )
-
+    try:
+        newaction.verb_id = verb
+        newaction.verb_deprecated = verb
+    except:
+        newaction.verb = unicode(verb),
+ 
     for opt in ('target', 'action_object'):
         obj = kwargs.pop(opt, None)
         if not obj is None:
