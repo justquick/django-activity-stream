@@ -4,8 +4,8 @@ from actstream import models
 
 class ActionAdmin(admin.ModelAdmin):
     date_hierarchy = 'timestamp'
-    list_display = ('__unicode__', 'actor', 'verb', 'target')
-    list_editable = ('verb',)
+    list_display = ('__unicode__', 'actor', 'verb', 'target', 'verb')
+    #list_editable = ('verb',)
     list_filter = ('timestamp',)
     raw_id_fields = ('actor_content_type','target_content_type',
                      'action_object_content_type')

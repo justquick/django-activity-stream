@@ -38,11 +38,8 @@ GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
 try:
-    VERB_CHOICES = verbs.DEPRICATED_VERB_CHOICES
-    VERB_CHOICES += SETTINGS.get('VERB_CHOICES', (
-                                (1, _('started following')),
-                                (2, _('stopped following'))
-                                ) )
+    VERB_CHOICES = verbs.VERB_CHOICES
+    VERB_CHOICES += SETTINGS.get('VERB_CHOICES')
 except:
     VERB_CHOICES = SETTINGS.get('VERB_CHOICES', (
                                 (1, _('started following')),
