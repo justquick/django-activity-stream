@@ -4,6 +4,18 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 import os
+import unicodedata
+import re
+
+
+def definify(value):
+    """
+    Modified from django slugify 
+    """
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub('[^\w\s-]', '', value).strip().upper()
+    return re.sub('[-\s]+', '_', value)
+
 
 class Migration(DataMigration):
 
@@ -34,9 +46,15 @@ DEPRICATED_VERB_CHOICES =   (
         list_verbs_text += ')'
         print list_verbs_text
         
+        list_verbs_text += '''
+        
+        '''
+        for index, verb in enumerate(list_verbs):
+            list_verbs_text += '\nVERB_%s = %s' % (definify(unicode(verb)).upper(), index)
+        
         
         module_dir = os.path.dirname(__file__)  # get current directory
-        file_path = os.path.join(module_dir, '../deprecated_verbs.py')
+        file_path = os.path.join(module_dir, '../verbs.py')
         
         open(file_path, 'w').write(list_verbs_text)
         

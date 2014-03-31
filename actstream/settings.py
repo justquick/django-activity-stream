@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 try:
-    import deprecated_verbs
+    import verbs
 except:
     pass
 
@@ -38,10 +38,10 @@ GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
 try:
-    VERB_CHOICES = deprecated_verbs.DEPRICATED_VERB_CHOICES
+    VERB_CHOICES = verbs.DEPRICATED_VERB_CHOICES
     VERB_CHOICES += SETTINGS.get('VERB_CHOICES', (
-                                (3, _('started following')),
-                                (4, _('stopped following'))
+                                (1, _('started following')),
+                                (2, _('stopped following'))
                                 ) )
 except:
     VERB_CHOICES = SETTINGS.get('VERB_CHOICES', (
