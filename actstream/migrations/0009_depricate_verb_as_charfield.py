@@ -29,8 +29,8 @@ class Migration(DataMigration):
         list_verbs = ((''),)
         list_verbs_text = '''from django.utils.translation import ugettext_lazy as _
 
-DEPRICATED_VERB_CHOICES =   (
-                            '''
+
+'''
 
         for action in orm.Action.objects.all():
             
@@ -38,25 +38,29 @@ DEPRICATED_VERB_CHOICES =   (
                 print 'New verb found: ', action.verb_deprecated
                 verb_count = verb_count + 1
                 list_verbs += ((action.verb_deprecated),)
-                list_verbs_text += '(%s,_(u\'%s\')),' % (verb_count, action.verb_deprecated)
+                list_verbs_text += '\nVERB_%s = _(u\'%s\')' % (definify(unicode(action.verb_deprecated)).upper(), action.verb_deprecated )
             
             action.verb_id = [x for x, y in enumerate(list_verbs) if y == action.verb_deprecated][0]
             action.save()
             
-        list_verbs_text += ')'
-        print list_verbs_text
-        
+
         list_verbs_text += '''
-        
+
+VERB_CHOICES =   (
+                    
         '''
-        for index, verb in enumerate(list_verbs):
-            list_verbs_text += '\nVERB_%s = %s' % (definify(unicode(verb)).upper(), index)
+        for index, verb in enumerate(list_verbs[1:]):
+            list_verbs_text += '(%s, VERB_%s),' % (index+1, definify(unicode(verb)).upper() )
         
+        list_verbs_text += ')'
         
         module_dir = os.path.dirname(__file__)  # get current directory
-        file_path = os.path.join(module_dir, '../verbs.py')
+        from settings import SETTINGS
+        file_path = SETTINGS.get('VERB_CHOICES_FILE', os.path.join(module_dir, '../verbs.py'))
         
-        open(file_path, 'w').write(list_verbs_text)
+        open(file_path, 'w+').write(list_verbs_text)
+        
+        print list_verbs_text
         
             
     def backwards(self, orm):

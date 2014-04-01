@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from actions import get_verb_id
 
 try:
     from django.utils import timezone
@@ -123,7 +124,7 @@ class Action(models.Model):
         def fget(self):
             return [text for enum, text in actstream_settings.VERB_CHOICES if enum == self.verb_id][0]
         def fset(self, value):
-            verb_id = [enum for enum, text in actstream_settings.VERB_CHOICES if text == value][0]
+            verb_id = get_verb_id(value)
         return locals()
     verb = property(**verb())
          

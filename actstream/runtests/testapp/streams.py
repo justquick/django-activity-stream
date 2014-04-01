@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from actstream.managers import ActionManager, stream
+from actions import get_verb_id
 
 
 class MyActionManager(ActionManager):
@@ -13,4 +14,4 @@ class MyActionManager(ActionManager):
 
     @stream
     def testbar(self, verb):
-        return self.filter(verb=verb)
+        return self.filter(verb_id=get_verb_id(verb))

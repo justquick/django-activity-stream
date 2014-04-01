@@ -105,6 +105,7 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
+    'VERB_CHOICES_MODULE': 'testapp.verbs',
 }
 
 if django.VERSION[0] == 1 and django.VERSION[1] >= 5:

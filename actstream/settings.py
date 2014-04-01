@@ -2,10 +2,9 @@ import django
 from django.conf import settings
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
-try:
-    import verbs
-except:
-    pass
+from django.utils import importlib
+from django.core.exceptions import ImproperlyConfigured
+
 
 
 SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
@@ -37,11 +36,23 @@ GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
+USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
+
+VERB_CHOICES_MODULE = SETTINGS.get('VERB_CHOICES_MODULE', 'actstream.verbs')
+
 try:
-    VERB_CHOICES = verbs.VERB_CHOICES
-    VERB_CHOICES += SETTINGS.get('VERB_CHOICES')
+
+    my_verbs = importlib.import_module(VERB_CHOICES_MODULE)
+    VERB_CHOICES = my_verbs.VERB_CHOICES
+    
+    for v in VERB_CHOICES:
+        if len([enum for enum, text in VERB_CHOICES if text == unicode(v[1])]) > 1:
+            raise ImproperlyConfigured("Your list of Verbs (VERB_CHOICES) seems uncorrectly configured. You have twice the word \'%s\'." % (unicode(v[1]))) 
+        if len([enum for enum, text in VERB_CHOICES if enum == v[0]]) > 1:
+            raise ImproperlyConfigured("Your list of Verbs (VERB_CHOICES) seems uncorrectly configured. You have twice the index \'%s\'." % (v[0]))
+    
 except:
-    VERB_CHOICES = SETTINGS.get('VERB_CHOICES', (
-                                (1, _('started following')),
-                                (2, _('stopped following'))
-                                ) )
+    raise ImproperlyConfigured("Your list of Verbs (VERB_CHOICES) is empty. Please configure 'VERB_CHOICES_MODULE' in ACTSTREAM_SETTINGS.")
+
+
+

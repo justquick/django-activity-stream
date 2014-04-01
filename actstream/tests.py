@@ -18,6 +18,7 @@ from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
 from actstream.settings import get_models, SETTINGS
 from actstream.compat import get_user_model
+from actions import get_verb_id
 
 User = get_user_model()
 
@@ -142,7 +143,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_action_object(self):
         action.send(self.user1, verb='created comment',
             action_object=self.comment, target=self.group)
-        created_action = Action.objects.get(verb='created comment')
+        created_action = Action.objects.get(verb_id=get_verb_id('created comment'))
 
         self.assertEqual(created_action.actor, self.user1)
         self.assertEqual(created_action.action_object, self.comment)
@@ -209,7 +210,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the model_actions method of the ActionManager
         by passing kwargs
         """
-        self.assertEqual(map(unicode, model_stream(self.user1, verb='commented on')), [
+        self.assertEqual(map(unicode, model_stream(self.user1, verb_id=get_verb_id('commented on'))), [
                 u'admin commented on CoolGroup 0 minutes ago',
                 ])
 
@@ -218,9 +219,9 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the user method of the ActionManager by passing additional
         filters in kwargs
         """
-        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb='joined')), [
-                u'Two joined CoolGroup 0 minutes ago',
-                ])
+        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb_id=get_verb_id('joined'))), 
+                [u'Two joined CoolGroup 0 minutes ago']
+                )
 
     def test_is_following_filter(self):
         src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
@@ -234,7 +235,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_store_untranslated_string(self):
         lang = get_language()
         activate("fr")
-        verb = _(u'English')
+        verb = _(u'English1')
 
         assert unicode(verb) == u"Anglais"
         action.send(self.user1, verb=verb, action_object=self.comment,
@@ -311,28 +312,28 @@ class GFKManagerTestCase(TestCase):
         Action.objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
-            verb='followed',
+            verb_id=get_verb_id('followed'),
             target_content_type=self.user_ct,
             target_object_id=self.user2.id
         )
         Action.objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
-            verb='followed',
+            verb_id=get_verb_id('followed'),
             target_content_type=self.user_ct,
             target_object_id=self.user3.id
         )
         Action.objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
-            verb='followed',
+            verb_id=get_verb_id('followed'),
             target_content_type=self.user_ct,
             target_object_id=self.user4.id
         )
         Action.objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
-            verb='joined',
+            verb_id=get_verb_id('followed'),
             target_content_type=self.group_ct,
             target_object_id=self.group.id
         )
