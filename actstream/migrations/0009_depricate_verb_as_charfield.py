@@ -7,6 +7,8 @@ import os
 import unicodedata
 import re
 
+from actstream import settings as actstream_settings
+
 
 def definify(value):
     """
@@ -55,8 +57,8 @@ VERB_CHOICES =   (
         list_verbs_text += ')'
         
         module_dir = os.path.dirname(__file__)  # get current directory
-        from settings import SETTINGS
-        file_path = SETTINGS.get('VERB_CHOICES_FILE', os.path.join(module_dir, '../verbs.py'))
+        #from actstream_settings import SETTINGS
+        file_path = os.path.join(module_dir, '../verbs.py')
         
         open(file_path, 'w+').write(list_verbs_text)
         
