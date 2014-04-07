@@ -7,6 +7,7 @@ from django.test import TestCase
 from actstream.models import Action
 from actstream.signals import action
 from actstream.compat import get_user_model
+from actions import get_verb_id
 
 
 User = get_user_model()
@@ -29,7 +30,7 @@ class TestAppTests(TestCase):
     def test_jsonfield(self):
         action.send(self.user, verb='said', text='foobar', tags=['sayings'],
                     more_data={'pk': self.user.pk})
-        newaction = Action.objects.filter(verb='said')[0]
+        newaction = Action.objects.filter(verb_id=get_verb_id('said'))[0]
         self.assertEqual(newaction.data['text'], 'foobar')
         self.assertEqual(newaction.data['tags'], ['sayings'])
         self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})

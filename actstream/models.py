@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from actions import get_verb_id
 
 try:
     from django.utils import timezone
@@ -76,7 +77,8 @@ class Action(models.Model):
     actor_object_id = models.CharField(max_length=255)
     actor = generic.GenericForeignKey('actor_content_type', 'actor_object_id')
 
-    verb = models.CharField(max_length=255)
+    verb_deprecated = models.CharField(max_length=255)
+    verb_id = models.PositiveIntegerField(choices=actstream_settings.VERB_CHOICES)
     description = models.TextField(blank=True, null=True)
 
     target_content_type = models.ForeignKey(ContentType, related_name='target',
@@ -117,6 +119,15 @@ class Action(models.Model):
             return _('%(actor)s %(verb)s %(action_object)s %(timesince)s ago') % ctx
         return _('%(actor)s %(verb)s %(timesince)s ago') % ctx
 
+    def verb():
+        doc = "The verb property."
+        def fget(self):
+            return [text for enum, text in actstream_settings.VERB_CHOICES if enum == self.verb_id][0]
+        def fset(self, value):
+            verb_id = get_verb_id(value)
+        return locals()
+    verb = property(**verb())
+         
     def actor_url(self):
         """
         Returns the URL to the ``actstream_actor`` view for the current actor.

@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from actstream.exceptions import check_actionable_model
 from actstream import settings
+from django.core.exceptions import FieldError, ImproperlyConfigured
 
 try:
     from django.utils import timezone
@@ -12,7 +13,7 @@ try:
 except ImportError:
     now = datetime.datetime.now
 
-
+    
 def follow(user, obj, send_action=True, actor_only=True):
     """
     Creates a relationship allowing the object's activities to appear in the
@@ -81,6 +82,15 @@ def is_following(user, obj):
         content_type=ContentType.objects.get_for_model(obj)).count())
 
 
+def get_verb_id(verb):
+    """
+    Return verb_id from text verb.
+    """
+    try:
+        return [enum for enum, text in settings.VERB_CHOICES if text == unicode(verb)][0]
+    except IndexError:
+        raise ImproperlyConfigured("Verb \'%s\' is not in the list of verbs." % (verb))
+    
 def action_handler(verb, **kwargs):
     """
     Handler function to create Action instance upon action signal call.
@@ -99,12 +109,17 @@ def action_handler(verb, **kwargs):
     newaction = Action(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
-        verb=unicode(verb),
+        #verb=unicode(verb),
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())
     )
-
+    try:
+        newaction.verb_id = get_verb_id(verb)
+        newaction.verb_deprecated = unicode(verb)
+    except:
+        newaction.verb = unicode(verb)
+ 
     for opt in ('target', 'action_object'):
         obj = kwargs.pop(opt, None)
         if not obj is None:
