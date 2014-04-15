@@ -15,11 +15,13 @@ import sys
 import os
 from datetime import datetime
 
-sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'actstream', 'runtests')))
+sys.path[0:0] = [
+    os.path.abspath(os.path.join('..', '..')), 
+    os.path.abspath(os.path.join('..', '..', 'actstream', 'runtests'))
+]
 
-import settings
-from django.core.management import setup_environ
-setup_environ(settings)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+from django.conf import settings
 
 import actstream
 
