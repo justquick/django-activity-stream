@@ -12,8 +12,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
 
 from django.conf import settings
-from django.test.utils import get_runner
+from django.core.management import execute_from_command_line
 
+import mock
 
 if __name__ == '__main__':
-    sys.exit(get_runner(settings)().run_tests(['actstream', 'testapp']))
+
+    default_labels = ['actstream', 'testapp']
+
+    argv = ['manage.py', 'test'] + sys.argv[1:]
+    for a in sys.argv:
+        if [x for x in default_labels if a.startswith(x)]:
+            break
+    else:
+        argv += default_labels
+
+    with mock.patch('django.utils.timesince.avoid_wrapping', lambda x: x):
+        sys.exit(execute_from_command_line(argv))
