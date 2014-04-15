@@ -1,7 +1,6 @@
 from random import choice
 
 from django.db import connection
-from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -46,12 +45,13 @@ class ActivityBaseTestCase(TestCase):
         SETTINGS['MODELS'] = self.old_models
 
 
-class ActivityTestCase(ActivityBaseTestCase):
+class GroupActivityTestCase(ActivityBaseTestCase):
+
     urls = 'actstream.urls'
     actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
 
     def setUp(self):
-        super(ActivityTestCase, self).setUp()
+        super(GroupActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -81,6 +81,9 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         # Group responds to comment
         action.send(self.group, verb='responded to', target=self.comment)
+
+
+class ActivityTestCase(GroupActivityTestCase):
 
     def test_aauser1(self):
         self.assertEqual(map(unicode, self.user1.actor_actions.all()), [
@@ -209,7 +212,8 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the model_actions method of the ActionManager
         by passing kwargs
         """
-        self.assertEqual(map(unicode, model_stream(self.user1, verb='commented on')), [
+        self.assertEqual(map(unicode,
+                             model_stream(self.user1, verb='commented on')), [
                 u'admin commented on CoolGroup 0 minutes ago',
                 ])
 
@@ -218,12 +222,14 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the user method of the ActionManager by passing additional
         filters in kwargs
         """
-        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb='joined')), [
+        self.assertEqual(map(unicode,
+                             Action.objects.user(self.user1, verb='joined')), [
                 u'Two joined CoolGroup 0 minutes ago',
                 ])
 
     def test_is_following_filter(self):
-        src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
+        src = '{% load activity_tags %}' \
+              '{% if user|is_following:group %}yup{% endif %}'
         self.assertEqual(Template(src).render(Context({
             'user': self.user2, 'group': self.group
         })), u'yup')
