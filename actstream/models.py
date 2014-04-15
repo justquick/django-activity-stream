@@ -42,7 +42,11 @@ class Follow(models.Model):
         unique_together = ('user', 'content_type', 'object_id')
 
     def __unicode__(self):
-        return u'%s -> %s' % (self.user, self.follow_object)
+        if self.verbs.all():
+            verbs = ' [%s]' % ','.join(self.verbs.all())
+        else:
+            verbs = ''
+        return u'%s -> %s%s' % (self.user, self.follow_object, verbs)
 
 
 class Action(models.Model):
