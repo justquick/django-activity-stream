@@ -250,6 +250,27 @@ class ActivityTestCase(GroupActivityTestCase):
         activate(lang)
 
 
+class UnreadActionsTestCase(GroupActivityTestCase):
+
+    def setUp(self):
+        super(UnreadActionsTestCase, self).setUp()
+
+        # adjust objects followed
+
+        # User1 follows User2
+        follow(self.user1, self.user2, track_unread=True)
+
+    def test_stream_read_unread(self):
+        # first retrieval, items should be marked as read
+        self.assertListEqual(map(unicode, Action.objects.user(self.user1)), [
+            u'Two started following CoolGroup 0 minutes ago',
+            u'Two joined CoolGroup 0 minutes ago',
+        ])
+        # second retrieval, nothing should be returned as all messages are
+        # marked as read
+        self.assertListEqual(map(unicode, Action.objects.user(self.user1)), [])
+
+
 class ZombieTest(ActivityBaseTestCase):
     actstream_models = ('auth.User',)
     human = 10
