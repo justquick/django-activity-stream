@@ -13,7 +13,7 @@ except ImportError:
     now = datetime.datetime.now
 
 
-def follow(user, obj, send_action=True, actor_only=True):
+def follow(user, obj, send_action=True, **kwargs):
     """
     Creates a relationship allowing the object's activities to appear in the
     user's stream.
@@ -23,10 +23,20 @@ def follow(user, obj, send_action=True, actor_only=True):
     If ``send_action`` is ``True`` (the default) then a
     ``<user> started following <object>`` action signal is sent.
 
-    If ``actor_only`` is ``True`` (the default) then only actions where the
-    object is the actor will appear in the user's activity stream. Set to
-    ``False`` to also include actions where this object is the action_object or
-    the target.
+    The kwargs available are those used by the Follow object constructor:
+
+    ``actor_only``:
+        If it is ``True`` (the default) then only actions where the object is
+        the actor will appear in the user's activity stream. Set to ``False``
+        to also include actions where this object is the action_object or
+        the target.
+
+    ``track_unread``:
+        If it is ``True`` (default), actions in the user's activity stream
+        will have an attribute ``unread`` set to ``True`` if they are retrieved
+        for the first time through this follower. If not, or if
+        ``track_unread`` is ``False``, the ``unread`` attribute will be set
+        to ``False``.
 
     Example::
 
@@ -37,8 +47,15 @@ def follow(user, obj, send_action=True, actor_only=True):
     check_actionable_model(obj)
     follow, created = Follow.objects.get_or_create(user=user,
         object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj),
-        actor_only=actor_only)
+        content_type=ContentType.objects.get_for_model(obj))
+
+    changed = []
+    for k, v in kwargs.iteritems():
+        if getattr(follow, k, None) != v:
+            changed.append(k)
+        setattr(follow, k, v)
+    follow.save()
+
     if send_action and created:
         action.send(user, verb=_('started following'), target=obj)
     return follow

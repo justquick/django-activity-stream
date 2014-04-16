@@ -10,7 +10,7 @@ from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 
-from actstream.models import Action, Follow, model_stream, user_stream,\
+from actstream.models import Action, Follow, model_stream, user_stream, \
     setup_generic_relations, following, followers
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
@@ -257,18 +257,22 @@ class UnreadActionsTestCase(GroupActivityTestCase):
 
         # adjust objects followed
 
-        # User1 follows User2
+        # User1 follows User2 (modification of existing Follow object)
         follow(self.user1, self.user2, track_unread=True)
 
+        # User1 follows group (new Follow object)
+        follow(self.user1, self.group, track_unread=True)
+
     def test_stream_read_unread(self):
-        # first retrieval, items should be marked as read
-        self.assertListEqual(map(unicode, Action.objects.user(self.user1)), [
-            u'Two started following CoolGroup 0 minutes ago',
-            u'Two joined CoolGroup 0 minutes ago',
-        ])
-        # second retrieval, nothing should be returned as all messages are
-        # marked as read
-        self.assertListEqual(map(unicode, Action.objects.user(self.user1)), [])
+        # first retrieval, only items from group should be marked as 'unread'
+        # (this is the 1st item of the list). Others should have unread=False
+        self.assertListEqual(
+            [a.unread for a in Action.objects.user(self.user1)],
+            [True, False, False]
+        )
+        # second retrieval, no item should not be marked as unread
+        self.assertFalse(
+            any([a.unread for a in Action.objects.user(self.user1)]))
 
 
 class ZombieTest(ActivityBaseTestCase):

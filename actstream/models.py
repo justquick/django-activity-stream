@@ -145,7 +145,7 @@ class Follow(models.Model):
     objects = FollowManager()
 
     # unread Actions tracking
-    track_unread = models.BooleanField(default=False)
+    track_unread = models.BooleanField(default=True)
     unread = models.ManyToManyField(Action)
 
     class Meta:
