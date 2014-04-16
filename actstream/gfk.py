@@ -34,7 +34,7 @@ class GFKQuerySet(QuerySet):
 
     def iterator(self):
         """
-        Sets the unread attribute on retrived objects if its id is not in
+        Sets the unread attribute on retrieved objects if its id is not in
         self.unread
         """
         unread_items = getattr(self, 'unread_set', ())

@@ -103,7 +103,6 @@ class ActionManager(GFKManager):
             if not follow.actor_only:
                 others_by_content_type[follow.content_type_id].append(\
                     follow.object_id)
-
             unread_set.update(self.follow(follow).unread_set)
 
         for content_type_id, object_ids in actors_by_content_type.iteritems():

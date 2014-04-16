@@ -263,7 +263,7 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         # User1 follows group (new Follow object)
         follow(self.user1, self.group, track_unread=True)
 
-    def test_stream_read_unread(self):
+    def test_stream_unread(self):
         # no item should not be marked as unread as no item was added
         # after track_unread was set to True
         self.assertFalse(
