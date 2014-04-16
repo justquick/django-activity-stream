@@ -274,6 +274,15 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         self.assertFalse(
             any([a.unread for a in Action.objects.user(self.user1)]))
 
+    def test_stream_unread_new_action(self):
+        # Generates a new action and check that it appears as unread in
+        # the user stream
+        action.send(self.user2, verb='commented on', target=self.group)
+        self.assertListEqual(
+            [a.unread for a in Action.objects.user(self.user1)],
+            [True, True, False, False]
+        )
+
 
 class ZombieTest(ActivityBaseTestCase):
     actstream_models = ('auth.User',)
