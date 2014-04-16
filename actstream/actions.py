@@ -32,11 +32,12 @@ def follow(user, obj, send_action=True, **kwargs):
         the target.
 
     ``track_unread``:
-        If it is ``True`` (default), actions in the user's activity stream
-        will have an attribute ``unread`` set to ``True`` if they are retrieved
-        for the first time through this follower. If not, or if
-        ``track_unread`` is ``False``, the ``unread`` attribute will be set
-        to ``False``.
+        If it is ``True``, actions in the user's activity stream will have
+        an ``unread`` attribute set to ``True`` if they are retrieved for the
+        first time through this follower. If not, or if ``track_unread`` is
+        ``False``, the ``unread`` attribute will be set to ``False``.
+        The default value for this argument is defined by the
+        TRACK_UNREAD_DEFAULT setting.
 
     Example::
 
