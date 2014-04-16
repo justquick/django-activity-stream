@@ -1,3 +1,6 @@
+from collections import defaultdict
+from itertools import repeat
+
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
@@ -129,6 +132,111 @@ class Action(models.Model):
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
 
+    def unread_in_qs(self, user):
+        """
+        Cache the queryset of Follow objects for which the action is unread
+        for that user
+        """
+        if not hasattr(self, '_unread_in_qs'):
+            self._unread_in_qs = {}
+        qs = self._unread_in_qs.get(user.id, None)
+        if qs is None:
+            self._unread_in_qs[user.id] = qs = self.unread_in.filter(user=user)
+        return qs
+
+    def is_unread(self, user):
+        """
+        Returns True if the action is unread for that user
+        """
+        if self.unread_in_qs(user).count():
+            return True
+        return False
+
+    def mark_read(self, user):
+        """
+        Attempts to mark the action as read, returns True if the action was
+        unread before
+        If you want to mark several actions as read, prefer the classmethod
+        bulk_mark_read
+        """
+        unread = False
+        for follow in self.unread_in_qs(user):
+            unread = True
+            follow.mark_read((self,))
+        return unread
+
+    def render(self, user=None):
+        """
+        Renders the action, attempting to mark it as read if user is not None
+        Returns a rendered string
+        """
+        unread = False
+        if user:
+            unread = self.mark_read(user)
+        rendered = unicode(self)
+        if unread:
+            rendered += ' [unread]'
+        return rendered
+
+    @classmethod
+    def bulk_is_read(cls, user, actions):
+        """
+        Does not bring any performance gains over Action.is_read method, exists
+        for the sake of consistency with bulk_mark_read and bulk_render
+        """
+        unread = []
+        for a in actions:
+            unread.append(a.is_unread())
+
+    @classmethod
+    def bulk_mark_read(cls, user, actions):
+        """
+        Marks a list or queryset of actions as read for the given user
+        It is more efficient than calling the mark_read method on each action,
+        especially if many actions belong to only a few followers
+
+        Returns a list ``l`` of boolean. If ``actions[i]`` was unread before
+        the call to bulk_mark_read, ``l[i]`` is True
+        """
+
+        follow_dict = defaultdict(lambda: [])
+        unread = []
+        for a in actions:
+            urd = False  # unread marker
+            for f in a.unread_in_qs(user):
+                follow_dict[f].append(a)
+                urd = True
+            unread.append(urd)
+
+        for follow, actions in follow_dict.iteritems():
+            follow.mark_read(actions)
+
+        return unread
+
+    @classmethod
+    def bulk_render(cls, actions=(), user=None):
+        """
+        Renders a list or queryset of actions, returning a list of rendered
+        strings in the same order as ``actions``
+
+        If ``user`` is provided, the class method will attempt to mark the
+        actions as read for the user using Action.mark_read above
+        """
+        if user:
+            unread = cls.bulk_mark_read(user, actions)
+        else:
+            # do not care about using count(), if actions is a queryset it
+            # needs to be evaluated at the next step anyway
+            unread = [False] * len(actions)
+
+        rendered = []
+        for a, urd in zip(actions, unread):
+            rdrd = unicode(a)
+            if urd:
+                rdrd += ' [unread]'
+            rendered.append(rdrd)
+        return rendered
+
 
 class Follow(models.Model):
     """
@@ -148,7 +256,7 @@ class Follow(models.Model):
     # unread Actions tracking
     track_unread = models.BooleanField(
         default=actstream_settings.TRACK_UNREAD_DEFAULT)
-    unread_actions = models.ManyToManyField(Action)
+    unread_actions = models.ManyToManyField(Action, related_name='unread_in')
 
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
@@ -159,7 +267,7 @@ class Follow(models.Model):
     def fetch_unread(self, qs):
         """
         Returns a queryset of the unread actions after having extracted the
-        latest actions from the ``qs``
+        latest actions from the ``qs`` and updated ``self.unread_actions``
         """
 
         if self.track_unread:
@@ -171,6 +279,14 @@ class Follow(models.Model):
         self.last_fetched = now()
         self.save()
         return self.unread_actions.all()
+
+    def mark_read(self, actions):
+        """
+        Marks an iterable of Action objects as read. This removes them from
+        the unread_actions queryset
+        """
+        # We don't care if some actions are not in unread_actions
+        self.unread_actions.remove(*actions)
 
 
 # convenient accessors

@@ -277,6 +277,21 @@ class UnreadActionsTestCase(GroupActivityTestCase):
             [a.unread for a in Action.objects.user(self.user1)],
             [True, False, False, False]
         )
+        # check that the unread status is maintained
+        self.assertTrue(Action.objects.user(self.user1)[0])
+
+    def test_stream_render(self):
+        action.send(self.user2, verb='commented on', target=self.group)
+        self.assertListEqual(
+            Action.bulk_render(Action.objects.user(self.user1), self.user1),
+            [u'Two commented on CoolGroup 0 minutes ago [unread]',
+             u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago',
+             u'Two started following CoolGroup 0 minutes ago',
+             u'Two joined CoolGroup 0 minutes ago']
+        )
+        # check that all Actions are marked as read
+        self.assertFalse(
+            any([a.unread for a in Action.objects.user(self.user1)]))
 
 
 class ZombieTest(ActivityBaseTestCase):
