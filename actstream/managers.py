@@ -58,13 +58,10 @@ class ActionManager(GFKManager):
         )
 
     @stream
-    def follow(self, follow, mark_read=True, **kwargs):
+    def follow(self, follow, **kwargs):
         """
         Stream of the most recent actions that are followed through the given
         follow object
-
-        If mark_read and follow.track_unread are True, the actions in the
-        queryset will be removed from follow.unread_actions
         """
 
         q = Q(actor_content_type=follow.content_type_id,
@@ -78,7 +75,8 @@ class ActionManager(GFKManager):
                 action_object_object_id=follow.object_id,
             )
         qs = self.filter(q, **kwargs)
-        qs.unread_set = follow.fetch_unread(qs, mark_read)
+        qs.unread_set = set([a[0] for a \
+                             in follow.fetch_unread(qs).values_list('id')])
         return qs
 
     @stream

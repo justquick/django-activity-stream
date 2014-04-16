@@ -156,39 +156,21 @@ class Follow(models.Model):
     def __unicode__(self):
         return u'%s -> %s' % (self.user, self.follow_object)
 
-    def fetch_unread(self, qs, mark_read=True):
+    def fetch_unread(self, qs):
         """
-        Returns a set containing the ids of the unread actions from the ``qs``
-        queryset, and clears the unread_actions field if ``mark_read`` is
-        ``True``
+        Returns a queryset of the unread actions after having extracted the
+        latest actions from the ``qs``
         """
 
         if self.track_unread:
-            # get actions that were marked as unread
-            q_unread = self.unread_actions.all()
             # get actions that occured since the last time the Follow object
-            # was fetched
-            if self.last_fetched:
-                q_new = qs.filter(timestamp__gte=self.last_fetched)
-            else:
-                q_new = qs
-            # make the query
-            unread_set = set([a[0] for a in \
-                              (q_unread | q_new).values_list('id')])
-            if mark_read:
-                # mark all retrieved actions as read: clears unread_actions
-                # and discard q_new
-                self.unread_actions.clear()
-            else:
-                # do not mark anything as read: keep unread_actions and upate
-                # it with q_new (use unread_set to avoid making a 2nd query)
-                self.unread_actions.add(*unread_set)
-        else:
-            unread_set = set()
+            # was fetched and update unread_actions
+            self.unread_actions.add(
+                *qs.filter(timestamp__gte=self.last_fetched))
 
         self.last_fetched = now()
         self.save()
-        return unread_set
+        return self.unread_actions.all()
 
 
 # convenient accessors
