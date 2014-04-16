@@ -146,7 +146,7 @@ class Follow(models.Model):
 
     # unread Actions tracking
     track_unread = models.BooleanField(default=True)
-    unread = models.ManyToManyField(Action)
+    unread_actions = models.ManyToManyField(Action)
 
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')

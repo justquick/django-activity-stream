@@ -42,7 +42,7 @@ def follow(user, obj, send_action=True, **kwargs):
 
         follow(request.user, group, actor_only=False)
     """
-    from actstream.models import Follow, action
+    from actstream.models import Action, Follow, action
 
     check_actionable_model(obj)
     follow, created = Follow.objects.get_or_create(user=user,
@@ -54,6 +54,12 @@ def follow(user, obj, send_action=True, **kwargs):
         if getattr(follow, k, None) != v:
             changed.append(k)
         setattr(follow, k, v)
+
+    if follow.track_unread and (created or 'track_unread' in changed):
+        # all existing matching actions should be marked as unread for a
+        # new follower
+        follow.unread_actions.add(*Action.objects.follow(follow))
+
     follow.save()
 
     if send_action and created:

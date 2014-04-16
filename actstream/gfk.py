@@ -31,6 +31,27 @@ class GFKQuerySet(QuerySet):
     Extended in django-activity-stream to allow for multi db, text primary keys
     and empty querysets.
     """
+
+    def iterator(self):
+        """
+        Sets the unread attribute on retrived objects if its id is not in
+        self.unread
+        """
+        unread_items = getattr(self, 'unread_set', ())
+        for item in super(GFKQuerySet, self).iterator():
+            item.unread = item.id in unread_items
+            yield item
+
+    def _clone(self, *args, **kwargs):
+        """
+        Overrides QuerySet._clone in order to keep track of unread actions
+        """
+        clone_qs = super(GFKQuerySet, self)._clone(*args, **kwargs)
+        unread_set = getattr(self, 'unread_set', None)
+        if unread_set is not None:
+            clone_qs.unread_set = unread_set
+        return clone_qs
+
     def fetch_generic_relations(self, *args):
         from actstream import settings as actstream_settings
 
