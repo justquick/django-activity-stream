@@ -22,27 +22,6 @@ from actstream.compat import user_model_label
 User = user_model_label
 
 
-class Follow(models.Model):
-    """
-    Lets a user follow the activities of any specific actor
-    """
-    user = models.ForeignKey(User)
-
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.CharField(max_length=255)
-    follow_object = generic.GenericForeignKey()
-    actor_only = models.BooleanField("Only follow actions where the object is "
-        "the target.", default=True)
-    started = models.DateTimeField(default=now)
-    objects = FollowManager()
-
-    class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
-
-    def __unicode__(self):
-        return u'%s -> %s' % (self.user, self.follow_object)
-
-
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
@@ -99,7 +78,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     def __unicode__(self):
         ctx = {
@@ -149,6 +128,32 @@ class Action(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
+
+
+class Follow(models.Model):
+    """
+    Lets a user follow the activities of any specific actor
+    """
+    user = models.ForeignKey(User)
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.CharField(max_length=255)
+    follow_object = generic.GenericForeignKey()
+    actor_only = models.BooleanField("Only follow actions where the object is "
+        "the target.", default=True)
+    started = models.DateTimeField(default=now)
+    objects = FollowManager()
+
+    # unread Actions tracking
+    track_unread = models.BooleanField(default=False)
+    unread = models.ManyToManyField(Action)
+
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
+
+    def __unicode__(self):
+        return u'%s -> %s' % (self.user, self.follow_object)
+
 
 
 # convenient accessors
