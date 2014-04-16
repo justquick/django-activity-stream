@@ -56,10 +56,9 @@ def follow(user, obj, send_action=True, **kwargs):
             changed.append(k)
         setattr(follow, k, v)
 
-    if follow.track_unread and (created or 'track_unread' in changed):
-        # all existing matching actions should be marked as unread for a
-        # new follower
-        follow.unread_actions.add(*Action.objects.follow(follow))
+    if follow.track_unread and 'track_unread' in changed:
+        # reset the tracking timestamp
+        follow.last_fetched = now()
 
     follow.save()
 

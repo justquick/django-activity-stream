@@ -78,10 +78,7 @@ class ActionManager(GFKManager):
                 action_object_object_id=follow.object_id,
             )
         qs = self.filter(q, **kwargs)
-        if mark_read and follow.track_unread:
-            qs.unread_set = [a[0] for a in \
-                              follow.unread_actions.all().values_list('id')]
-            follow.unread_actions.clear()
+        qs.unread_set = follow.fetch_unread(qs, mark_read)
         return qs
 
     @stream
@@ -108,11 +105,8 @@ class ActionManager(GFKManager):
             if not follow.actor_only:
                 others_by_content_type[follow.content_type_id].append(\
                     follow.object_id)
-            if follow.track_unread:
-                for action in follow.unread_actions.all().values_list('id'):
-                    a_id = action[0]
-                    unread_set.add(a_id)
-                    follow.unread_actions.remove(a_id)
+
+            unread_set.update(self.follow(follow).unread_set)
 
         for content_type_id, object_ids in actors_by_content_type.iteritems():
             q = q | Q(
