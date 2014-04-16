@@ -264,13 +264,8 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         follow(self.user1, self.group, track_unread=True)
 
     def test_stream_read_unread(self):
-        # first retrieval, only items from group should be marked as 'unread'
-        # (this is the 1st item of the list). Others should have unread=False
-        self.assertListEqual(
-            [a.unread for a in Action.objects.user(self.user1)],
-            [True, False, False]
-        )
-        # second retrieval, no item should not be marked as unread
+        # no item should not be marked as unread as no item was added
+        # after track_unread was set to True
         self.assertFalse(
             any([a.unread for a in Action.objects.user(self.user1)]))
 
@@ -280,7 +275,7 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         action.send(self.user2, verb='commented on', target=self.group)
         self.assertListEqual(
             [a.unread for a in Action.objects.user(self.user1)],
-            [True, True, False, False]
+            [True, False, False, False]
         )
 
 
