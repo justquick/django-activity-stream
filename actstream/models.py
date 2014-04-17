@@ -151,6 +151,13 @@ class Action(models.Model):
         return ('actstream.views.detail', [self.pk])
 
 
+class DeletedModel(models.Model):
+
+    content_type = models.ForeignKey(ContentType)
+    name = models.CharField(max_length=255)
+    # a data field is available when USE_JSONFIELD is enabled
+
+
 # convenient accessors
 actor_stream = Action.objects.actor
 action_object_stream = Action.objects.action_object
@@ -195,6 +202,7 @@ if actstream_settings.USE_JSONFIELD:
         raise ImproperlyConfigured('You must have django-jsonfield installed '
                                 'if you wish to use a JSONField on your actions')
     JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
+    JSONField(blank=True, null=True).contribute_to_class(DeletedModel, 'data')
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
