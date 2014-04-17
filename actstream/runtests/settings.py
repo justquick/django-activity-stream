@@ -104,6 +104,7 @@ ACTSTREAM_SETTINGS = {
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
+    'USE_DELMODEL': False,
     'GFK_FETCH_DEPTH': 0,
 }
 
