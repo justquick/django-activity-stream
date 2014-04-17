@@ -143,6 +143,14 @@ class Action(models.Model):
             self._unread_in_qs[user.id] = qs = self.unread_in.filter(user=user)
         return qs
 
+    def reset_unread_in_cache(self, user=None):
+        if user:
+            if not hasattr(self, '_unread_in_qs'):
+                self._unread_in_qs = {}
+            self._unread_in_qs[user.id] = self.unread_in.filter(user=user)
+        else:
+            self._unread_in_qs = {}
+
     def is_unread(self, user):
         """
         Returns True if the action is unread for that user
@@ -151,17 +159,19 @@ class Action(models.Model):
             return True
         return False
 
-    def mark_read(self, user):
+    def mark_read(self, user, force=False):
         """
-        Attempts to mark the action as read, returns True if the action was
-        unread before
+        Attempts to mark the action as read using the follow objects' mark_read
+        method. Returns True if the action was unread before
         If you want to mark several actions as read, prefer the classmethod
         bulk_mark_read
         """
         unread = False
         for follow in self.unread_in_qs(user):
             unread = True
-            follow.mark_read((self,))
+            follow.mark_read((self,), force)
+        # update cached queryset
+        self.reset_unread_in_cache(user)
         return unread
 
     def render(self, user=None):
@@ -188,7 +198,7 @@ class Action(models.Model):
             unread.append(a.is_unread())
 
     @classmethod
-    def bulk_mark_read(cls, user, actions):
+    def bulk_mark_read(cls, user, actions, force=False):
         """
         Marks a list or queryset of actions as read for the given user
         It is more efficient than calling the mark_read method on each action,
@@ -208,7 +218,7 @@ class Action(models.Model):
             unread.append(urd)
 
         for follow, actions in follow_dict.iteritems():
-            follow.mark_read(actions)
+            follow.mark_read(actions, force)
 
         return unread
 
@@ -255,6 +265,8 @@ class Follow(models.Model):
     # unread Actions tracking
     track_unread = models.BooleanField(
         default=actstream_settings.TRACK_UNREAD_DEFAULT)
+    auto_read = models.BooleanField(
+        default=actstream_settings.AUTO_READ_DEFAULT)
     unread_actions = models.ManyToManyField(Action, related_name='unread_in')
 
     class Meta:
@@ -274,20 +286,27 @@ class Follow(models.Model):
                 qs = Action.objects.follow(self)
             # get actions that occured since the last time the Follow object
             # was fetched and update unread_actions
-            self.unread_actions.add(
-                *qs.filter(timestamp__gte=self.last_updated))
+            last_actions = qs.filter(timestamp__gte=self.last_updated)
+            for a in last_actions:
+                a.reset_unread_in_cache()
+            self.unread_actions.add(*last_actions)
 
         self.last_updated = now()
         self.save()
         return self.unread_actions.all()
 
-    def mark_read(self, actions):
+    def mark_read(self, actions, force=False):
         """
         Marks an iterable of Action objects as read. This removes them from
         the unread_actions queryset
+
+        If ``force`` is set to True, the actions will be marked as unread no
+        matter the value of self.auto_read.
         """
-        # We don't care if some actions are not in unread_actions
-        self.unread_actions.remove(*actions)
+        if force or self.auto_read:
+            # We don't care if some actions are not in unread_actions
+            self.unread_actions.remove(*actions)
+            self.save()
 
 
 # convenient accessors

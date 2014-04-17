@@ -296,6 +296,21 @@ class UnreadActionsTestCase(GroupActivityTestCase):
             any([a.is_unread(self.user1) \
                  for a in Action.objects.user(self.user1)]))
 
+    def test_stream_not_auto_read(self):
+        follow(self.user1, self.user2, track_unread=True, auto_read=False)
+        action.send(self.user2, verb='commented on', target=self.group)
+        # render user1's actions
+        Action.bulk_render(Action.objects.user(self.user1), self.user1)
+        # check that the last action is still marked as unread
+        last_action = Action.objects.user(self.user1)[0]
+        self.assertTrue(last_action.is_unread(self.user1))
+        # mark the action as read without force=True, should not do anything
+        last_action.mark_read(self.user1)
+        self.assertTrue(last_action.is_unread(self.user1))
+        # this time use force=True
+        last_action.mark_read(self.user1, force=True)
+        self.assertFalse(last_action.is_unread(self.user1))
+
 
 class ZombieTest(ActivityBaseTestCase):
     actstream_models = ('auth.User',)
