@@ -75,8 +75,6 @@ class ActionManager(GFKManager):
                 action_object_object_id=follow.object_id,
             )
         qs = self.filter(q, **kwargs)
-        qs.unread_set = set([a[0] for a \
-                             in follow.fetch_unread(qs).values_list('id')])
         return qs
 
     @stream
@@ -96,14 +94,15 @@ class ActionManager(GFKManager):
         if not follow_gfks:
             return qs.none()
 
-        unread_set = set()
         for follow in follow_gfks.iterator():
             actors_by_content_type[follow.content_type_id].append(\
                 follow.object_id)
             if not follow.actor_only:
                 others_by_content_type[follow.content_type_id].append(\
                     follow.object_id)
-            unread_set.update(self.follow(follow).unread_set)
+
+            # mark the new messages as unread if required
+            follow.update_unread()
 
         for content_type_id, object_ids in actors_by_content_type.iteritems():
             q = q | Q(
@@ -119,7 +118,6 @@ class ActionManager(GFKManager):
                 action_object_object_id__in=object_ids,
             )
         qs = qs.filter(q, **kwargs)
-        qs.unread_set = unread_set
         return qs
 
 

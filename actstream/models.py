@@ -1,5 +1,4 @@
 from collections import defaultdict
-from itertools import repeat
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -250,7 +249,7 @@ class Follow(models.Model):
     actor_only = models.BooleanField("Only follow actions where the object is "
         "the target.", default=True)
     started = models.DateTimeField(default=now)
-    last_fetched = models.DateTimeField(default=now)
+    last_updated = models.DateTimeField(default=now)
     objects = FollowManager()
 
     # unread Actions tracking
@@ -264,19 +263,21 @@ class Follow(models.Model):
     def __unicode__(self):
         return u'%s -> %s' % (self.user, self.follow_object)
 
-    def fetch_unread(self, qs):
+    def update_unread(self, qs=None):
         """
         Returns a queryset of the unread actions after having extracted the
         latest actions from the ``qs`` and updated ``self.unread_actions``
         """
 
         if self.track_unread:
+            if qs is None:
+                qs = Action.objects.follow(self)
             # get actions that occured since the last time the Follow object
             # was fetched and update unread_actions
             self.unread_actions.add(
-                *qs.filter(timestamp__gte=self.last_fetched))
+                *qs.filter(timestamp__gte=self.last_updated))
 
-        self.last_fetched = now()
+        self.last_updated = now()
         self.save()
         return self.unread_actions.all()
 

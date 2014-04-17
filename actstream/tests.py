@@ -267,14 +267,16 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         # no item should not be marked as unread as no item was added
         # after track_unread was set to True
         self.assertFalse(
-            any([a.unread for a in Action.objects.user(self.user1)]))
+            any([a.is_unread(self.user1) \
+                 for a in Action.objects.user(self.user1)]))
 
     def test_stream_unread_new_action(self):
         # Generates a new action and check that it appears as unread in
         # the user stream
         action.send(self.user2, verb='commented on', target=self.group)
         self.assertListEqual(
-            [a.unread for a in Action.objects.user(self.user1)],
+            [a.is_unread(self.user1) \
+             for a in Action.objects.user(self.user1)],
             [True, False, False, False]
         )
         # check that the unread status is maintained
@@ -291,7 +293,8 @@ class UnreadActionsTestCase(GroupActivityTestCase):
         )
         # check that all Actions are marked as read
         self.assertFalse(
-            any([a.unread for a in Action.objects.user(self.user1)]))
+            any([a.is_unread(self.user1) \
+                 for a in Action.objects.user(self.user1)]))
 
 
 class ZombieTest(ActivityBaseTestCase):

@@ -58,7 +58,7 @@ def follow(user, obj, send_action=True, **kwargs):
 
     if follow.track_unread and 'track_unread' in changed:
         # reset the tracking timestamp
-        follow.last_fetched = now()
+        follow.last_updated = now()
 
     follow.save()
 
