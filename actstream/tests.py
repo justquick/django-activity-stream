@@ -10,8 +10,8 @@ from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 
-from actstream.models import Action, Follow, model_stream, user_stream,\
-    setup_generic_relations, following, followers
+from actstream.models import Action, Follow, DeletedModel, model_stream, \
+    user_stream, setup_generic_relations, following, followers
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
@@ -52,6 +52,9 @@ class GroupActivityTestCase(ActivityBaseTestCase):
 
     def setUp(self):
         super(GroupActivityTestCase, self).setUp()
+        self.create_objects()
+
+    def create_objects(self):
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -81,6 +84,7 @@ class GroupActivityTestCase(ActivityBaseTestCase):
 
         # Group responds to comment
         action.send(self.group, verb='responded to', target=self.comment)
+
 
 
 class ActivityTestCase(GroupActivityTestCase):
@@ -248,6 +252,55 @@ class ActivityTestCase(GroupActivityTestCase):
         self.assertTrue(Action.objects.filter(verb=u'English'))
         # restore language
         activate(lang)
+
+
+class DeletedModelTests(GroupActivityTestCase):
+
+    @classmethod
+    def setUpClass(self):
+        """
+        As we don't want to create a second series of tests with another
+        settings file, here we need to simulate a USE_DELMODELS = True case
+        So we need to destroy the generic relations, and the tearDownClass
+        method restores them
+        """
+        for model in get_models().values():
+            if not model:
+                continue
+            v_fields = model._meta.virtual_fields
+            for field in ('actor', 'target', 'action_object'):
+                attr = '%s_actions' % field
+                for f in v_fields:
+                    if getattr(f, 'attname', None) == attr:
+                        v_fields.remove(f)
+                try:
+                    delattr(model, attr)
+                except AttributeError:
+                    pass
+                try:
+                    delattr(Action, 'actions_with_%s_%s_as_%s' % (
+                        model._meta.app_label, model._meta.module_name, field))
+                except AttributeError:
+                    pass
+        SETTINGS['USE_DELMODELS'] = True
+
+    @classmethod
+    def tearDownClass(cls):
+        SETTINGS['USE_DELMODELS'] = False
+        setup_generic_relations()
+
+    def setUp(self):
+        self.create_objects()
+
+    def test_delete_group(self):
+        group_ct = ContentType.objects.get_for_model(Group)
+        group_id = self.group.pk
+        self.group.delete()
+        # check that the Action objects have not been deleted
+        # (temporary test to check that DeletedModelTests.setUpClass works)
+        self.assertEqual(len(Action.objects.filter(
+                                 target_content_type=group_ct,
+                                 target_object_id=group_id)), 4)
 
 
 class ZombieTest(ActivityBaseTestCase):
