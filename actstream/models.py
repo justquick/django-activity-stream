@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import pre_delete
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
@@ -150,12 +151,15 @@ class Action(models.Model):
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
 
+if actstream_settings.USE_DELMODEL:
+    class DeletedModel(models.Model):
 
-class DeletedModel(models.Model):
+        content_type = models.ForeignKey(ContentType)
+        name = models.CharField(max_length=255)
+        # a data field is available when USE_JSONFIELD is enabled
 
-    content_type = models.ForeignKey(ContentType)
-    name = models.CharField(max_length=255)
-    # a data field is available when USE_JSONFIELD is enabled
+        def __unicode__(self):
+            return self.name
 
 
 # convenient accessors
@@ -168,31 +172,64 @@ followers = Follow.objects.followers
 following = Follow.objects.following
 
 
-def setup_generic_relations():
+def setup_deletion_handling():
     """
-    Set up GenericRelations for actionable models.
+    Set up either GenericRelations or pre_delete signals for actionable models,
+    depending on the USE_DELMODEL setting
     """
-    for model in actstream_settings.get_models().values():
-        if not model:
-            continue
-        for field in ('actor', 'target', 'action_object'):
-            attr = '%s_actions' % field
-            if isinstance(getattr(model, attr, None),
-                          generic.ReverseGenericRelatedObjectsDescriptor):
-                break
-            generic.GenericRelation(Action,
-                content_type_field='%s_content_type' % field,
-                object_id_field='%s_object_id' % field,
-                related_name='actions_with_%s_%s_as_%s' % (
+    models = actstream_settings.get_models()
+
+    if actstream_settings.USE_DELMODEL:
+        # Action objects should not be deleted when a referent object is
+        # deleted. Instead, the referent object should be turned into a
+        # DeletedModel instance
+        def on_delete(sender, **kwargs):
+            # create the DeletedModel instance
+            instance = kwargs.get('instance', None)
+            if not instance:
+                return
+            content_type = ContentType.objects.get_for_model(sender)
+            instance_id = instance.pk
+            DeletedModel_ct = ContentType.objects.get_for_model(DeletedModel)
+            delmod = DeletedModel.objects.create(
+                content_type=content_type, name=unicode(instance))
+            # associate it with all the Action objects linked to the instance
+            # being deleted
+            for field in ('actor', 'target', 'action_object'):
+                # one query per field
+                Action.objects.filter(**{
+                    '%s_content_type' % field: content_type,
+                    '%s_object_id' % field: instance_id}) \
+                .update(**{
+                    '%s_content_type' % field: DeletedModel_ct,
+                    '%s_object_id' % field: delmod.pk})
+
+        for k, model in models.iteritems():
+            pre_delete.connect(on_delete, model, weak=False,
+                               dispatch_uid='%s_pre_delete' % k)
+
+    else:
+        # Action objects should be deleted when any referent object
+        # deleted
+        for model in models.values():
+            for field in ('actor', 'target', 'action_object'):
+                attr = '%s_actions' % field
+                if isinstance(getattr(model, attr, None),
+                              generic.ReverseGenericRelatedObjectsDescriptor):
+                    break
+                generic.GenericRelation(Action,
+                    content_type_field='%s_content_type' % field,
+                    object_id_field='%s_object_id' % field,
+                    related_name='actions_with_%s_%s_as_%s' % (
+                        model._meta.app_label, model._meta.module_name, field),
+                ).contribute_to_class(model, attr)
+
+                # @@@ I'm not entirely sure why this works
+                setattr(Action, 'actions_with_%s_%s_as_%s' % (
                     model._meta.app_label, model._meta.module_name, field),
-            ).contribute_to_class(model, attr)
+                    None)
 
-            # @@@ I'm not entirely sure why this works
-            setattr(Action, 'actions_with_%s_%s_as_%s' % (
-                model._meta.app_label, model._meta.module_name, field), None)
-
-
-setup_generic_relations()
+setup_deletion_handling()
 
 
 if actstream_settings.USE_JSONFIELD:
@@ -202,7 +239,9 @@ if actstream_settings.USE_JSONFIELD:
         raise ImproperlyConfigured('You must have django-jsonfield installed '
                                 'if you wish to use a JSONField on your actions')
     JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
-    JSONField(blank=True, null=True).contribute_to_class(DeletedModel, 'data')
+    if actstream_settings.USE_DELMODEL:
+        JSONField(blank=True, null=True). \
+            contribute_to_class(DeletedModel, 'data')
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')

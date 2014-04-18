@@ -104,7 +104,9 @@ ACTSTREAM_SETTINGS = {
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
-    'USE_DELMODEL': False,
+    # We have to use USE_DELMODEL=True to make the DeletedModel model available
+    # but in most tests, it is manually set to False
+    'USE_DELMODEL': True,
     'GFK_FETCH_DEPTH': 0,
 }
 

@@ -9,12 +9,14 @@ from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
+from django.db.models.signals import pre_delete
 
 from actstream.models import Action, Follow, DeletedModel, model_stream, \
-    user_stream, setup_generic_relations, following, followers
+    user_stream, setup_deletion_handling, following, followers
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
+from actstream import settings as actstream_settings
 from actstream.settings import get_models, SETTINGS
 from actstream.compat import get_user_model
 
@@ -36,13 +38,66 @@ class LTE(int):
 
 class ActivityBaseTestCase(TestCase):
     actstream_models = ()
+    use_del_model = False
+
+    @classmethod
+    def setUpClass(cls):
+        if cls.use_del_model:
+            cls.remove_generic_relations()
+        else:
+            cls.remove_pre_delete_signals()
+        actstream_settings.USE_DELMODEL = cls.use_del_model
+        super(ActivityBaseTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.use_del_model:
+            cls.remove_pre_delete_signals()
+        else:
+            cls.remove_generic_relations()
+        super(ActivityBaseTestCase, cls).tearDownClass()
 
     def setUp(self):
         self.old_models = get_models()
-        setup_generic_relations()
+        setup_deletion_handling()
 
     def tearDown(self):
         SETTINGS['MODELS'] = self.old_models
+
+    @classmethod
+    def remove_generic_relations(cls):
+        """
+        Removes the generic relations before running tests that need
+        USE_DELMODELS=True, or after running tests using USE_DELMODELS=False
+        """
+        for model in get_models().values():
+            if not model:
+                continue
+            v_fields = model._meta.virtual_fields
+            for field in ('actor', 'target', 'action_object'):
+                attr = '%s_actions' % field
+                for f in v_fields:
+                    if getattr(f, 'attname', None) == attr:
+                        v_fields.remove(f)
+                try:
+                    delattr(model, attr)
+                except AttributeError:
+                    pass
+                try:
+                    delattr(Action, 'actions_with_%s_%s_as_%s' % (
+                        model._meta.app_label, model._meta.module_name, field))
+                except AttributeError:
+                    pass
+
+    @classmethod
+    def remove_pre_delete_signals(cls):
+        """
+        Removes the pre_delete listeners before running tests that need
+        USE_DELMODELS=False, or after running tests using USE_DELMODELS=True
+        """
+        for k, model in get_models().iteritems():
+            pre_delete.disconnect(sender=model,
+                                  dispatch_uid='%s_pre_delete' % k)
 
 
 class GroupActivityTestCase(ActivityBaseTestCase):
@@ -52,9 +107,6 @@ class GroupActivityTestCase(ActivityBaseTestCase):
 
     def setUp(self):
         super(GroupActivityTestCase, self).setUp()
-        self.create_objects()
-
-    def create_objects(self):
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
         self.user1.set_password('admin')
@@ -84,7 +136,6 @@ class GroupActivityTestCase(ActivityBaseTestCase):
 
         # Group responds to comment
         action.send(self.group, verb='responded to', target=self.comment)
-
 
 
 class ActivityTestCase(GroupActivityTestCase):
@@ -256,51 +307,33 @@ class ActivityTestCase(GroupActivityTestCase):
 
 class DeletedModelTests(GroupActivityTestCase):
 
-    @classmethod
-    def setUpClass(self):
-        """
-        As we don't want to create a second series of tests with another
-        settings file, here we need to simulate a USE_DELMODELS = True case
-        So we need to destroy the generic relations, and the tearDownClass
-        method restores them
-        """
-        for model in get_models().values():
-            if not model:
-                continue
-            v_fields = model._meta.virtual_fields
-            for field in ('actor', 'target', 'action_object'):
-                attr = '%s_actions' % field
-                for f in v_fields:
-                    if getattr(f, 'attname', None) == attr:
-                        v_fields.remove(f)
-                try:
-                    delattr(model, attr)
-                except AttributeError:
-                    pass
-                try:
-                    delattr(Action, 'actions_with_%s_%s_as_%s' % (
-                        model._meta.app_label, model._meta.module_name, field))
-                except AttributeError:
-                    pass
-        SETTINGS['USE_DELMODELS'] = True
-
-    @classmethod
-    def tearDownClass(cls):
-        SETTINGS['USE_DELMODELS'] = False
-        setup_generic_relations()
-
-    def setUp(self):
-        self.create_objects()
+    use_del_model = True
 
     def test_delete_group(self):
-        group_ct = ContentType.objects.get_for_model(Group)
-        group_id = self.group.pk
+        g_ct = ContentType.objects.get_for_model(Group)
+        dm_ct = ContentType.objects.get_for_model(DeletedModel)
+
+        n_actions = Action.objects.all().count()
+
+        # we will examine what happens to this action
+        old_action = Action.objects.filter(actor_content_type=g_ct)[0]
+        action_pk = old_action.pk
+        old_unicode = unicode(old_action)
+
+        # deleting the group
         self.group.delete()
-        # check that the Action objects have not been deleted
-        # (temporary test to check that DeletedModelTests.setUpClass works)
-        self.assertEqual(len(Action.objects.filter(
-                                 target_content_type=group_ct,
-                                 target_object_id=group_id)), 4)
+
+        # check that no Action object has been deleted
+        self.assertEqual(n_actions, Action.objects.all().count())
+
+        new_action = Action.objects.get(pk=action_pk)
+
+        # check that actor_action's actor was replaced by a DeletedModel
+        # instance
+        self.assertEqual(new_action.actor_content_type, dm_ct)
+
+        # and that the output is still the same not changed
+        self.assertEqual(old_unicode, unicode(new_action))
 
 
 class ZombieTest(ActivityBaseTestCase):

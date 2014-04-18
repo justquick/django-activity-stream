@@ -12,7 +12,9 @@ def get_models():
     """
     models = {}
     for model in SETTINGS.get('MODELS', ('auth.User',)):
-        models[model.lower()] = get_model(*model.split('.'))
+        m = get_model(*model.split('.'))
+        if m:
+            models[model.lower()] = m
     return models
 
 def get_action_manager():
@@ -33,4 +35,3 @@ GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
 USE_DELMODEL = SETTINGS.get('USE_DELMODEL', False)
-

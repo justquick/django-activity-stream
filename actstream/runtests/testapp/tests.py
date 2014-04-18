@@ -2,7 +2,7 @@ from datetime import datetime
 
 import django
 from django.utils.unittest import skipUnless
-from django.test import TestCase
+from actstream.tests import ActivityBaseTestCase as TestCase
 
 from actstream.models import Action
 from actstream.signals import action
@@ -15,6 +15,7 @@ User = get_user_model()
 class TestAppTests(TestCase):
 
     def setUp(self):
+        super(TestAppTests, self).setUp()
         self.user = User.objects.create(username='test')
         action.send(self.user, verb='was created')
 
