@@ -279,6 +279,21 @@ class UnreadActionsTestCase(GroupActivityTestCase):
              for a in Action.objects.user(self.user1)],
             [True, False, False, False]
         )
+
+        # check unread filtering
+        self.assertListEqual(
+            map(unicode, Action.objects.user(self.user1, unread=True)),
+            [u'Two commented on CoolGroup 0 minutes ago']
+        )
+
+        # check read filtering
+        self.assertListEqual(
+            map(unicode, Action.objects.user(self.user1, unread=False)),
+            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago',
+             u'Two started following CoolGroup 0 minutes ago',
+             u'Two joined CoolGroup 0 minutes ago']
+        )
+
         # check that the unread status is maintained
         self.assertTrue(Action.objects.user(self.user1)[0])
 

@@ -78,18 +78,34 @@ class ActionManager(GFKManager):
         return qs
 
     @stream
-    def user(self, object, **kwargs):
+    def user(self, user, **kwargs):
         """
         Stream of most recent actions by objects that the passed User object is
         following.
+
+        Can take an optional ``unread`` kwarg:
+        - if True, only unread messages will be fetched
+        - if False, only read messages will be fetched
+        - if unspecified, all messages will be fetched
         """
-        q = Q()
+
         qs = self.filter(public=True)
+        unread_kw = kwargs.pop('unread', None)
+        if unread_kw == True:
+            # find all actions with user matching any follow object in
+            # the reverse m2m relation unread_in
+            qs = qs.filter(unread_in__user__in=(user,))
+        elif unread_kw == False:
+            # find all actions with user matching any follow object in
+            # the reverse m2m relation unread_in
+            qs = qs.exclude(unread_in__user__in=(user,))
+
+        q = Q()
         actors_by_content_type = defaultdict(lambda: [])
         others_by_content_type = defaultdict(lambda: [])
 
         follow_gfks = get_model('actstream', 'follow').objects.filter(
-            user=object)
+            user=user)
 
         if not follow_gfks:
             return qs.none()
