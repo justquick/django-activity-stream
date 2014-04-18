@@ -61,6 +61,18 @@ Lets you add custom data to any of your actions, see :ref:`custom-data`
 Defaults to ``False``
 
 
+USE_DELMODELS
+*************
+
+Set this to ``True`` to keep the actions related to actors, targets or action
+objects that are deleted. They are internally transformed into an object that
+simply stores a description of the object. If a ``deleted_model_description``
+is available on the object being deleted, it is called to generate the
+description. If not, the ``__unicode__`` method is used.
+
+Defaults to ``False``
+
+
 GFK_FETCH_DEPTH
 ***************
 
