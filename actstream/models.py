@@ -220,6 +220,10 @@ class Action(models.Model):
         for follow, actions in follow_dict.iteritems():
             follow.mark_read(actions, force)
 
+        # update cached querysets
+        for a in actions:
+            a.reset_unread_in_cache(user)
+
         return unread
 
     @classmethod
