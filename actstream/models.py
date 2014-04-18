@@ -155,11 +155,11 @@ if actstream_settings.USE_DELMODEL:
     class DeletedModel(models.Model):
 
         content_type = models.ForeignKey(ContentType)
-        name = models.CharField(max_length=255)
+        description = models.CharField(max_length=255)
         # a data field is available when USE_JSONFIELD is enabled
 
         def __unicode__(self):
-            return self.name
+            return self.description
 
 
 # convenient accessors
@@ -191,8 +191,14 @@ def setup_deletion_handling():
             content_type = ContentType.objects.get_for_model(sender)
             instance_id = instance.pk
             DeletedModel_ct = ContentType.objects.get_for_model(DeletedModel)
+
+            try:
+                description = instance.deleted_model_description()
+            except:
+                description = unicode(instance)
+
             delmod = DeletedModel.objects.create(
-                content_type=content_type, name=unicode(instance))
+                content_type=content_type, description=description)
             # associate it with all the Action objects linked to the instance
             # being deleted
             for field in ('actor', 'target', 'action_object'):
