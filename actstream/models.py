@@ -100,7 +100,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     def __unicode__(self):
         ctx = {
@@ -156,7 +156,6 @@ if actstream_settings.USE_DELMODEL:
 
         content_type = models.ForeignKey(ContentType)
         description = models.CharField(max_length=255)
-        # a data field is available when USE_JSONFIELD is enabled
 
         def __unicode__(self):
             return self.description
@@ -245,9 +244,7 @@ if actstream_settings.USE_JSONFIELD:
         raise ImproperlyConfigured('You must have django-jsonfield installed '
                                 'if you wish to use a JSONField on your actions')
     JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
-    if actstream_settings.USE_DELMODEL:
-        JSONField(blank=True, null=True). \
-            contribute_to_class(DeletedModel, 'data')
+
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
