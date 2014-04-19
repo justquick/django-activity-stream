@@ -159,7 +159,7 @@ class Action(models.Model):
             return True
         return False
 
-    def mark_read(self, user, force=False):
+    def mark_read(self, user, force=False, commit=True):
         """
         Attempts to mark the action as read using the follow objects' mark_read
         method. Returns True if the action was unread before
@@ -169,19 +169,19 @@ class Action(models.Model):
         unread = False
         for follow in self.unread_in_qs(user):
             unread = True
-            follow.mark_read((self,), force)
+            follow.mark_read((self,), force, commit)
         # update cached queryset
         self.reset_unread_in_cache(user)
         return unread
 
-    def render(self, user=None):
+    def render(self, user=None, commit=True):
         """
         Renders the action, attempting to mark it as read if user is not None
         Returns a rendered string
         """
         unread = False
         if user:
-            unread = self.mark_read(user)
+            unread = self.mark_read(user, commit=commit)
         rendered = unicode(self)
         if unread:
             rendered += ' [unread]'
@@ -198,7 +198,7 @@ class Action(models.Model):
             unread.append(a.is_unread())
 
     @classmethod
-    def bulk_mark_read(cls, user, actions, force=False):
+    def bulk_mark_read(cls, user, actions, force=False, commit=True):
         """
         Marks a list or queryset of actions as read for the given user
         It is more efficient than calling the mark_read method on each action,
@@ -218,7 +218,7 @@ class Action(models.Model):
             unread.append(urd)
 
         for follow, actions in follow_dict.iteritems():
-            follow.mark_read(actions, force)
+            follow.mark_read(actions, force, commit)
 
         # update cached querysets
         for a in actions:
@@ -227,7 +227,7 @@ class Action(models.Model):
         return unread
 
     @classmethod
-    def bulk_render(cls, actions=(), user=None):
+    def bulk_render(cls, actions=(), user=None, commit=True):
         """
         Renders a list or queryset of actions, returning a list of rendered
         strings in the same order as ``actions``
@@ -236,7 +236,7 @@ class Action(models.Model):
         actions as read for the user using Action.mark_read above
         """
         if user:
-            unread = cls.bulk_mark_read(user, actions)
+            unread = cls.bulk_mark_read(user, actions, commit=commit)
         else:
             # do not care about using count(), if actions is a queryset it
             # needs to be evaluated at the next step anyway
@@ -299,7 +299,7 @@ class Follow(models.Model):
         self.save()
         return self.unread_actions.all()
 
-    def mark_read(self, actions, force=False):
+    def mark_read(self, actions, force=False, commit=True):
         """
         Marks an iterable of Action objects as read. This removes them from
         the unread_actions queryset
@@ -310,7 +310,8 @@ class Follow(models.Model):
         if force or self.auto_read:
             # We don't care if some actions are not in unread_actions
             self.unread_actions.remove(*actions)
-            self.save()
+            if commit:
+                self.save()
 
 
 # convenient accessors
