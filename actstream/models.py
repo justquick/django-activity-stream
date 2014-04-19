@@ -4,9 +4,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
-
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from django.template.loader import render_to_string
+from django.template.base import Context
 
 try:
     from django.utils import timezone
@@ -131,6 +132,26 @@ class Action(models.Model):
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
 
+    def _render(self, context, **kwargs):
+        """
+        Renders the action from a template
+        """
+
+        dic = dict(kwargs, action=self)
+
+        user = context.get('user', None)
+        if user and 'unread' not in dic:
+            dic['unread'] = self.is_unread(user)
+
+        norm_verb = self.verb.replace(' ', '_')
+        templates = [
+            'actstream/%s/action.html' % norm_verb,
+            'actstream/action.html',
+            'activity/%s/action.html' % norm_verb,
+            'activity/action.html',
+        ]
+        return render_to_string(templates, dic, context)
+
     def unread_in_qs(self, user):
         """
         Cache the queryset of Follow objects for which the action is unread
@@ -174,18 +195,16 @@ class Action(models.Model):
         self.reset_unread_in_cache(user)
         return unread
 
-    def render(self, user=None, commit=True):
+    def render(self, context, commit=True, **kwargs):
         """
         Renders the action, attempting to mark it as read if user is not None
         Returns a rendered string
         """
-        unread = False
+
+        user = context.get('user', None)
         if user:
-            unread = self.mark_read(user, commit=commit)
-        rendered = unicode(self)
-        if unread:
-            rendered += ' [unread]'
-        return rendered
+            kwargs['unread'] = self.mark_read(user, commit=commit)
+        return self._render(context, **kwargs)
 
     @classmethod
     def bulk_is_read(cls, user, actions):
@@ -227,7 +246,7 @@ class Action(models.Model):
         return unread
 
     @classmethod
-    def bulk_render(cls, actions=(), user=None, commit=True):
+    def bulk_render(cls, actions=(), user=None, commit=True, **kwargs):
         """
         Renders a list or queryset of actions, returning a list of rendered
         strings in the same order as ``actions``
@@ -235,19 +254,19 @@ class Action(models.Model):
         If ``user`` is provided, the class method will attempt to mark the
         actions as read for the user using Action.mark_read above
         """
+
         if user:
             unread = cls.bulk_mark_read(user, actions, commit=commit)
+            context = Context({'user': user})
         else:
             # do not care about using count(), if actions is a queryset it
             # needs to be evaluated at the next step anyway
-            unread = [False] * len(actions)
+            unread = [None] * len(actions)
+            context = Context()
 
         rendered = []
         for a, urd in zip(actions, unread):
-            rdrd = unicode(a)
-            if urd:
-                rdrd += ' [unread]'
-            rendered.append(rdrd)
+            rendered.append(a._render(context, unread=urd))
         return rendered
 
 

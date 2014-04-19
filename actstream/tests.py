@@ -1,4 +1,5 @@
 from random import choice
+import re
 
 from django.db import connection
 from django.test import TestCase
@@ -300,12 +301,10 @@ class UnreadActionsTestCase(GroupActivityTestCase):
     def test_stream_render(self):
         action.send(self.user2, verb='commented on', target=self.group)
         self.assertListEqual(
-            Action.bulk_render(Action.objects.user(self.user1), self.user1),
-            [u'Two commented on CoolGroup 0 minutes ago [unread]',
-             u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago',
-             u'Two started following CoolGroup 0 minutes ago',
-             u'Two joined CoolGroup 0 minutes ago']
-        )
+            [re.match('<div class="(.+?)">.*</div>', r, re.S).groups()[0] \
+             for r in Action.bulk_render(Action.objects.user(self.user1),
+                                         self.user1)],
+            ['action unread', 'action', 'action', 'action'])
         # check that all Actions are marked as read
         self.assertFalse(
             any([a.is_unread(self.user1) \

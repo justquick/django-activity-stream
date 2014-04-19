@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.base import TemplateDoesNotExist
-from django.template.loader import render_to_string, find_template
+from django.template.loader import find_template
 
 
 register = Library()
@@ -89,14 +89,7 @@ class DisplayAction(AsNode):
 
     def render_result(self, context):
         action_instance = self.args[0].resolve(context)
-        templates = [
-            'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
-            'actstream/action.html',
-            'activity/%s/action.html' % action_instance.verb.replace(' ', '_'),
-            'activity/action.html',
-        ]
-        return render_to_string(templates, {'action': action_instance},
-            context)
+        return action_instance.render(context)
 
 
 def display_action(parser, token):
