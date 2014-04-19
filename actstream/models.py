@@ -291,9 +291,9 @@ class Follow(models.Model):
             # get actions that occured since the last time the Follow object
             # was fetched and update unread_actions
             last_actions = qs.filter(timestamp__gte=self.last_updated)
+            self.unread_actions.add(*last_actions)
             for a in last_actions:
                 a.reset_unread_in_cache()
-            self.unread_actions.add(*last_actions)
 
         self.last_updated = now()
         self.save()
