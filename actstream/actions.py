@@ -13,7 +13,7 @@ except ImportError:
     now = datetime.datetime.now
 
 
-def follow(user, obj, send_action=True, actor_only=True):
+def follow(user, obj, send_action=True, actor_only=True, verbs=None):
     """
     Creates a relationship allowing the object's activities to appear in the
     user's stream.
@@ -28,28 +28,60 @@ def follow(user, obj, send_action=True, actor_only=True):
     ``False`` to also include actions where this object is the action_object or
     the target.
 
+    If ``verbs`` is defined as a string or a tuple, only actions bearing
+    this or these verb(s) will appear in the user's activity stream. If
+    ``verbs`` is None, all actions will appear in the stream
+
     Example::
 
         follow(request.user, group, actor_only=False)
     """
     from actstream.models import Follow, action
 
+    if verbs:
+        if hasattr(verbs, '__iter__'):
+            verbs = set(verbs)
+        else:
+            # transforms a string in a single-item list
+            verbs = set([verbs])
+
     check_actionable_model(obj)
     follow, created = Follow.objects.get_or_create(user=user,
         object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj),
-        actor_only=actor_only)
+        content_type=ContentType.objects.get_for_model(obj)
+    )
+
+    save_follow = False
+    # update actor_only
+    if follow.actor_only != actor_only:
+        follow.actor_only = actor_only
+        save_follow = True
+
+    # update verbs
+    if verbs:
+        follow.verbs = verbs
+        save_follow = True
+
+    # save if necessary
+    if save_follow:
+        follow.save()
+
     if send_action and created:
         action.send(user, verb=_('started following'), target=obj)
+
     return follow
 
 
-def unfollow(user, obj, send_action=False):
+def unfollow(user, obj, send_action=False, verbs=None):
     """
     Removes a "follow" relationship.
 
     Set ``send_action`` to ``True`` (``False is default) to also send a
     ``<user> stopped following <object>`` action signal.
+
+    If ``verbs`` is defined as a string or a tuple, only actions bearing this
+    or these verbs will be removed from this user's activity stream.
+    If ``verbs`` is None, no action will longer appear in the stream
 
     Example::
 
@@ -58,8 +90,26 @@ def unfollow(user, obj, send_action=False):
     from actstream.models import Follow, action
 
     check_actionable_model(obj)
-    Follow.objects.filter(user=user, object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj)).delete()
+
+    follow_obj = Follow.objects.filter(user=user, object_id=obj.pk,
+        content_type=ContentType.objects.get_for_model(obj))
+
+    if verbs is None:
+        # easy, just delete the Follow instance
+        follow_obj.delete()
+    else:
+        if not hasattr(verbs, '__iter__'):  # excludes strings, that's wanted
+            verbs = [verbs]
+
+        # remove verbs
+        follow_obj.verbs.difference_update(verbs)
+
+        # if there is no more verb to follow, delete the Follow object
+        if not follow_obj.verbs:
+            follow_obj.delete()
+        else:
+            follow_obj.save()
+
     if send_action:
         action.send(user, verb=_('stopped following'), target=obj)
 
