@@ -161,6 +161,8 @@ user_stream = Action.objects.user
 model_stream = Action.objects.model_actions
 followers = Follow.objects.followers
 following = Follow.objects.following
+followers_dict = Follow.objects.followers_dict
+following_dict = Follow.objects.following_dict
 
 
 def setup_generic_relations():

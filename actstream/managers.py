@@ -137,6 +137,22 @@ class FollowManager(GFKManager):
                 l.append(u)
         return l
 
+    def followers_dict(self, actor):
+        """
+        Returns a dict of User objects who are following the given actor,
+        with the verb for which they are followed as the key
+        """
+
+        d = defaultdict(lambda: [])
+        for follow in self.filter(
+            content_type=ContentType.objects.get_for_model(actor),
+            object_id=actor.pk
+        ).select_related('user'):
+            u = follow.user
+            for v in (follow.verbs or ['']):
+                d[v].append(u)
+        return dict(d)
+
     def following(self, user, *models, **kwargs):
         """
         Returns a list of actors that the given user is following (eg who i'm
@@ -161,3 +177,21 @@ class FollowManager(GFKManager):
             if not follow.verbs or follow.verbs.intersection(verbs):
                 l.append(o)
         return l
+
+    def following_dict(self, user, *models):
+        """
+        Returns a dict of actors that the given user is following
+        with the verb for which they are following as the key
+        """
+
+        qs = self.filter(user=user)
+        if len(models):
+            qs = qs.filter(content_type__in=(
+                ContentType.objects.get_for_model(model) for model in models)
+            )
+        d = defaultdict(lambda: [])
+        for follow in qs.fetch_generic_relations():
+            o = follow.follow_object
+            for v in (follow.verbs or ['']):
+                d[v].append(o)
+        return dict(d)

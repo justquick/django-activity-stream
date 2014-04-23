@@ -10,8 +10,9 @@ from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 
-from actstream.models import Action, Follow, model_stream, user_stream,\
-    setup_generic_relations, following, followers
+from actstream.models import Action, Follow, model_stream, user_stream, \
+    setup_generic_relations, following, followers, \
+    following_dict, followers_dict
 from actstream.actions import follow, unfollow
 from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
