@@ -26,7 +26,10 @@ class ActionManager(GFKManager):
         Stream of most recent actions where object is the actor.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.actor_actions.public(**kwargs)
+        ct = ContentType.objects.get_for_model(object.__class__)
+        pk = object.pk
+        return self.public(actor_content_type=ct,
+                           actor_object_id=pk, **kwargs)
 
     @stream
     def target(self, object, **kwargs):
@@ -34,7 +37,10 @@ class ActionManager(GFKManager):
         Stream of most recent actions where object is the target.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.target_actions.public(**kwargs)
+        ct = ContentType.objects.get_for_model(object.__class__)
+        pk = object.pk
+        return self.public(target_content_type=ct,
+                           target_object_id=pk, **kwargs)
 
     @stream
     def action_object(self, object, **kwargs):
@@ -42,7 +48,10 @@ class ActionManager(GFKManager):
         Stream of most recent actions where object is the action_object.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.action_object_actions.public(**kwargs)
+        ct = ContentType.objects.get_for_model(object.__class__)
+        pk = object.pk
+        return self.public(action_object_content_type=ct,
+                           action_object_object_id=pk, **kwargs)
 
     @stream
     def model_actions(self, model, **kwargs):
