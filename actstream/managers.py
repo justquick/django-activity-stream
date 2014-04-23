@@ -118,24 +118,46 @@ class FollowManager(GFKManager):
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
 
-    def followers(self, actor):
+    def followers(self, actor, verbs=()):
         """
-        Returns a list of User objects who are following the given actor (eg my followers).
+        Returns a list of User objects who are following the given actor
+        (eg my followers) for one or several given verbs (optional).
         """
-        return [follow.user for follow in self.filter(
-            content_type=ContentType.objects.get_for_model(actor),
-            object_id=actor.pk
-        ).select_related('user')]
 
-    def following(self, user, *models):
+        if not hasattr(verbs, '__iter__'):
+            verbs = [verbs]
+
+        l = []
+        for follow in self.filter(
+            content_type=ContentType.objects.get_for_model(actor),
+            object_id=actor.pk,
+        ).select_related('user'):
+            u = follow.user
+            if not follow.verbs or follow.verbs.intersection(verbs):
+                l.append(u)
+        return l
+
+    def following(self, user, *models, **kwargs):
         """
-        Returns a list of actors that the given user is following (eg who im following).
-        Items in the list can be of any model unless a list of restricted models are passed.
+        Returns a list of actors that the given user is following (eg who i'm
+        following). Items in the list can be of any model unless a list of
+        restricted models is passed.
         Eg following(user, User) will only return users following the given user
+        If one or several verbs are passed using keyword ``verbs``, this
+        returns only objects followed using these verbs
         """
+        verbs = kwargs.pop('verbs', [])
+        if not hasattr(verbs, '__iter__'):
+            verbs = [verbs]
+
         qs = self.filter(user=user)
         if len(models):
             qs = qs.filter(content_type__in=(
                 ContentType.objects.get_for_model(model) for model in models)
             )
-        return [follow.follow_object for follow in qs.fetch_generic_relations()]
+        l = []
+        for follow in qs.fetch_generic_relations():
+            o = follow.follow_object
+            if not follow.verbs or follow.verbs.intersection(verbs):
+                l.append(o)
+        return l
