@@ -18,6 +18,7 @@ from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.managers import FollowManager
 from actstream.compat import user_model_label
+from actstream.fields import VerbsField
 
 User = user_model_label
 
@@ -33,6 +34,7 @@ class Follow(models.Model):
     follow_object = generic.GenericForeignKey()
     actor_only = models.BooleanField("Only follow actions where the object is "
         "the target.", default=True)
+    verbs = VerbsField(max_length=1000)
     started = models.DateTimeField(default=now)
     objects = FollowManager()
 
