@@ -250,6 +250,88 @@ class ActivityTestCase(GroupActivityTestCase):
         activate(lang)
 
 
+class VerbsFilteringTestCase(GroupActivityTestCase):
+    # same tests as above but adding filtering by verbs
+
+    def setUp(self):
+        super(VerbsFilteringTestCase, self).setUp()
+
+        self.user3 = User.objects.get_or_create(username='Three')[0]
+
+        # adjust object followed
+
+        # user1 follows 'joined' actions (and no other) on the group
+        follow(self.user1, self.group, actor_only=False, verbs='joined')
+
+        # user2 follows comments and responses from any source in the group
+        follow(self.user2, self.group, actor_only=False,
+               verbs=('commented on', 'responded to'))
+
+        # user1 follows joins or comments coming from user3 (not about user3)
+        follow(self.user1, self.user3, verbs=('commented on', 'joined'))
+
+        # User3 joins group
+        self.user3.groups.add(self.group)
+        action.send(self.user3, verb='joined', target=self.group)
+
+        # User3 comments on group
+        action.send(self.user3, verb='commented on', target=self.group)
+        self.user3_comment = Site.objects.create(
+            domain="user3: Sweet Group!...")
+
+        # Group responds to comment
+        action.send(self.group, verb='responded to', target=self.user3_comment)
+
+    def test_following(self):
+        # user1 follows user2 for all verbs
+        self.assertListEqual(following(self.user1), [self.user2])
+        # user1 follows group for verb 'joined' only, user3 for 'joined' and
+        # 'commented on' and user2 for all actions
+        self.assertListEqual(following(self.user1, verbs='joined'),
+                             [self.user2, self.group, self.user3])
+        # user1 follows user3 for verb 'commented on' only
+        # and user2 for any actions
+        self.assertListEqual(following(self.user1, verbs='commented on'),
+                             [self.user2, self.user3])
+
+    def test_following_dict(self):
+        # all the objects user1 is following, with their verbs as keys
+        self.assertDictEqual(following_dict(self.user1), {
+            '': [self.user2],
+            'joined': [self.group, self.user3],
+            'commented on': [self.user3],
+        })
+
+    def test_followers(self):
+        self.assertListEqual(followers(self.group), [])
+        self.assertListEqual(followers(self.group, verbs='commented on'),
+                             [self.user2])
+        self.assertListEqual(followers(self.group, verbs='joined'),
+                             [self.user1])
+
+    def test_followers_dict(self):
+        self.assertDictEqual(followers_dict(self.group), {
+            'joined': [self.user1],
+            'commented on': [self.user2],
+            'responded to': [self.user2]
+        })
+
+    def test_stream(self):
+        self.assertListEqual(map(unicode, Action.objects.user(self.user1)), [
+            u'Three commented on CoolGroup 0 minutes ago',
+            u'Three joined CoolGroup 0 minutes ago',
+            u'Two started following CoolGroup 0 minutes ago',
+            u'Two joined CoolGroup 0 minutes ago',
+            u'admin joined CoolGroup 0 minutes ago',
+        ])
+        self.assertListEqual(map(unicode, Action.objects.user(self.user2)),
+            [u'CoolGroup responded to user3: Sweet Group!... 0 minutes ago',
+             u'Three commented on CoolGroup 0 minutes ago',
+             u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago',
+             u'admin commented on CoolGroup 0 minutes ago'])
+        self.assertListEqual(map(unicode, Action.objects.user(self.user3)), [])
+
+
 class ZombieTest(ActivityBaseTestCase):
     actstream_models = ('auth.User',)
     human = 10
