@@ -143,7 +143,9 @@ class Action(models.Model):
         if user and 'unread' not in dic:
             dic['unread'] = self.is_unread(user)
 
-        dic.update(getattr(self, 'data', {}))
+        data = getattr(self, 'data', None)
+        if data:
+            dic.update(data)
 
         norm_verb = self.verb.replace(' ', '_')
         templates = [
