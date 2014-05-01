@@ -24,7 +24,6 @@ from actstream.compat import user_model_label
 
 User = user_model_label
 
-
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
@@ -139,7 +138,7 @@ class Action(models.Model):
 
         dic = dict(kwargs, action=self)
 
-        user = context.get('user', None)
+        user = kwargs.get('user', None) or context.get('user', None)
         if user and 'unread' not in dic:
             dic['unread'] = self.is_unread(user)
 
@@ -205,8 +204,8 @@ class Action(models.Model):
         Returns a rendered string
         """
 
-        user = context.get('user', None)
-        if user:
+        user = kwargs.get('user', None) or context.get('user', None)
+        if user and not 'unread' in kwargs:
             kwargs['unread'] = self.mark_read(user, commit=commit)
         return self._render(context, **kwargs)
 
@@ -260,17 +259,19 @@ class Action(models.Model):
         """
 
         if user:
+            kwargs['user'] = user
+
+        unread = kwargs.pop('unread', None)
+        if unread is None and user:
             unread = cls.bulk_mark_read(user, actions, commit=commit)
-            context = Context({'user': user})
         else:
             # do not care about using count(), if actions is a queryset it
             # needs to be evaluated at the next step anyway
-            unread = [None] * len(actions)
-            context = Context()
+            unread = [unread] * len(action)
 
         rendered = []
         for a, urd in zip(actions, unread):
-            rendered.append(a._render(context, unread=urd))
+            rendered.append(a._render(Context(), unread=urd, **kwargs))
         return rendered
 
 
