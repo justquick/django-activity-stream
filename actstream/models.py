@@ -131,14 +131,13 @@ class Action(models.Model):
     def get_absolute_url(self):
         return ('actstream.views.detail', [self.pk])
 
-    def _render(self, context, **kwargs):
+    def _render(self, user, context, **kwargs):
         """
         Renders the action from a template
         """
 
         dic = dict(kwargs, action=self)
 
-        user = kwargs.get('user', None) or context.get('user', None)
         if user and 'unread' not in dic:
             dic['unread'] = self.is_unread(user)
 
@@ -198,16 +197,17 @@ class Action(models.Model):
         self.reset_unread_in_cache(user)
         return unread
 
-    def render(self, context, commit=True, **kwargs):
+    def render(self, user=None, context=None, commit=True, **kwargs):
         """
         Renders the action, attempting to mark it as read if user is not None
         Returns a rendered string
         """
 
-        user = kwargs.get('user', None) or context.get('user', None)
+        if not user:
+            user = context.get('user', None)
         if user and not 'unread' in kwargs:
             kwargs['unread'] = self.mark_read(user, commit=commit)
-        return self._render(context, **kwargs)
+        return self._render(user, context, **kwargs)
 
     @classmethod
     def bulk_is_read(cls, user, actions):
@@ -249,7 +249,7 @@ class Action(models.Model):
         return unread
 
     @classmethod
-    def bulk_render(cls, actions=(), user=None, commit=True, **kwargs):
+    def bulk_render(cls, actions=(), user=None, context=None, commit=True, **kwargs):
         """
         Renders a list or queryset of actions, returning a list of rendered
         strings in the same order as ``actions``
@@ -258,8 +258,10 @@ class Action(models.Model):
         actions as read for the user using Action.mark_read above
         """
 
-        if user:
-            kwargs['user'] = user
+        if not context:
+            context = Context()
+        elif not user:
+            user = context.get('user', None)
 
         unread = kwargs.pop('unread', None)
         if unread is None and user:
@@ -271,7 +273,7 @@ class Action(models.Model):
 
         rendered = []
         for a, urd in zip(actions, unread):
-            rendered.append(a._render(Context(), unread=urd, **kwargs))
+            rendered.append(a._render(user, context, unread=urd, **kwargs))
         return rendered
 
 
