@@ -138,8 +138,10 @@ class Action(models.Model):
 
         dic = dict(kwargs, action=self)
 
-        if user and 'unread' not in dic:
-            dic['unread'] = self.is_unread(user)
+        if user:
+            dic['user'] = user
+            if 'unread' not in dic:
+                dic['unread'] = self.is_unread(user)
 
         data = getattr(self, 'data', None)
         if data:
