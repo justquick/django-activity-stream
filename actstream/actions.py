@@ -1,6 +1,7 @@
 import datetime
 
 from django.utils.translation import ugettext_lazy as _
+from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.exceptions import check_actionable_model
@@ -99,7 +100,7 @@ def action_handler(verb, **kwargs):
     newaction = Action(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
-        verb=unicode(verb),
+        verb=text_type(verb),
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())

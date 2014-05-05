@@ -1,7 +1,7 @@
 from django.conf import settings
 
 
-# Django 1.5 compatibility utilities, providing support for custom User models.
+# Django>=1.5 compatibility utilities, providing support for custom User models.
 # Since get_user_model() causes a circular import if called when app models are
 # being loaded, the user_model_label should be used when possible, with calls
 # to get_user_model deferred to execution time

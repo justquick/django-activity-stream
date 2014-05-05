@@ -36,7 +36,7 @@ class TestAppTests(TestCase):
 
     @skipUnless(django.VERSION[0] == 1 and django.VERSION[1] >= 5, 'Django>=1.5 Required')
     def test_customuser(self):
-        from testapp.models import MyUser
+        from actstream.runtests.testapp.models import MyUser
 
         self.assertEqual(User, MyUser)
         self.assertEqual(self.user.get_full_name(), 'full')

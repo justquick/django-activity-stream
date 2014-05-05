@@ -1,9 +1,11 @@
+import django
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timesince import timesince as djtimesince
 
-from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
 try:
@@ -22,6 +24,7 @@ from actstream.compat import user_model_label
 User = user_model_label
 
 
+@python_2_unicode_compatible
 class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
@@ -39,10 +42,11 @@ class Follow(models.Model):
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
 
-    def __unicode__(self):
-        return u'%s -> %s' % (self.user, self.follow_object)
+    def __str__(self):
+        return '%s -> %s' % (self.user, self.follow_object)
 
 
+@python_2_unicode_compatible
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
@@ -101,7 +105,7 @@ class Action(models.Model):
     class Meta:
         ordering = ('-timestamp', )
 
-    def __unicode__(self):
+    def __str__(self):
         ctx = {
             'actor': self.actor,
             'verb': self.verb,
@@ -143,8 +147,7 @@ class Action(models.Model):
         Shortcut for the ``django.utils.timesince.timesince`` function of the
         current timestamp.
         """
-        from django.utils.timesince import timesince as timesince_
-        return timesince_(self.timestamp, now)
+        return djtimesince(self.timestamp, now).encode('utf8').replace(b'\xc2\xa0', b' ').decode()
 
     @models.permalink
     def get_absolute_url(self):

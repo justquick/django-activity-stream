@@ -10,6 +10,7 @@ from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
+from django.utils.six import text_type
 
 from actstream.models import Action, Follow, model_stream, user_stream,\
     setup_generic_relations, following, followers
@@ -41,6 +42,13 @@ class ActivityBaseTestCase(TestCase):
     def setUp(self):
         self.old_models = get_models()
         setup_generic_relations()
+
+    def assertSetEqual(self, l1, l2, msg=None):
+        self.assertSequenceEqual(set(map(text_type, l1)), set(l2))
+
+    def assertAllIn(self, bits, string):
+        for bit in bits:
+            self.assertIn(bit, string)
 
     def tearDown(self):
         SETTINGS['MODELS'] = self.old_models

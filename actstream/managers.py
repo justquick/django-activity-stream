@@ -72,7 +72,7 @@ class ActionManager(GFKManager):
             user=object).values_list('content_type_id',
                                      'object_id', 'actor_only')
 
-        if not follow_gfks:
+        if not len(follow_gfks):
             return qs.none()
 
         for content_type_id, object_id, actor_only in follow_gfks.iterator():
@@ -80,12 +80,12 @@ class ActionManager(GFKManager):
             if not actor_only:
                 others_by_content_type[content_type_id].append(object_id)
 
-        for content_type_id, object_ids in actors_by_content_type.iteritems():
+        for content_type_id, object_ids in actors_by_content_type.items():
             q = q | Q(
                 actor_content_type=content_type_id,
                 actor_object_id__in=object_ids,
             )
-        for content_type_id, object_ids in others_by_content_type.iteritems():
+        for content_type_id, object_ids in others_by_content_type.items():
             q = q | Q(
                 target_content_type=content_type_id,
                 target_object_id__in=object_ids,
@@ -93,8 +93,7 @@ class ActionManager(GFKManager):
                 action_object_content_type=content_type_id,
                 action_object_object_id__in=object_ids,
             )
-        qs = qs.filter(q, **kwargs)
-        return qs
+        return qs.filter(q, **kwargs)
 
 
 class FollowManager(GFKManager):
