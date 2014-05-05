@@ -25,10 +25,7 @@ if engine.startswith('mysql'):
 elif engine.startswith('postgre'):
     engine = 'django.db.backends.postgresql_psycopg2'
 
-
-print('Using DB engine: ' + engine)
 os.environ['DATABASE_ENGINE'] = engine
-
 
 try:
     from psycopg2cffi import compat
