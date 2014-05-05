@@ -25,7 +25,8 @@ install:
 addons:
   postgresql: "9.3"
 before_script:
-  - psql -c 'create database test;' -U postgres  
+  - psql -c 'create database test;' -U postgres
+  - mysql -e 'create database test;'
 script:
   - tox -e $TOX_ENV
   - DATABASE_USER="postgres" DATABASE_PASSWORD="" tox -e $TOX_ENV postgres

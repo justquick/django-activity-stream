@@ -1,10 +1,12 @@
 import django
 from django.db import models
+from django.db.backends.mysql.base import DatabaseOperations
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
+from django.utils.encoding import force_text
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -205,8 +207,17 @@ if actstream_settings.USE_JSONFIELD:
         from jsonfield.fields import JSONField
     except ImportError:
         raise ImproperlyConfigured('You must have django-jsonfield installed '
-                                'if you wish to use a JSONField on your actions')
+                                   'if you wish to use a JSONField on your actions')
     JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
 
 # connect the signal
 action.connect(action_handler, dispatch_uid='actstream.models')
+
+
+def fixed_last_executed_query(self, cursor, sql, params):
+    """
+    Patches error with Django<=1.5: https://code.djangoproject.com/ticket/19954
+    """
+    return force_text(cursor._last_executed, errors='replace')
+
+DatabaseOperations.last_executed_query = fixed_last_executed_query
