@@ -48,4 +48,4 @@ if __name__ == '__main__':
     from django.conf import settings
     from django.test.utils import get_runner
 
-    sys.exit(get_runner(settings)().run_tests(['actstream', 'testapp']))
+    sys.exit(get_runner(settings)(interactive=False).run_tests(['actstream', 'testapp']))
