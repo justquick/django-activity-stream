@@ -1,5 +1,6 @@
 # Django settings for example_project project.
-import os, sys
+import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -21,7 +22,11 @@ DATABASES = {
 }
 
 if 'postgres' in ENGINE or 'mysql' in ENGINE:
-    DATABASES['default'].update(USER='test', PASSWORD='test', HOST='localhost')
+    DATABASES['default'].update(
+        USER=os.environ.get('DATABASE_USER', 'test'),
+        PASSWORD=os.environ.get('DATABASE_PASSWORD', 'test'),
+        HOST=os.environ.get('DATABASE_HOST', 'localhost')
+    )
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -57,7 +62,6 @@ SECRET_KEY = 'wzf0h@r2u%m^_zgj^39-y(kd%+n+j0r7=du(q0^s@q1asdfasdfasdft%^2!p'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (

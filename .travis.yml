@@ -6,10 +6,6 @@ python:
   - "3.3"
   - "3.4"
 env:
-  - TOX_ENV=py2.7-dj1.5
-  - TOX_ENV=py2.6-dj1.5
-  - TOX_ENV=py2.7-dj1.4
-  - TOX_ENV=py2.6-dj1.4
   - TOX_ENV=pypy-djdev
   - TOX_ENV=py3.4-djdev
   - TOX_ENV=py3.3-djdev
@@ -31,7 +27,7 @@ env:
 install:
   - pip install tox==1.7.1
 script:
-  - tox -e $TOX_ENV
+  - DATABASE_USER="travis" DATABASE_PASSWORD="" tox -e $TOX_ENV mysql
 notifications:
   email: false
 branches:
