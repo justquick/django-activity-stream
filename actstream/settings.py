@@ -11,8 +11,13 @@ def get_models():
     Only call this right before you need to inspect the models
     """
     models = {}
-    for model in SETTINGS.get('MODELS', ('auth.User',)):
-        models[model.lower()] = get_model(*model.split('.'))
+    for name in SETTINGS.get('MODELS', ('auth.User',)):
+        try:
+            model = get_model(*name.split('.'))
+            assert model
+        except (AssertionError, LookupError, RuntimeError):
+            continue
+        models[name.lower()] = model
     return models
 
 def get_action_manager():
