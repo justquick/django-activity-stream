@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-29 07:26-0400\n"
+"POT-Creation-Date: 2014-05-04 07:53-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,24 +25,28 @@ msgstr ""
 msgid "stopped following"
 msgstr ""
 
-#: models.py:114
+#: models.py:117
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:115
+#: models.py:118
 #, python-format
 msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:117
+#: models.py:120
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:118
+#: models.py:121
 #, python-format
 msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr ""
+
+#: tests.py:251
+msgid "English"
 msgstr ""
 
 #: templates/actstream/action.html:13
