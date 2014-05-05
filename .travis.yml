@@ -1,9 +1,6 @@
 language: python
 python:
-  - "pypy"
   - "2.7"
-  - "3.3"
-  - "3.4"
 env:
   - TOX_ENV=pypy-djdev,py3.4-djdev,py2.7-djdev
   - TOX_ENV=pypy-dj1.6,py3.3-dj1.6,py2.7-dj1.6
