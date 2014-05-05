@@ -10,7 +10,6 @@ env:
   - TOX_ENV=py2.6-dj1.5
   - TOX_ENV=py2.7-dj1.4
   - TOX_ENV=py2.6-dj1.4
-  - TOX_ENV=py2.7-dj1.3
   - TOX_ENV=pypy-djdev
   - TOX_ENV=py3.4-djdev
   - TOX_ENV=py3.3-djdev
