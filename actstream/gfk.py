@@ -14,9 +14,10 @@ class GFKManager(Manager):
     """
     def get_query_set(self):
         return GFKQuerySet(self.model)
+    get_queryset = get_query_set
 
     def none(self):
-        return self.get_query_set().none()
+        return self.get_queryset().none()
 
 
 class GFKQuerySet(QuerySet):
@@ -90,7 +91,10 @@ class GFKQuerySet(QuerySet):
         return qs
 
     def none(self):
-        return self._clone(klass=EmptyGFKQuerySet)
+        clone = self._clone(klass=EmptyGFKQuerySet)
+        if hasattr(clone.query, 'set_empty'):
+            clone.query.set_empty()
+        return clone
 
 
 class EmptyGFKQuerySet(GFKQuerySet, EmptyQuerySet):
