@@ -1,7 +1,6 @@
 from random import choice
 
 from django.db import connection
-from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -19,8 +18,6 @@ from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
 from actstream.settings import get_models, SETTINGS
 from actstream.compat import get_user_model
-
-User = get_user_model()
 
 
 class LTE(int):
@@ -59,6 +56,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
 
     def setUp(self):
+        User = get_user_model()
         super(ActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
@@ -91,23 +89,24 @@ class ActivityTestCase(ActivityBaseTestCase):
         action.send(self.group, verb='responded to', target=self.comment)
 
     def test_aauser1(self):
-        self.assertEqual(map(unicode, self.user1.actor_actions.all()), [
-            u'admin commented on CoolGroup 0 minutes ago',
-            u'admin started following Two 0 minutes ago',
-            u'admin joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(self.user1.actor_actions.all(), [
+            'admin commented on CoolGroup 0 minutes ago',
+            'admin started following Two 0 minutes ago',
+            'admin joined CoolGroup 0 minutes ago',
         ])
 
     def test_user2(self):
-        self.assertEqual(map(unicode, Action.objects.actor(self.user2)), [
-            u'Two started following CoolGroup 0 minutes ago',
-            u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(Action.objects.actor(self.user2), [
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
         ])
 
     def test_group(self):
-        self.assertEqual(map(unicode, Action.objects.actor(self.group)),
-            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+        self.assertSetEqual(Action.objects.actor(self.group),
+            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_following(self):
+        User = get_user_model()
         self.assertEqual(list(following(self.user1)), [self.user2])
         self.assertEqual(len(following(self.user2, User)), 0)
 
@@ -116,15 +115,15 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)
-        self.assert_(not user_stream(self.user1))
+        self.assertFalse(user_stream(self.user1))
 
     def test_stream(self):
-        self.assertEqual(map(unicode, Action.objects.user(self.user1)), [
-            u'Two started following CoolGroup 0 minutes ago',
-            u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(Action.objects.user(self.user1), [
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
         ])
-        self.assertEqual(map(unicode, Action.objects.user(self.user2)),
-            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+        self.assertSetEqual(Action.objects.user(self.user2),
+            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_stream_stale_follows(self):
         """
@@ -132,20 +131,24 @@ class ActivityTestCase(ActivityBaseTestCase):
         references.
         """
         self.user2.delete()
-        self.assert_(not 'Two' in str(Action.objects.user(self.user1)))
+        self.assertNotIn('Two', str(Action.objects.user(self.user1)))
 
     def test_rss(self):
-        rss = self.client.get('/feed/').content
-        self.assert_(rss.startswith('<?xml version="1.0" encoding="utf-8"?>\n'
-            '<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">'))
-        self.assert_(rss.find('Activity feed for your followed actors') > -1)
+        self.assertAllIn([
+            '<?xml version="1.0" encoding="utf-8"?>\n',
+            '<rss ',
+            'xmlns:atom="http://www.w3.org/2005/Atom"',
+            'version="2.0"',
+            'Activity feed for your followed actors'
+        ], self.client.get('/feed/').content.decode())
 
     def test_atom(self):
-        atom = self.client.get('/feed/atom/').content
-        self.assert_(atom.startswith('<?xml version="1.0" encoding="utf-8"?>\n'
-            '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="%s">' %
-                                     settings.LANGUAGE_CODE))
-        self.assert_(atom.find('Activity feed for your followed actors') > -1)
+        self.assertAllIn([
+            '<?xml version="1.0" encoding="utf-8"?>\n',
+            'xmlns="http://www.w3.org/2005/Atom"',
+            'xml:lang="%s"' % settings.LANGUAGE_CODE,
+            'Activity feed for your followed actors'
+        ], self.client.get('/feed/atom/').content.decode())
 
     def test_action_object(self):
         action.send(self.user1, verb='created comment',
@@ -155,11 +158,12 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEqual(created_action.actor, self.user1)
         self.assertEqual(created_action.action_object, self.comment)
         self.assertEqual(created_action.target, self.group)
-        self.assertEqual(unicode(created_action),
-            u'admin created comment admin: Sweet Group!... on CoolGroup 0 '
+        self.assertEqual(text_type(created_action),
+            'admin created comment admin: Sweet Group!... on CoolGroup 0 '
                 'minutes ago')
 
     def test_doesnt_generate_duplicate_follow_records(self):
+        User = get_user_model()
         g = Group.objects.get_or_create(name='DupGroup')[0]
         s = User.objects.get_or_create(username='dupuser')[0]
 
@@ -168,17 +172,17 @@ class ActivityTestCase(ActivityBaseTestCase):
             "record")
         self.assertTrue(isinstance(f1, Follow), "Returns a Follow object")
 
-        self.assertEquals(1, Follow.objects.filter(user=s, object_id=g.pk,
+        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
             content_type=ContentType.objects.get_for_model(g)).count(),
             "Should only have 1 follow record here")
 
         f2 = follow(s, g)
-        self.assertEquals(1, Follow.objects.filter(user=s, object_id=g.pk,
+        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
             content_type=ContentType.objects.get_for_model(g)).count(),
             "Should still only have 1 follow record here")
         self.assertTrue(f2 is not None, "Should have received a Follow object")
         self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
-        self.assertEquals(f1, f2, "Should have received the same Follow "
+        self.assertEqual(f1, f2, "Should have received the same Follow "
             "object that I first submitted")
 
     def test_y_no_orphaned_follows(self):
@@ -204,9 +208,10 @@ class ActivityTestCase(ActivityBaseTestCase):
         action = self.user1.actor_actions.all()[0]
         action.public = False
         action.save()
-        self.assert_(not action in self.user1.actor_actions.public())
+        self.assertNotIn(action, self.user1.actor_actions.public())
 
     def test_tag_follow_url(self):
+        User = get_user_model()
         src = '{% load activity_tags %}{% follow_url user %}'
         output = Template(src).render(Context({'user': self.user1}))
         ct = ContentType.objects.get_for_model(User)
@@ -217,8 +222,8 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the model_actions method of the ActionManager
         by passing kwargs
         """
-        self.assertEqual(map(unicode, model_stream(self.user1, verb='commented on')), [
-                u'admin commented on CoolGroup 0 minutes ago',
+        self.assertSetEqual(model_stream(self.user1, verb='commented on'), [
+                'admin commented on CoolGroup 0 minutes ago',
                 ])
 
     def test_user_stream_with_kwargs(self):
@@ -226,28 +231,28 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the user method of the ActionManager by passing additional
         filters in kwargs
         """
-        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb='joined')), [
-                u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(Action.objects.user(self.user1, verb='joined'), [
+                'Two joined CoolGroup 0 minutes ago',
                 ])
 
     def test_is_following_filter(self):
         src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
         self.assertEqual(Template(src).render(Context({
             'user': self.user2, 'group': self.group
-        })), u'yup')
+        })), 'yup')
         self.assertEqual(Template(src).render(Context({
             'user': self.user1, 'group': self.group
-        })), u'')
+        })), '')
 
     def test_store_untranslated_string(self):
         lang = get_language()
         activate("fr")
-        verb = _(u'English')
+        verb = _('English')
 
-        assert unicode(verb) == u"Anglais"
+        assert text_type(verb) == "Anglais"
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group)
-        self.assertTrue(Action.objects.filter(verb=u'English'))
+        self.assertTrue(Action.objects.filter(verb='English'))
         # restore language
         activate(lang)
 
@@ -258,6 +263,7 @@ class ZombieTest(ActivityBaseTestCase):
     zombie = 1
 
     def setUp(self):
+        User = get_user_model()
         super(ZombieTest, self).setUp()
         settings.DEBUG = True
 
@@ -288,7 +294,7 @@ class ZombieTest(ActivityBaseTestCase):
     def check_query_count(self, queryset):
         ci = len(connection.queries)
 
-        result = list([map(unicode, (x.actor, x.target, x.action_object))
+        result = list([map(text_type, (x.actor, x.target, x.action_object))
             for x in queryset])
         self.assertTrue(len(connection.queries) - ci <= 4,
             'Too many queries, got %d expected no more than 4' %
@@ -296,19 +302,27 @@ class ZombieTest(ActivityBaseTestCase):
         return result
 
     def test_query_count(self):
+        User = get_user_model()
         queryset = model_stream(User)
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 10)
 
     def test_query_count_sliced(self):
+        User = get_user_model()
         queryset = model_stream(User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
+
+    def test_none_returns_an_empty_queryset(self):
+        qs = Action.objects.none()
+        self.assertFalse(qs.exists())
+        self.assertEqual(qs.count(), 0)
 
 
 class GFKManagerTestCase(TestCase):
 
     def setUp(self):
+        User = get_user_model()
         self.user_ct = ContentType.objects.get_for_model(User)
         self.group_ct = ContentType.objects.get_for_model(Group)
         self.group, _ = Group.objects.get_or_create(name='CoolGroup')

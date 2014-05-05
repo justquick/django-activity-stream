@@ -12,13 +12,17 @@ ADMINS = (
     ('Justin Quick', 'justquick@gmail.com'),
 )
 
-
+ENGINE = os.environ['DATABASE_ENGINE']
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'dev.db',                      # Or path to database file if using sqlite3.
+        'ENGINE':  ENGINE,
+        'NAME': 'test',
     }
 }
+
+if 'postgres' in ENGINE or 'mysql' in ENGINE:
+    DATABASES['default'].update(USER='test', PASSWORD='test', HOST='localhost')
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -83,14 +87,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'actstream',
-    'testapp'
+    'actstream.runtests.testapp'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    # for django 1.2 or 1.3
-    'django.core.context_processors.auth',
-    # for django 1.4 comment above line and uncomment below
-    #'django.contrib.auth.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
@@ -110,3 +111,5 @@ ACTSTREAM_SETTINGS = {
 if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
     AUTH_USER_MODEL = 'testapp.MyUser'
     ACTSTREAM_SETTINGS['MODELS'] += ('testapp.myuser',)
+
+TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
