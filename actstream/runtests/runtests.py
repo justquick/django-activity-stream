@@ -20,8 +20,6 @@ except IndexError:
 
 if engine.startswith('mysql'):
     engine = 'django.db.backends.mysql'
-    if sys.version_info[0] == 3:
-        engine = 'mysql.connector.django'
 elif engine.startswith('postgre'):
     engine = 'django.db.backends.postgresql_psycopg2'
 
@@ -30,17 +28,23 @@ os.environ['DATABASE_ENGINE'] = engine
 try:
     from psycopg2cffi import compat
     compat.register()
-except (ImportError, NameError):
+except ImportError:
+    pass
+
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
+import django
+try:
+    django.setup()
+except AttributeError:
     pass
 
 
 if __name__ == '__main__':
-    import django
-    try:
-        django.setup()
-    except AttributeError:
-        pass
-
     from django.conf import settings
     from django.test.utils import get_runner
 
