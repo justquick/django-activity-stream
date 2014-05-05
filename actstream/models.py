@@ -15,6 +15,11 @@ except ImportError:
     from datetime import datetime
     now = datetime.now
 
+try:
+    from django.contrib.contenttypes import fields as generic
+except ImportError:
+    from django.contrib.contenttypes import generic
+
 from actstream import settings as actstream_settings
 from actstream.signals import action
 from actstream.actions import action_handler
@@ -168,6 +173,9 @@ def setup_generic_relations():
     """
     Set up GenericRelations for actionable models.
     """
+    related_attr_name = 'related_name'
+    if django.VERSION[0] == 1 and django.VERSION[1] >= 7:
+        related_attr_name = 'related_query_name'
     for model in actstream_settings.get_models().values():
         if not model:
             continue
@@ -176,14 +184,15 @@ def setup_generic_relations():
             if isinstance(getattr(model, attr, None),
                           generic.ReverseGenericRelatedObjectsDescriptor):
                 break
-            generic.GenericRelation(Action,
-                content_type_field='%s_content_type' % field,
-                object_id_field='%s_object_id' % field,
-                related_name='actions_with_%s_%s_as_%s' % (
+            kwargs = {
+                'content_type_field': '%s_content_type' % field,
+                'object_id_field': '%s_object_id' % field,
+                related_attr_name: 'actions_with_%s_%s_as_%s' % (
                     model._meta.app_label, model._meta.module_name, field),
-            ).contribute_to_class(model, attr)
+            }
+            generic.GenericRelation(Action, **kwargs).contribute_to_class(model, attr)
 
-            # @@@ I'm not entirely sure why this works
+            # @@@ I'm still not entirely sure why this works
             setattr(Action, 'actions_with_%s_%s_as_%s' % (
                 model._meta.app_label, model._meta.module_name, field), None)
 
