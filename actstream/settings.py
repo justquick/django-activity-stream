@@ -1,24 +1,8 @@
 import django
 from django.conf import settings
-from django.db.models import get_model
 
 
 SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
-
-def get_models():
-    """
-    Returns a lookup of 'app_label.model': <model class> from ACTSTREAM_SETTINGS['MODELS']
-    Only call this right before you need to inspect the models
-    """
-    models = {}
-    for name in SETTINGS.get('MODELS', ('auth.User',)):
-        try:
-            model = get_model(*name.split('.'))
-            assert model
-        except (AssertionError, LookupError, RuntimeError):
-            continue
-        models[name.lower()] = model
-    return models
 
 def get_action_manager():
     """

@@ -108,7 +108,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'auth.group', 'sites.site', 'comments.comment'),
     'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
@@ -118,6 +117,5 @@ ACTSTREAM_SETTINGS = {
 
 if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
     AUTH_USER_MODEL = 'testapp.MyUser'
-    ACTSTREAM_SETTINGS['MODELS'] += ('testapp.myuser',)
 
 TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'

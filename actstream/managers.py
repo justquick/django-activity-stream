@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
+from actstream.registry import check
 
 
 class ActionManager(GFKManager):
@@ -21,56 +22,65 @@ class ActionManager(GFKManager):
         return self.filter(*args, **kwargs)
 
     @stream
-    def actor(self, object, **kwargs):
+    def actor(self, obj, **kwargs):
         """
-        Stream of most recent actions where object is the actor.
+        Stream of most recent actions where obj is the actor.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.actor_actions.public(**kwargs)
+        check(obj)
+        return obj.actor_actions.public(**kwargs)
 
     @stream
-    def target(self, object, **kwargs):
+    def target(self, obj, **kwargs):
         """
-        Stream of most recent actions where object is the target.
+        Stream of most recent actions where obj is the target.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.target_actions.public(**kwargs)
+        check(obj)
+        return obj.target_actions.public(**kwargs)
 
     @stream
-    def action_object(self, object, **kwargs):
+    def action_object(self, obj, **kwargs):
         """
-        Stream of most recent actions where object is the action_object.
+        Stream of most recent actions where obj is the action_object.
         Keyword arguments will be passed to Action.objects.filter
         """
-        return object.action_object_actions.public(**kwargs)
+        check(obj)
+        return obj.action_object_actions.public(**kwargs)
 
     @stream
     def model_actions(self, model, **kwargs):
         """
         Stream of most recent actions by any particular model
         """
+        check(model)
         ctype = ContentType.objects.get_for_model(model)
         return self.public(
             (Q(target_content_type=ctype) |
-            Q(action_object_content_type=ctype) |
-            Q(actor_content_type=ctype)),
+             Q(action_object_content_type=ctype) |
+             Q(actor_content_type=ctype)),
             **kwargs
         )
 
     @stream
-    def user(self, object, **kwargs):
+    def user(self, obj, **kwargs):
         """
-        Stream of most recent actions by objects that the passed User object is
+        Stream of most recent actions by objects that the passed User obj is
         following.
         """
         q = Q()
-        qs = self.filter(public=True)
+        qs = self.public()
+
+        if not obj:
+            return qs.none()
+
+        check(obj)
         actors_by_content_type = defaultdict(lambda: [])
         others_by_content_type = defaultdict(lambda: [])
 
         follow_gfks = get_model('actstream', 'follow').objects.filter(
-            user=object).values_list('content_type_id',
-                                     'object_id', 'actor_only')
+            user=obj).values_list('content_type_id',
+                                  'object_id', 'actor_only')
 
         if not len(follow_gfks):
             return qs.none()
@@ -105,6 +115,7 @@ class FollowManager(GFKManager):
         """
         Filter to a specific instance.
         """
+        check(instance)
         content_type = ContentType.objects.get_for_model(instance).pk
         return self.filter(content_type=content_type, object_id=instance.pk)
 
@@ -121,6 +132,7 @@ class FollowManager(GFKManager):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
         """
+        check(actor)
         return [follow.user for follow in self.filter(
             content_type=ContentType.objects.get_for_model(actor),
             object_id=actor.pk
@@ -133,8 +145,7 @@ class FollowManager(GFKManager):
         Eg following(user, User) will only return users following the given user
         """
         qs = self.filter(user=user)
-        if len(models):
-            qs = qs.filter(content_type__in=(
-                ContentType.objects.get_for_model(model) for model in models)
-            )
+        for model in models:
+            check(model)
+            qs = qs.filter(content_type=ContentType.objects.get_for_model(model))
         return [follow.follow_object for follow in qs.fetch_generic_relations()]
