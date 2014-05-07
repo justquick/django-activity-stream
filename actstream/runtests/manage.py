@@ -11,12 +11,9 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
 
-engine = 'django.db.backends.sqlite3'
 
-try:
-    engine = sys.argv[1:][0]
-except IndexError:
-    pass
+# Expand DATABASE_ENGINE
+engine = os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
 
 if engine.startswith('mysql'):
     engine = 'django.db.backends.mysql'
@@ -45,7 +42,6 @@ except AttributeError:
 
 
 if __name__ == '__main__':
-    from django.conf import settings
-    from django.test.utils import get_runner
+    from django.core.management import execute_from_command_line
 
-    sys.exit(get_runner(settings)(interactive=False).run_tests(['actstream', 'testapp']))
+    execute_from_command_line(sys.argv)

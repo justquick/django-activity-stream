@@ -1,17 +1,11 @@
+import django
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
-from django.utils.encoding import force_text
-
 from django.contrib.contenttypes.models import ContentType
 
-try:
-    from django.db.backends.mysql.base import DatabaseOperations
-except (ImportError, ImproperlyConfigured):
-    DatabaseOperations = None
 
 try:
     from django.utils import timezone
@@ -24,15 +18,13 @@ from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
 from actstream.compat import user_model_label, generic
 
-User = user_model_label
-
 
 @python_2_unicode_compatible
 class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(user_model_label)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
@@ -167,20 +159,7 @@ followers = Follow.objects.followers
 following = Follow.objects.following
 
 
-if actstream_settings.USE_JSONFIELD:
-    try:
-        from jsonfield.fields import JSONField
-    except ImportError:
-        raise ImproperlyConfigured('You must have django-jsonfield installed '
-                                   'if you wish to use a JSONField on your actions')
-    JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
+if django.VERSION < (1, 7):
+    from actstream.apps import ActstreamConfig
 
-
-def fixed_last_executed_query(self, cursor, sql, params):
-    """
-    Patches error with MySQL + Django<=1.5: https://code.djangoproject.com/ticket/19954
-    """
-    return force_text(cursor._last_executed, errors='replace')
-
-if DatabaseOperations:
-    DatabaseOperations.last_executed_query = fixed_last_executed_query
+    ActstreamConfig().ready()

@@ -14,11 +14,9 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    from actstream.models import Action
-
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
-    if django.VERSION[0] == 1 and django.VERSION[1] >= 7:
+    if django.VERSION >= (1, 7):
         related_attr_name = 'related_query_name'
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
@@ -28,10 +26,7 @@ def setup_generic_relations(model_class):
             'object_id_field': '%s_object_id' % field,
             related_attr_name: attr_value
         }
-        generic.GenericRelation(Action, **kwargs).contribute_to_class(model_class, attr)
-
-        # @@@ I'm still not entirely sure why this works
-        setattr(Action, attr_value, None)
+        generic.GenericRelation('actstream.Action', **kwargs).contribute_to_class(model_class, attr)
 
 
 def label(model_class):

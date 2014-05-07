@@ -4,6 +4,7 @@ from django.conf import settings
 
 SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
 
+
 def get_action_manager():
     """
     Returns the class of the action manager to use from ACTSTREAM_SETTINGS['MANAGER']
@@ -13,7 +14,7 @@ def get_action_manager():
     return getattr(__import__(j(a[:-1]), {}, {}, [a[-1]]), a[-1])()
 
 USE_PREFETCH = SETTINGS.get('USE_PREFETCH',
-                            django.VERSION[0] == 1 and django.VERSION[1] >= 4)
+                            django.VERSION >= (1, 4))
 
 FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 

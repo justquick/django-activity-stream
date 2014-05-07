@@ -40,13 +40,10 @@ class Unregistered(Abstract):
     pass
 
 
-if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
-    from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+if django.VERSION >= (1, 5):
+    from django.contrib.auth.models import AbstractUser
 
-    class MyUser(AbstractBaseUser, PermissionsMixin):
-        username = models.CharField(max_length=30, unique=True)
-
-        USERNAME_FIELD = 'username'
+    class MyUser(AbstractUser):
 
         def get_full_name(self):
             return 'full'

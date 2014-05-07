@@ -1,11 +1,11 @@
 import datetime
 
+from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
 
 from actstream import settings
-from actstream.models import Follow, Action
 from actstream.signals import action
 from actstream.registry import check
 
@@ -36,7 +36,7 @@ def follow(user, obj, send_action=True, actor_only=True):
         follow(request.user, group, actor_only=False)
     """
     check(obj)
-    instance, created = Follow.objects.get_or_create(
+    instance, created = get_model('actstream', 'follow').objects.get_or_create(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
@@ -57,7 +57,7 @@ def unfollow(user, obj, send_action=False):
         unfollow(request.user, other_user)
     """
     check(obj)
-    Follow.objects.filter(
+    get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     ).delete()
@@ -76,7 +76,7 @@ def is_following(user, obj):
         is_following(request.user, group)
     """
     check(obj)
-    return Follow.objects.filter(
+    return get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     ).exists()
@@ -94,7 +94,7 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = Action(
+    newaction = get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=text_type(verb),
@@ -113,6 +113,3 @@ def action_handler(verb, **kwargs):
     if settings.USE_JSONFIELD and len(kwargs):
         newaction.data = kwargs
     newaction.save()
-
-# connect the signal
-action.connect(action_handler, dispatch_uid='actstream.models')

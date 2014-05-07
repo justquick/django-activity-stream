@@ -37,7 +37,7 @@ class TestAppTests(TestCase):
         self.assertEqual(newaction.data['tags'], ['sayings'])
         self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
 
-    @skipUnless(django.VERSION[0] == 1 and django.VERSION[1] >= 5, 'Django>=1.5 Required')
+    @skipUnless(django.VERSION >= (1, 5), 'Django>=1.5 Required')
     def test_customuser(self):
         from actstream.runtests.testapp.models import MyUser
 

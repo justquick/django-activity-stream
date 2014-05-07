@@ -76,7 +76,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'actstream.runtests.urls'
 
 TEMPLATE_DIRS = (
     'templates',
@@ -115,7 +115,7 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
-if django.VERSION[0] == 1 and django.VERSION[1] >= 5:
+if django.VERSION >= (1, 5):
     AUTH_USER_MODEL = 'testapp.MyUser'
 
 TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
