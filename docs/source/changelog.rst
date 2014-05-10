@@ -9,6 +9,7 @@ Changelog
   - Added register method for actionable models
   - Dropped support for ACTSTREAM_SETTINGS['MODELS'] setting
   - Added AppConf to support Django>=1.7
+  - Removed unused exceptions now relying on ImproperlyConfigured and RuntimeError
 
 
 0.4.5
