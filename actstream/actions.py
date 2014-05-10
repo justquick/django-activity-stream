@@ -112,4 +112,5 @@ def action_handler(verb, **kwargs):
                     ContentType.objects.get_for_model(obj))
     if settings.USE_JSONFIELD and len(kwargs):
         newaction.data = kwargs
-    newaction.save()
+    newaction.save(force_insert=True)
+    return newaction

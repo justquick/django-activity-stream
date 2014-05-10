@@ -12,7 +12,7 @@ from django.utils.translation import activate, get_language
 from django.utils.six import text_type
 
 from actstream.models import (Action, Follow, model_stream, user_stream,
-                              following, followers)
+                              actor_stream, following, followers)
 from actstream.actions import follow, unfollow
 from actstream.signals import action
 from actstream.registry import register, unregister
@@ -67,7 +67,7 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         # User1 joins group
         self.user1.groups.add(self.group)
-        action.send(self.user1, verb='joined', target=self.group)
+        self.join_action = action.send(self.user1, verb='joined', target=self.group)[0][1]
 
         # User1 follows User2
         follow(self.user1, self.user2)
@@ -96,13 +96,13 @@ class ActivityTestCase(ActivityBaseTestCase):
         ])
 
     def test_user2(self):
-        self.assertSetEqual(Action.objects.actor(self.user2), [
+        self.assertSetEqual(actor_stream(self.user2), [
             'Two started following CoolGroup 0 minutes ago',
             'Two joined CoolGroup 0 minutes ago',
         ])
 
     def test_group(self):
-        self.assertSetEqual(Action.objects.actor(self.group),
+        self.assertSetEqual(actor_stream(self.group),
             ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_following(self):
@@ -118,20 +118,20 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertFalse(user_stream(self.user1))
 
     def test_stream(self):
-        self.assertSetEqual(Action.objects.user(self.user1), [
+        self.assertSetEqual(user_stream(self.user1), [
             'Two started following CoolGroup 0 minutes ago',
             'Two joined CoolGroup 0 minutes ago',
         ])
-        self.assertSetEqual(Action.objects.user(self.user2),
+        self.assertSetEqual(user_stream(self.user2),
             ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_stream_stale_follows(self):
         """
-        Action.objects.user() should ignore Follow objects with stale actor
+        user_stream() should ignore Follow objects with stale actor
         references.
         """
         self.user2.delete()
-        self.assertNotIn('Two', str(Action.objects.user(self.user1)))
+        self.assertNotIn('Two', str(user_stream(self.user1)))
 
     def test_rss(self):
         self.assertAllIn([
@@ -151,9 +151,8 @@ class ActivityTestCase(ActivityBaseTestCase):
         ], self.client.get('/feed/atom/').content.decode())
 
     def test_action_object(self):
-        action.send(self.user1, verb='created comment',
-            action_object=self.comment, target=self.group)
-        created_action = Action.objects.get(verb='created comment')
+        created_action = action.send(self.user1, verb='created comment',
+            action_object=self.comment, target=self.group)[0][1]
 
         self.assertEqual(created_action.actor, self.user1)
         self.assertEqual(created_action.action_object, self.comment)
@@ -227,7 +226,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the user method of the ActionManager by passing additional
         filters in kwargs
         """
-        self.assertSetEqual(Action.objects.user(self.user1, verb='joined'), [
+        self.assertSetEqual(user_stream(self.user1, verb='joined'), [
                 'Two joined CoolGroup 0 minutes ago',
                 ])
 
@@ -248,7 +247,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         assert text_type(verb) == "Anglais"
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group)
-        self.assertTrue(Action.objects.filter(verb='English'))
+        self.assertTrue(Action.objects.filter(verb='English').exists())
         # restore language
         activate(lang)
 
@@ -256,6 +255,10 @@ class ActivityTestCase(ActivityBaseTestCase):
         qs = Action.objects.none()
         self.assertFalse(qs.exists())
         self.assertEqual(qs.count(), 0)
+
+    def test_with_user_activity(self):
+        self.assertIn(self.join_action,
+                      list(user_stream(self.user1, with_user_activity=True)))
 
 
 class ZombieTest(ActivityBaseTestCase):

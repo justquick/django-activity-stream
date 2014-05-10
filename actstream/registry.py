@@ -18,6 +18,7 @@ def setup_generic_relations(model_class):
     related_attr_value = 'actions_with_%s' % label(model_class)
     if django.VERSION >= (1, 7):
         related_attr_name = 'related_query_name'
+    relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
         attr_value = '%s_as_%s' % (related_attr_value, field)
@@ -26,7 +27,10 @@ def setup_generic_relations(model_class):
             'object_id_field': '%s_object_id' % field,
             related_attr_name: attr_value
         }
-        generic.GenericRelation('actstream.Action', **kwargs).contribute_to_class(model_class, attr)
+        rel = generic.GenericRelation('actstream.Action', **kwargs
+                        ).contribute_to_class(model_class, attr)
+        relations[field] = rel
+    return relations
 
 
 def label(model_class):
@@ -55,20 +59,19 @@ def validate(model_class, exception_class=ImproperlyConfigured):
     return model_class
 
 
-class ActionableModelRegistry(list):
+class ActionableModelRegistry(dict):
 
     def register(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
             model_class = validate(class_or_label)
             if not model_class in self:
-                setup_generic_relations(model_class)
-                self.append(model_class)
+                self[model_class] = setup_generic_relations(model_class)
 
     def unregister(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
             model_class = validate(class_or_label)
             if model_class in self:
-                self.remove(model_class)
+                del self[model_class]
 
     def check(self, model_class_or_object):
         if not isclass(model_class_or_object):
