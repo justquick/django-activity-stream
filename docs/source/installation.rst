@@ -11,9 +11,7 @@ or get it from source
 
 .. code-block:: bash
 
-    $ git clone https://justquick@github.com/justquick/django-activity-stream.git
-    $ cd django-activity-stream
-    $ python setup.py install
+    $ pip install git+https://github.com/justquick/django-activity-stream.git#egg=actstream
 
 Then to add the Django Activity Stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
 

@@ -19,8 +19,8 @@ set the ``actor_only`` parameter to ``False``:
 
 .. code-block:: python
 
-	# Follow the group wherever it appears in activity.
-	follow(request.user, group, actor_only=False)
+    # Follow the group wherever it appears in activity.
+    follow(request.user, group, actor_only=False)
 
 You can also just make a request to the ``actstream_follow`` view while authenticated.
 The request can use either ``GET`` or ``POST``.

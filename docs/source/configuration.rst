@@ -1,12 +1,39 @@
 Configuration
 ==============
 
+
+Models
+-------
+
+In order to have your models be either an actor, target, or action object they must first be registered with actstream.
+In v0.5 and above, actstream has a registry of all actionable model classes.
+When you register them, actstream sets up certain GenericRelations that are required for generating activity streams.
+You normally call register right after your model is defined (models.py) but you can call it anytime before you need to generate activity streams.
+
+.. code-block:: python
+
+    from actstream import registry
+
+    class MyModel(models.Model):
+        ...
+
+    registry.register(MyModel)
+
+.. warning::
+
+    This change makes the ACTSTREAM_SETTINGS['MODELS'] setting obsolte so please use the register functions instead.
+
+
+Settings
+--------
+
 Update these settings in your project's ``settings.py``.
 As of v0.4.4, all settings are contained inside the ``ACTSTREAM_SETTINGS`` dictionary.
-Here is an example of what you can set in your ``settings.py``::
+Here is an example of what you can set in your ``settings.py``
+
+.. code-block:: python
 
     ACTSTREAM_SETTINGS = {
-        'MODELS': ('auth.user', 'auth.group', 'sites.site', 'comments.comment'),
         'MANAGER': 'myapp.streams.MyActionManager',
         'FETCH_RELATIONS': True,
         'USE_PREFETCH': True,
@@ -16,14 +43,6 @@ Here is an example of what you can set in your ``settings.py``::
 
 
 Supported settings are defined below.
-
-MODELS
-*******
-
-A list the models that you want to enable actions for. Models must be in the format ``app_label.model_name`` .
-In the background, django-activity-stream sets up ``GenericRelations`` to handle stream generation.
-
-Defaults to ``('auth.user',)``
 
 
 MANAGER

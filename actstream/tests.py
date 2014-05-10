@@ -11,12 +11,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.utils.six import text_type
 
-from actstream.models import Action, Follow, model_stream, user_stream,\
-    setup_generic_relations, following, followers
+from actstream.models import (Action, Follow, model_stream, user_stream,
+                              following, followers)
 from actstream.actions import follow, unfollow
-from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
-from actstream.settings import get_models, SETTINGS
+from actstream.registry import register, unregister
 from actstream.compat import get_user_model
 
 
@@ -37,8 +36,8 @@ class ActivityBaseTestCase(TestCase):
     actstream_models = ()
 
     def setUp(self):
-        self.old_models = get_models()
-        setup_generic_relations()
+        for model in self.actstream_models:
+            register(model)
 
     def assertSetEqual(self, l1, l2, msg=None):
         self.assertSequenceEqual(set(map(text_type, l1)), set(l2))
@@ -48,7 +47,8 @@ class ActivityBaseTestCase(TestCase):
             self.assertIn(bit, string)
 
     def tearDown(self):
-        SETTINGS['MODELS'] = self.old_models
+        for model in self.actstream_models:
+            unregister(model)
 
 
 class ActivityTestCase(ActivityBaseTestCase):
@@ -200,10 +200,6 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEqual(self.user2.target_actions.count(), 1)
         self.assertEqual(self.user2.action_object_actions.count(), 0)
 
-    def test_bad_actionable_model(self):
-        self.assertRaises(ModelNotActionable, follow, self.user1,
-                          ContentType.objects.get_for_model(self.user1))
-
     def test_hidden_action(self):
         action = self.user1.actor_actions.all()[0]
         action.public = False
@@ -255,6 +251,11 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertTrue(Action.objects.filter(verb='English'))
         # restore language
         activate(lang)
+
+    def test_none_returns_an_empty_queryset(self):
+        qs = Action.objects.none()
+        self.assertFalse(qs.exists())
+        self.assertEqual(qs.count(), 0)
 
 
 class ZombieTest(ActivityBaseTestCase):
@@ -312,11 +313,6 @@ class ZombieTest(ActivityBaseTestCase):
         queryset = model_stream(User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
-
-    def test_none_returns_an_empty_queryset(self):
-        qs = Action.objects.none()
-        self.assertFalse(qs.exists())
-        self.assertEqual(qs.count(), 0)
 
 
 class GFKManagerTestCase(TestCase):

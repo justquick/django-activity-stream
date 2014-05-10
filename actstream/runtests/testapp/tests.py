@@ -3,10 +3,13 @@ from datetime import datetime
 import django
 from django.utils.unittest import skipUnless
 from django.test import TestCase
+from django.core.exceptions import ImproperlyConfigured
 
-from actstream.models import Action
-from actstream.signals import action
+from actstream import action, registry
+from actstream.models import Action, actor_stream, model_stream
 from actstream.compat import get_user_model
+
+from actstream.runtests.testapp.models import Abstract, Unregistered
 
 
 User = get_user_model()
@@ -34,9 +37,18 @@ class TestAppTests(TestCase):
         self.assertEqual(newaction.data['tags'], ['sayings'])
         self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
 
-    @skipUnless(django.VERSION[0] == 1 and django.VERSION[1] >= 5, 'Django>=1.5 Required')
+    @skipUnless(django.VERSION >= (1, 5), 'Django>=1.5 Required')
     def test_customuser(self):
         from actstream.runtests.testapp.models import MyUser
 
         self.assertEqual(User, MyUser)
         self.assertEqual(self.user.get_full_name(), 'full')
+
+    def test_registration(self):
+        instance = Unregistered.objects.create(name='fubar')
+        self.assertRaises(ImproperlyConfigured, actor_stream, instance)
+        registry.register(Unregistered)
+        self.assertEqual(actor_stream(instance).count(), 0)
+
+        self.assertRaises(RuntimeError, model_stream, Abstract)
+        self.assertRaises(ImproperlyConfigured, registry.register, Abstract)

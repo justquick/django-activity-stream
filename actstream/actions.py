@@ -1,11 +1,13 @@
 import datetime
 
+from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
 
-from actstream.exceptions import check_actionable_model
 from actstream import settings
+from actstream.signals import action
+from actstream.registry import check
 
 try:
     from django.utils import timezone
@@ -33,16 +35,14 @@ def follow(user, obj, send_action=True, actor_only=True):
 
         follow(request.user, group, actor_only=False)
     """
-    from actstream.models import Follow, action
-
-    check_actionable_model(obj)
-    follow, created = Follow.objects.get_or_create(user=user,
-        object_id=obj.pk,
+    check(obj)
+    instance, created = get_model('actstream', 'follow').objects.get_or_create(
+        user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
     if send_action and created:
         action.send(user, verb=_('started following'), target=obj)
-    return follow
+    return instance
 
 
 def unfollow(user, obj, send_action=False):
@@ -56,11 +56,11 @@ def unfollow(user, obj, send_action=False):
 
         unfollow(request.user, other_user)
     """
-    from actstream.models import Follow, action
-
-    check_actionable_model(obj)
-    Follow.objects.filter(user=user, object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj)).delete()
+    check(obj)
+    get_model('actstream', 'follow').objects.filter(
+        user=user, object_id=obj.pk,
+        content_type=ContentType.objects.get_for_model(obj)
+    ).delete()
     if send_action:
         action.send(user, verb=_('stopped following'), target=obj)
 
@@ -75,29 +75,26 @@ def is_following(user, obj):
 
         is_following(request.user, group)
     """
-    from actstream.models import Follow
-
-    check_actionable_model(obj)
-    return bool(Follow.objects.filter(user=user, object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj)).count())
+    check(obj)
+    return get_model('actstream', 'follow').objects.filter(
+        user=user, object_id=obj.pk,
+        content_type=ContentType.objects.get_for_model(obj)
+    ).exists()
 
 
 def action_handler(verb, **kwargs):
     """
     Handler function to create Action instance upon action signal call.
     """
-    from actstream.models import Action
-
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
-    check_actionable_model(actor)
 
     # We must store the unstranslated string
     # If verb is an ugettext_lazyed string, fetch the original string
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = Action(
+    newaction = get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=text_type(verb),
@@ -109,7 +106,7 @@ def action_handler(verb, **kwargs):
     for opt in ('target', 'action_object'):
         obj = kwargs.pop(opt, None)
         if not obj is None:
-            check_actionable_model(obj)
+            check(obj)
             setattr(newaction, '%s_object_id' % opt, obj.pk)
             setattr(newaction, '%s_content_type' % opt,
                     ContentType.objects.get_for_model(obj))

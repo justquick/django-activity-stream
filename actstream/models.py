@@ -1,14 +1,11 @@
 import django
 from django.db import models
-from django.db.backends.mysql.base import DatabaseOperations
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
-from django.utils.encoding import force_text
-
 from django.contrib.contenttypes.models import ContentType
+
 
 try:
     from django.utils import timezone
@@ -17,18 +14,9 @@ except ImportError:
     from datetime import datetime
     now = datetime.now
 
-try:
-    from django.contrib.contenttypes import fields as generic
-except ImportError:
-    from django.contrib.contenttypes import generic
-
 from actstream import settings as actstream_settings
-from actstream.signals import action
-from actstream.actions import action_handler
 from actstream.managers import FollowManager
-from actstream.compat import user_model_label
-
-User = user_model_label
+from actstream.compat import user_model_label, generic
 
 
 @python_2_unicode_compatible
@@ -36,7 +24,7 @@ class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(user_model_label)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
@@ -171,53 +159,7 @@ followers = Follow.objects.followers
 following = Follow.objects.following
 
 
-def setup_generic_relations():
-    """
-    Set up GenericRelations for actionable models.
-    """
-    related_attr_name = 'related_name'
-    if django.VERSION[0] == 1 and django.VERSION[1] >= 7:
-        related_attr_name = 'related_query_name'
-    for model in actstream_settings.get_models().values():
-        if not model:
-            continue
-        for field in ('actor', 'target', 'action_object'):
-            attr = '%s_actions' % field
-            if isinstance(getattr(model, attr, None),
-                          generic.ReverseGenericRelatedObjectsDescriptor):
-                break
-            kwargs = {
-                'content_type_field': '%s_content_type' % field,
-                'object_id_field': '%s_object_id' % field,
-                related_attr_name: 'actions_with_%s_%s_as_%s' % (
-                    model._meta.app_label, model._meta.module_name, field),
-            }
-            generic.GenericRelation(Action, **kwargs).contribute_to_class(model, attr)
+if django.VERSION < (1, 7):
+    from actstream.apps import ActstreamConfig
 
-            # @@@ I'm still not entirely sure why this works
-            setattr(Action, 'actions_with_%s_%s_as_%s' % (
-                model._meta.app_label, model._meta.module_name, field), None)
-
-
-setup_generic_relations()
-
-
-if actstream_settings.USE_JSONFIELD:
-    try:
-        from jsonfield.fields import JSONField
-    except ImportError:
-        raise ImproperlyConfigured('You must have django-jsonfield installed '
-                                   'if you wish to use a JSONField on your actions')
-    JSONField(blank=True, null=True).contribute_to_class(Action, 'data')
-
-# connect the signal
-action.connect(action_handler, dispatch_uid='actstream.models')
-
-
-def fixed_last_executed_query(self, cursor, sql, params):
-    """
-    Patches error with Django<=1.5: https://code.djangoproject.com/ticket/19954
-    """
-    return force_text(cursor._last_executed, errors='replace')
-
-DatabaseOperations.last_executed_query = fixed_last_executed_query
+    ActstreamConfig().ready()
