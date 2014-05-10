@@ -108,7 +108,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 
 ACTSTREAM_SETTINGS = {
-    'MANAGER': 'testapp.streams.MyActionManager',
+    'MANAGER': 'actstream.runtests.testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,

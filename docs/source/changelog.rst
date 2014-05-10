@@ -1,6 +1,16 @@
 Changelog
 ==========
 
+0.5.0
+-----
+
+  - Django 1.6 and 1.7 support
+  - Python 3 and PyPy support
+  - Added register method for actionable models
+  - Dropped support for ACTSTREAM_SETTINGS['MODELS'] setting
+  - Added AppConf to support Django>=1.7
+
+
 0.4.5
 -----
 

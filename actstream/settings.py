@@ -11,7 +11,11 @@ def get_action_manager():
     """
     mod = SETTINGS.get('MANAGER', 'actstream.managers.ActionManager')
     a, j = mod.split('.'), lambda l: '.'.join(l)
-    return getattr(__import__(j(a[:-1]), {}, {}, [a[-1]]), a[-1])()
+    try:
+        return getattr(__import__(j(a[:-1]), {}, {}, [a[-1]]), a[-1])()
+    except ImportError:
+        raise ImportError('Cannot import %s try fixing ACTSTREAM_SETTINGS[MANAGER]'
+                          'setting.' % mod)
 
 USE_PREFETCH = SETTINGS.get('USE_PREFETCH',
                             django.VERSION >= (1, 4))
