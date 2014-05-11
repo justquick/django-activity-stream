@@ -40,6 +40,21 @@ Actor streams show you what a particular actor object has done. Helpful for view
 Generates a stream of ``Actions`` where the ``request.user`` was the ``actor``
 
 
+Target
+------
+
+Actor streams show you what a particular actor object has done. Helpful for viewing "My Activities".
+
+.. code-block:: python
+
+    from actstream.models import actor_stream
+
+    actor_stream(request.user)
+
+Generates a stream of ``Actions`` where the ``request.user`` was the ``actor``
+
+
+
 Action Object
 --------------
 

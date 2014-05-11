@@ -1,16 +1,17 @@
-from actstream.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.base import TemplateDoesNotExist
 from django.template.loader import render_to_string, find_template
 
+from actstream import models
+
 
 register = Library()
 
 
 def _is_following_helper(context, actor):
-    return Follow.objects.is_following(context.get('user'), actor)
+    return models.Follow.objects.is_following(context.get('user'), actor)
 
 
 class DisplayActivityFollowUrl(Node):
@@ -21,7 +22,7 @@ class DisplayActivityFollowUrl(Node):
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         content_type = ContentType.objects.get_for_model(actor_instance).pk
-        if Follow.objects.is_following(context.get('user'), actor_instance):
+        if models.Follow.objects.is_following(context.get('user'), actor_instance):
             return reverse('actstream_unfollow', kwargs={
                 'content_type_id': content_type, 'object_id': actor_instance.pk})
         if self.actor_only:
@@ -120,7 +121,7 @@ def is_following(user, actor):
             You are already following {{ another_user }}
         {% endif %}
     """
-    return Follow.objects.is_following(user, actor)
+    return models.Follow.objects.is_following(user, actor)
 
 
 def follow_url(parser, token):
@@ -182,11 +183,20 @@ def actor_url(parser, token):
     else:
         return DisplayActivityActorUrl(*bits[1:])
 
+def stream_filter_wrapper(name):
+    def stream_filter(obj, *args):
+        return getattr(models, name)(obj, *args)
+    return stream_filter
+
 register.filter(is_following)
 register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
 register.tag(actor_url)
+
+for stream in ('user', 'actor', 'target', 'action_object', 'model'):
+    stream = '%s_stream' % stream
+    register.filter(stream, stream_filter_wrapper(stream))
 
 @register.filter
 def backwards_compatibility_check(template_name):
