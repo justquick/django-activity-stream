@@ -46,6 +46,10 @@ class ActivityBaseTestCase(TestCase):
         for bit in bits:
             self.assertIn(bit, string)
 
+    def assertAllIn(self, bits, string):
+        for bit in bits:
+            self.assertIn(bit, string)
+
     def tearDown(self):
         for model in self.actstream_models:
             unregister(model)
