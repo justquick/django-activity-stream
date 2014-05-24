@@ -36,10 +36,12 @@ If you have `South <http://south.aeracode.org/>`_ installed you have to migrate 
 
 .. code-block:: bash
 
-     $ django-admin.py migrate actstream
+    $ django-admin.py migrate actstream
 
 If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://github.com/bradjasper/django-jsonfield/>`_ installed::
 
-    pip install django-jsonfield
+.. code-block:: bash
+
+    $ pip install django-jsonfield
 
 You can learn more at :ref:`custom-data`

@@ -62,6 +62,11 @@ Here is an example of what you can set in your ``settings.py``
         'GFK_FETCH_DEPTH': 1,
     }
 
+.. note::
+
+    In v0.5 and above, since only Django>=1.4 is supported all generic lookups fall back to `QuerySet.prefetch_related <https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.prefetch_related>`_
+    so the ``USE_PREFETCH`` and ``GFK_FETCH_DEPTH`` settings have been deprecated.
+
 
 Supported settings are defined below.
 
@@ -87,6 +92,10 @@ Defaults to ``True``
 USE_PREFETCH
 *************
 
+.. deprecated:: 0.5
+
+    This setting is no longer used (see note above).
+
 Set this to ``True`` to forcefully enable ``prefetch_related`` (Django>=1.4 only).
 On earlier versions, the generic foreign key prefetch fallback contained within ``actstream.gfk`` will be enabled.
 
@@ -103,6 +112,10 @@ Defaults to ``False``
 
 GFK_FETCH_DEPTH
 ***************
+
+.. deprecated:: 0.5
+
+    This setting is no longer used (see note above).
 
 Number of levels of relations that ``select_related`` will perform.
 Only matters if you are not running ``prefetch_related`` (Django<=1.3).
