@@ -11,9 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 import os
+import sys
 from datetime import datetime
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../actstream/runtests'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import django
 try:

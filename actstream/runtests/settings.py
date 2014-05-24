@@ -95,7 +95,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'actstream',
-    'actstream.runtests.testapp'
+    'testapp'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -108,7 +108,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 
 ACTSTREAM_SETTINGS = {
-    'MANAGER': 'actstream.runtests.testapp.streams.MyActionManager',
+    'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,

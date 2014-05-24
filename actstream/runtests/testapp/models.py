@@ -22,7 +22,9 @@ class Player(models.Model):
     def __str__(self):
         return '#%d' % self.pk
 
-register(Player)
+
+if django.VERSION <= (1, 7):
+    register(Player)
 
 
 @python_2_unicode_compatible
@@ -41,11 +43,17 @@ class Unregistered(Abstract):
 
 
 if django.VERSION >= (1, 5):
-    from django.contrib.auth.models import AbstractUser
+    from django.contrib.auth.models import AbstractBaseUser
 
-    class MyUser(AbstractUser):
+    class MyUser(AbstractBaseUser):
+        username = models.CharField(max_length=40, unique=True)
+        groups = models.ManyToManyField('auth.Group', verbose_name='groups',
+            blank=True, related_name="user_set")
+
+        USERNAME_FIELD = 'username'
 
         def get_full_name(self):
             return 'full'
 
-    register(MyUser)
+    if django.VERSION <= (1, 7):
+        register(MyUser)

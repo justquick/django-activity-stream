@@ -46,5 +46,3 @@ class ActstreamConfig(AppConfig):
 
         if DatabaseOperations:
             DatabaseOperations.last_executed_query = fixed_last_executed_query
-
-        #if 'MODELS' in settings.SETTINGS:

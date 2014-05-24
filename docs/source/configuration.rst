@@ -8,20 +8,41 @@ Models
 In order to have your models be either an actor, target, or action object they must first be registered with actstream.
 In v0.5 and above, actstream has a registry of all actionable model classes.
 When you register them, actstream sets up certain GenericRelations that are required for generating activity streams.
-You normally call register right after your model is defined (models.py) but you can call it anytime before you need to generate activity streams.
+
+.. warning::
+
+    Introducing the registry change makes the ACTSTREAM_SETTINGS['MODELS'] setting obsolte so please use the register functions instead.
+
+
+You normally call register right after your model is defined (models.py) but you can call it anytime before you need to generate actions or activity streams.
 
 .. code-block:: python
 
+    # myapp/models.py
     from actstream import registry
 
     class MyModel(models.Model):
         ...
 
+    # Django < 1.7
     registry.register(MyModel)
 
-.. warning::
+For Django versions 1.7 or later, you should use `AppConfig <https://docs.djangoproject.com/en/dev/ref/applications/#configuring-applications>`_.
 
-    This change makes the ACTSTREAM_SETTINGS['MODELS'] setting obsolte so please use the register functions instead.
+.. code-block:: python
+
+    # myapp/apps.py
+    from django.apps import AppConfig
+    from actstream import registry
+
+    class MyAppConfig(AppConfig):
+        name = 'myapp'
+
+        def ready(self):
+            registry.register(self.get_models('MyModel'))
+
+    # myapp/__init__.py
+    default_app_config = 'myapp.apps.MyAppConfig'
 
 
 Settings
