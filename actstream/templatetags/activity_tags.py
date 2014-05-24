@@ -183,22 +183,13 @@ def actor_url(parser, token):
     else:
         return DisplayActivityActorUrl(*bits[1:])
 
-def stream_filter_wrapper(name):
-    def stream_filter(obj, *args):
-        return getattr(models, name)(obj, *args)
-    return stream_filter
 
-register.filter(is_following)
-register.tag(display_action)
-register.tag(follow_url)
-register.tag(follow_all_url)
-register.tag(actor_url)
+def activity_stream(obj, stream_type='actor'):
+    if stream_type == 'model':
+        stream_type = 'model_actions'
+    return getattr(Action.objects, stream_type)(obj)
 
-for stream in ('user', 'actor', 'target', 'action_object', 'model'):
-    stream = '%s_stream' % stream
-    register.filter(stream, stream_filter_wrapper(stream))
 
-@register.filter
 def backwards_compatibility_check(template_name):
     backwards = False
     try:
@@ -208,3 +199,12 @@ def backwards_compatibility_check(template_name):
     if backwards:
         template_name = template_name.replace('actstream/', 'activity/')
     return template_name
+
+
+register.filter(activity_stream)
+register.filter(is_following)
+register.filter(backwards_compatibility_check)
+register.tag(display_action)
+register.tag(follow_url)
+register.tag(follow_all_url)
+register.tag(actor_url)
