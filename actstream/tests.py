@@ -42,6 +42,10 @@ class ActivityBaseTestCase(TestCase):
         self.old_models = get_models()
         setup_generic_relations()
 
+    def assertAllIn(self, bits, string):
+        for bit in bits:
+            self.assertIn(bit, string)
+
     def tearDown(self):
         SETTINGS['MODELS'] = self.old_models
 
@@ -127,17 +131,21 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assert_(not 'Two' in str(Action.objects.user(self.user1)))
 
     def test_rss(self):
-        rss = self.client.get('/feed/').content
-        self.assert_(rss.startswith('<?xml version="1.0" encoding="utf-8"?>\n'
-            '<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">'))
-        self.assert_(rss.find('Activity feed for your followed actors') > -1)
+        self.assertAllIn([
+            '<?xml version="1.0" encoding="utf-8"?>\n',
+            '<rss ',
+            'xmlns:atom="http://www.w3.org/2005/Atom"',
+            'version="2.0"',
+            'Activity feed for your followed actors'
+        ], self.client.get('/feed/').content.decode())
 
     def test_atom(self):
-        atom = self.client.get('/feed/atom/').content
-        self.assert_(atom.startswith('<?xml version="1.0" encoding="utf-8"?>\n'
-            '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="%s">' %
-                                     settings.LANGUAGE_CODE))
-        self.assert_(atom.find('Activity feed for your followed actors') > -1)
+        self.assertAllIn([
+            '<?xml version="1.0" encoding="utf-8"?>\n',
+            'xmlns="http://www.w3.org/2005/Atom"',
+            'xml:lang="%s"' % settings.LANGUAGE_CODE,
+            'Activity feed for your followed actors'
+        ], self.client.get('/feed/atom/').content.decode())
 
     def test_action_object(self):
         action.send(self.user1, verb='created comment',
