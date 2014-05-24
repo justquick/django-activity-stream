@@ -152,4 +152,4 @@ class FollowManager(GFKManager):
         for model in models:
             check(model)
             qs = qs.filter(content_type=ContentType.objects.get_for_model(model))
-        return [follow.follow_object for follow in qs.fetch_generic_relations()]
+        return [follow.follow_object for follow in qs.fetch_generic_relations('follow_object')]

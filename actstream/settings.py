@@ -17,11 +17,6 @@ def get_action_manager():
         raise ImportError('Cannot import %s try fixing ACTSTREAM_SETTINGS[MANAGER]'
                           'setting.' % mod)
 
-USE_PREFETCH = SETTINGS.get('USE_PREFETCH',
-                            django.VERSION >= (1, 4))
-
 FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
-
-GFK_FETCH_DEPTH = SETTINGS.get('GFK_FETCH_DEPTH', 0)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
