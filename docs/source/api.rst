@@ -35,4 +35,4 @@ Templatetags
 -------------
 
 .. automodule:: actstream.templatetags.activity_tags
-    :members: is_following, display_action, follow_url, actor_url
+    :members: activity_stream, is_following, display_action, follow_url, actor_url

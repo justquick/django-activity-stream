@@ -1,9 +1,10 @@
-from actstream.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.base import TemplateDoesNotExist
 from django.template.loader import render_to_string, find_template
+
+from actstream.models import Follow, Action
 
 
 register = Library()
@@ -182,6 +183,14 @@ def actor_url(parser, token):
     else:
         return DisplayActivityActorUrl(*bits[1:])
 
+
+def activity_stream(obj, stream_type='actor'):
+    if stream_type == 'model':
+        stream_type = 'model_actions'
+    return getattr(Action.objects, stream_type)(obj)
+
+
+register.filter(activity_stream)
 register.filter(is_following)
 register.tag(display_action)
 register.tag(follow_url)
