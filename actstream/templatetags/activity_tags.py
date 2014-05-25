@@ -187,14 +187,3 @@ register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
 register.tag(actor_url)
-
-@register.filter
-def backwards_compatibility_check(template_name):
-    backwards = False
-    try:
-        find_template('actstream/action.html')
-    except TemplateDoesNotExist:
-        backwards = True
-    if backwards:
-        template_name = template_name.replace('actstream/', 'activity/')
-    return template_name
