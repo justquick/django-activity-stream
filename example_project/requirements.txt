@@ -1,6 +1,0 @@
-Django>=1.3
-South
-django-activity-stream
-django-jsonfield
-django-registration
-django-debug-toolbar
