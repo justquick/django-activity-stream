@@ -10,10 +10,6 @@ from actstream.models import Follow, Action
 register = Library()
 
 
-def _is_following_helper(context, actor):
-    return Follow.objects.is_following(context.get('user'), actor)
-
-
 class DisplayActivityFollowUrl(Node):
     def __init__(self, actor, actor_only=True):
         self.actor = Variable(actor)
@@ -93,8 +89,6 @@ class DisplayAction(AsNode):
         templates = [
             'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'actstream/action.html',
-            'activity/%s/action.html' % action_instance.verb.replace(' ', '_'),
-            'activity/action.html',
         ]
         return render_to_string(templates, {'action': action_instance},
             context)
