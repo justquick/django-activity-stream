@@ -178,10 +178,14 @@ def actor_url(parser, token):
         return DisplayActivityActorUrl(*bits[1:])
 
 
-def activity_stream(obj, stream_type='actor'):
+def activity_stream(context, stream_type, *args, **kwargs):
     if stream_type == 'model':
         stream_type = 'model_actions'
-    return getattr(Action.objects, stream_type)(obj)
+    if not hasattr(Action.objects, stream_type):
+        raise TemplateSyntaxError('Action manager has no attribute: %s' % stream_type)
+    ctxvar = kwargs.pop('as', 'stream')
+    context[ctxvar] = getattr(Action.objects, stream_type)(*args, **kwargs)
+    return ''
 
 
 register.filter(activity_stream)
@@ -190,3 +194,4 @@ register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
 register.tag(actor_url)
+register.simple_tag(takes_context=True)(activity_stream)

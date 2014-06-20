@@ -8,6 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 from actstream import action, registry
 from actstream.models import Action, actor_stream, model_stream
 from actstream.compat import get_user_model
+from actstream.tests import render, ActivityBaseTestCase
 
 from testapp.models import Abstract, Unregistered
 
@@ -15,7 +16,7 @@ from testapp.models import Abstract, Unregistered
 User = get_user_model()
 
 
-class TestAppTests(TestCase):
+class TestAppTests(ActivityBaseTestCase):
 
     def setUp(self):
         self.user = User.objects.create(username='test')
@@ -52,3 +53,13 @@ class TestAppTests(TestCase):
 
         self.assertRaises(RuntimeError, model_stream, Abstract)
         self.assertRaises(ImproperlyConfigured, registry.register, Abstract)
+        registry.unregister(Unregistered)
+
+    def test_tag_custom_activity_stream(self):
+        stream = self.user.actor_actions.testbar('was created')
+        output = render('''{% activity_stream 'testbar' 'was created' %}
+        {% for action in stream %}
+            {{ action }}
+        {% endfor %}
+        ''', user=self.user)
+        self.assertAllIn([str(action) for action in stream], output)

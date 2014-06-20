@@ -19,6 +19,10 @@ from actstream.registry import register, unregister
 from actstream.compat import get_user_model
 
 
+def render(src, **ctx):
+    return Template('{% load activity_tags %}' + src).render(Context(ctx))
+
+
 class LTE(int):
     def __new__(cls, n):
         obj = super(LTE, cls).__new__(cls, n)
@@ -210,11 +214,38 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertNotIn(action, self.user1.actor_actions.public())
 
     def test_tag_follow_url(self):
-        User = get_user_model()
-        src = '{% load activity_tags %}{% follow_url user %}'
-        output = Template(src).render(Context({'user': self.user1}))
-        ct = ContentType.objects.get_for_model(User)
+        src = '{% follow_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
         self.assertEqual(output, '/follow/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_follow_all_url(self):
+        src = '{% follow_all_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
+        self.assertEqual(output, '/follow_all/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_actor_url(self):
+        src = '{% actor_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
+        self.assertEqual(output, '/actors/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_display_action(self):
+        src = '{% display_action action %}'
+        output = render(src, action=self.join_action)
+        self.assertAllIn([str(self.user1), 'joined', str(self.group)], output)
+        src = '{% display_action action as nope %}'
+        self.assertEqual(render(src, action=self.join_action), '')
+
+    def test_tag_activity_stream(self):
+        output = render('''{% activity_stream 'actor' user as='mystream' %}
+        {% for action in mystream %}
+            {{ action }}
+        {% endfor %}
+        ''', user=self.user1)
+        self.assertAllIn([str(action) for action in actor_stream(self.user1)],
+                         output)
 
     def test_model_actions_with_kwargs(self):
         """
@@ -235,13 +266,9 @@ class ActivityTestCase(ActivityBaseTestCase):
                 ])
 
     def test_is_following_filter(self):
-        src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
-        self.assertEqual(Template(src).render(Context({
-            'user': self.user2, 'group': self.group
-        })), 'yup')
-        self.assertEqual(Template(src).render(Context({
-            'user': self.user1, 'group': self.group
-        })), '')
+        src = '{% if user|is_following:group %}yup{% endif %}'
+        self.assertEqual(render(src, user=self.user2, group=self.group), 'yup')
+        self.assertEqual(render(src, user=self.user1, group=self.group), '')
 
     def test_store_untranslated_string(self):
         lang = get_language()

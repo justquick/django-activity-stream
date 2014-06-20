@@ -1,7 +1,6 @@
 # Django settings for example_project project.
 import os
 import sys
-import pprint
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -31,7 +30,7 @@ if 'postgres' in ENGINE or 'mysql' in ENGINE:
         HOST=os.environ.get('DATABASE_HOST', 'localhost')
     )
 
-pprint.pprint(DATABASES['default'])
+print(ENGINE)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

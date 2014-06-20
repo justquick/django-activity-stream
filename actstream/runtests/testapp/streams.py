@@ -13,4 +13,4 @@ class MyActionManager(ActionManager):
 
     @stream
     def testbar(self, verb):
-        return self.filter(verb=verb)
+        return {'verb': verb}
