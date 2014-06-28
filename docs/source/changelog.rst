@@ -6,6 +6,7 @@ Changelog
 
   - Django 1.6 and 1.7 support
   - Python 3 and PyPy support
+  - Added new activity_stream templatetag
   - Dropping support for Django<=1.3 and rely on prefetch_related.
   - Added register method for actionable models
   - Dropped support for ACTSTREAM_SETTINGS['MODELS'] setting
