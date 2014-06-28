@@ -179,6 +179,18 @@ def actor_url(parser, token):
 
 
 def activity_stream(context, stream_type, *args, **kwargs):
+    """
+    Renders an activity stream as a list into the template's context.
+    Streams loaded by stream_type can be the default ones (eg user, actor, etc.) or a user defined stream.
+    Extra args/kwargs are passed into the stream call.
+
+    Example::
+
+        {% activity_stream 'actor' user %}
+        {% for action in stream %}
+            {% display_action action %}
+        {% endfor %}
+    """
     if stream_type == 'model':
         stream_type = 'model_actions'
     if not hasattr(Action.objects, stream_type):
