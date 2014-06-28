@@ -31,14 +31,8 @@ Decorators
 .. automodule:: actstream.decorators
     :members: stream
 
-Exceptions
------------
-
-.. automodule:: actstream.exceptions
-    :members: ModelNotActionable, BadQuerySet, check_actionable_model
-
 Templatetags
 -------------
 
 .. automodule:: actstream.templatetags.activity_tags
-    :members: is_following,display_action,follow_url,actor_url
+    :members: activity_stream, is_following, display_action, follow_url, actor_url

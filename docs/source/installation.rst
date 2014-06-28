@@ -11,9 +11,7 @@ or get it from source
 
 .. code-block:: bash
 
-    $ git clone https://justquick@github.com/justquick/django-activity-stream.git
-    $ cd django-activity-stream
-    $ python setup.py install
+    $ pip install git+https://github.com/justquick/django-activity-stream.git#egg=actstream
 
 Then to add the Django Activity Stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
 
@@ -38,10 +36,12 @@ If you have `South <http://south.aeracode.org/>`_ installed you have to migrate 
 
 .. code-block:: bash
 
-     $ django-admin.py migrate actstream
+    $ django-admin.py migrate actstream
 
 If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://github.com/bradjasper/django-jsonfield/>`_ installed::
 
-    pip install django-jsonfield
+.. code-block:: bash
+
+    $ pip install django-jsonfield
 
 You can learn more at :ref:`custom-data`

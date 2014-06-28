@@ -2,11 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed, rfc3339_date, get_tag_uri
 from django.contrib.contenttypes.models import ContentType
-
-try:
-    from django.contrib.syndication.views import Feed
-except ImportError:   # Pre 1.2
-    from django.contrib.syndication.feeds import Feed
+from django.contrib.syndication.views import Feed
 
 from actstream.models import model_stream, user_stream, action_object_stream
 
@@ -16,7 +12,7 @@ class AtomWithContentFeed(Atom1Feed):
     def add_item_elements(self, handler, item):
         super(AtomWithContentFeed, self).add_item_elements(handler, item)
         if 'content' in item:
-            handler.addQuickElement(u"content", item['content'],
+            handler.addQuickElement('content', item['content'],
                 {'type': 'html'})
 
 
@@ -74,7 +70,7 @@ class ActivityStreamsFeed(AtomWithContentFeed):
 
     def add_item_elements(self, handler, item):
         super(ActivityStreamsFeed, self).add_item_elements(handler, item)
-        handler.addQuickElement(u"activity: verb", item['verb'])
+        handler.addQuickElement('activity: verb', item['verb'])
 
         if 'actor' in item:
             handler.startElement('author', {})

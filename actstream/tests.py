@@ -1,7 +1,6 @@
 from random import choice
 
 from django.db import connection
-from django.db.models import get_model
 from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -10,16 +9,18 @@ from django.contrib.sites.models import Site
 from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
+from django.utils.six import text_type
 
-from actstream.models import Action, Follow, model_stream, user_stream,\
-    setup_generic_relations, following, followers
+from actstream.models import (Action, Follow, model_stream, user_stream,
+                              actor_stream, following, followers)
 from actstream.actions import follow, unfollow
-from actstream.exceptions import ModelNotActionable
 from actstream.signals import action
-from actstream.settings import get_models, SETTINGS
+from actstream.registry import register, unregister
 from actstream.compat import get_user_model
 
-User = get_user_model()
+
+def render(src, **ctx):
+    return Template('{% load activity_tags %}' + src).render(Context(ctx))
 
 
 class LTE(int):
@@ -39,15 +40,23 @@ class ActivityBaseTestCase(TestCase):
     actstream_models = ()
 
     def setUp(self):
-        self.old_models = get_models()
-        setup_generic_relations()
+        for model in self.actstream_models:
+            register(model)
+
+    def assertSetEqual(self, l1, l2, msg=None):
+        self.assertSequenceEqual(set(map(text_type, l1)), set(l2))
+
+    def assertAllIn(self, bits, string):
+        for bit in bits:
+            self.assertIn(bit, string)
 
     def assertAllIn(self, bits, string):
         for bit in bits:
             self.assertIn(bit, string)
 
     def tearDown(self):
-        SETTINGS['MODELS'] = self.old_models
+        for model in self.actstream_models:
+            unregister(model)
 
 
 class ActivityTestCase(ActivityBaseTestCase):
@@ -55,6 +64,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
 
     def setUp(self):
+        User = get_user_model()
         super(ActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
@@ -65,7 +75,7 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         # User1 joins group
         self.user1.groups.add(self.group)
-        action.send(self.user1, verb='joined', target=self.group)
+        self.join_action = action.send(self.user1, verb='joined', target=self.group)[0][1]
 
         # User1 follows User2
         follow(self.user1, self.user2)
@@ -87,23 +97,24 @@ class ActivityTestCase(ActivityBaseTestCase):
         action.send(self.group, verb='responded to', target=self.comment)
 
     def test_aauser1(self):
-        self.assertEqual(map(unicode, self.user1.actor_actions.all()), [
-            u'admin commented on CoolGroup 0 minutes ago',
-            u'admin started following Two 0 minutes ago',
-            u'admin joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(self.user1.actor_actions.all(), [
+            'admin commented on CoolGroup 0 minutes ago',
+            'admin started following Two 0 minutes ago',
+            'admin joined CoolGroup 0 minutes ago',
         ])
 
     def test_user2(self):
-        self.assertEqual(map(unicode, Action.objects.actor(self.user2)), [
-            u'Two started following CoolGroup 0 minutes ago',
-            u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(actor_stream(self.user2), [
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
         ])
 
     def test_group(self):
-        self.assertEqual(map(unicode, Action.objects.actor(self.group)),
-            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+        self.assertSetEqual(actor_stream(self.group),
+            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_following(self):
+        User = get_user_model()
         self.assertEqual(list(following(self.user1)), [self.user2])
         self.assertEqual(len(following(self.user2, User)), 0)
 
@@ -112,23 +123,23 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)
-        self.assert_(not user_stream(self.user1))
+        self.assertFalse(user_stream(self.user1))
 
     def test_stream(self):
-        self.assertEqual(map(unicode, Action.objects.user(self.user1)), [
-            u'Two started following CoolGroup 0 minutes ago',
-            u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(user_stream(self.user1), [
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
         ])
-        self.assertEqual(map(unicode, Action.objects.user(self.user2)),
-            [u'CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+        self.assertSetEqual(user_stream(self.user2),
+            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_stream_stale_follows(self):
         """
-        Action.objects.user() should ignore Follow objects with stale actor
+        user_stream() should ignore Follow objects with stale actor
         references.
         """
         self.user2.delete()
-        self.assert_(not 'Two' in str(Action.objects.user(self.user1)))
+        self.assertNotIn('Two', str(user_stream(self.user1)))
 
     def test_rss(self):
         self.assertAllIn([
@@ -148,18 +159,18 @@ class ActivityTestCase(ActivityBaseTestCase):
         ], self.client.get('/feed/atom/').content.decode())
 
     def test_action_object(self):
-        action.send(self.user1, verb='created comment',
-            action_object=self.comment, target=self.group)
-        created_action = Action.objects.get(verb='created comment')
+        created_action = action.send(self.user1, verb='created comment',
+            action_object=self.comment, target=self.group)[0][1]
 
         self.assertEqual(created_action.actor, self.user1)
         self.assertEqual(created_action.action_object, self.comment)
         self.assertEqual(created_action.target, self.group)
-        self.assertEqual(unicode(created_action),
-            u'admin created comment admin: Sweet Group!... on CoolGroup 0 '
+        self.assertEqual(text_type(created_action),
+            'admin created comment admin: Sweet Group!... on CoolGroup 0 '
                 'minutes ago')
 
     def test_doesnt_generate_duplicate_follow_records(self):
+        User = get_user_model()
         g = Group.objects.get_or_create(name='DupGroup')[0]
         s = User.objects.get_or_create(username='dupuser')[0]
 
@@ -168,17 +179,17 @@ class ActivityTestCase(ActivityBaseTestCase):
             "record")
         self.assertTrue(isinstance(f1, Follow), "Returns a Follow object")
 
-        self.assertEquals(1, Follow.objects.filter(user=s, object_id=g.pk,
+        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
             content_type=ContentType.objects.get_for_model(g)).count(),
             "Should only have 1 follow record here")
 
         f2 = follow(s, g)
-        self.assertEquals(1, Follow.objects.filter(user=s, object_id=g.pk,
+        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
             content_type=ContentType.objects.get_for_model(g)).count(),
             "Should still only have 1 follow record here")
         self.assertTrue(f2 is not None, "Should have received a Follow object")
         self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
-        self.assertEquals(f1, f2, "Should have received the same Follow "
+        self.assertEqual(f1, f2, "Should have received the same Follow "
             "object that I first submitted")
 
     def test_y_no_orphaned_follows(self):
@@ -196,29 +207,53 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertEqual(self.user2.target_actions.count(), 1)
         self.assertEqual(self.user2.action_object_actions.count(), 0)
 
-    def test_bad_actionable_model(self):
-        self.assertRaises(ModelNotActionable, follow, self.user1,
-                          ContentType.objects.get_for_model(self.user1))
-
     def test_hidden_action(self):
         action = self.user1.actor_actions.all()[0]
         action.public = False
         action.save()
-        self.assert_(not action in self.user1.actor_actions.public())
+        self.assertNotIn(action, self.user1.actor_actions.public())
 
     def test_tag_follow_url(self):
-        src = '{% load activity_tags %}{% follow_url user %}'
-        output = Template(src).render(Context({'user': self.user1}))
-        ct = ContentType.objects.get_for_model(User)
+        src = '{% follow_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
         self.assertEqual(output, '/follow/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_follow_all_url(self):
+        src = '{% follow_all_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
+        self.assertEqual(output, '/follow_all/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_actor_url(self):
+        src = '{% actor_url user %}'
+        output = render(src, user=self.user1)
+        ct = ContentType.objects.get_for_model(self.user1)
+        self.assertEqual(output, '/actors/%s/%s/' % (ct.pk, self.user1.pk))
+
+    def test_tag_display_action(self):
+        src = '{% display_action action %}'
+        output = render(src, action=self.join_action)
+        self.assertAllIn([str(self.user1), 'joined', str(self.group)], output)
+        src = '{% display_action action as nope %}'
+        self.assertEqual(render(src, action=self.join_action), '')
+
+    def test_tag_activity_stream(self):
+        output = render('''{% activity_stream 'actor' user as='mystream' %}
+        {% for action in mystream %}
+            {{ action }}
+        {% endfor %}
+        ''', user=self.user1)
+        self.assertAllIn([str(action) for action in actor_stream(self.user1)],
+                         output)
 
     def test_model_actions_with_kwargs(self):
         """
         Testing the model_actions method of the ActionManager
         by passing kwargs
         """
-        self.assertEqual(map(unicode, model_stream(self.user1, verb='commented on')), [
-                u'admin commented on CoolGroup 0 minutes ago',
+        self.assertSetEqual(model_stream(self.user1, verb='commented on'), [
+                'admin commented on CoolGroup 0 minutes ago',
                 ])
 
     def test_user_stream_with_kwargs(self):
@@ -226,30 +261,35 @@ class ActivityTestCase(ActivityBaseTestCase):
         Testing the user method of the ActionManager by passing additional
         filters in kwargs
         """
-        self.assertEqual(map(unicode, Action.objects.user(self.user1, verb='joined')), [
-                u'Two joined CoolGroup 0 minutes ago',
+        self.assertSetEqual(user_stream(self.user1, verb='joined'), [
+                'Two joined CoolGroup 0 minutes ago',
                 ])
 
     def test_is_following_filter(self):
-        src = '{% load activity_tags %}{% if user|is_following:group %}yup{% endif %}'
-        self.assertEqual(Template(src).render(Context({
-            'user': self.user2, 'group': self.group
-        })), u'yup')
-        self.assertEqual(Template(src).render(Context({
-            'user': self.user1, 'group': self.group
-        })), u'')
+        src = '{% if user|is_following:group %}yup{% endif %}'
+        self.assertEqual(render(src, user=self.user2, group=self.group), 'yup')
+        self.assertEqual(render(src, user=self.user1, group=self.group), '')
 
     def test_store_untranslated_string(self):
         lang = get_language()
         activate("fr")
-        verb = _(u'English')
+        verb = _('English')
 
-        assert unicode(verb) == u"Anglais"
+        assert text_type(verb) == "Anglais"
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group)
-        self.assertTrue(Action.objects.filter(verb=u'English'))
+        self.assertTrue(Action.objects.filter(verb='English').exists())
         # restore language
         activate(lang)
+
+    def test_none_returns_an_empty_queryset(self):
+        qs = Action.objects.none()
+        self.assertFalse(qs.exists())
+        self.assertEqual(qs.count(), 0)
+
+    def test_with_user_activity(self):
+        self.assertIn(self.join_action,
+                      list(user_stream(self.user1, with_user_activity=True)))
 
 
 class ZombieTest(ActivityBaseTestCase):
@@ -258,6 +298,7 @@ class ZombieTest(ActivityBaseTestCase):
     zombie = 1
 
     def setUp(self):
+        User = get_user_model()
         super(ZombieTest, self).setUp()
         settings.DEBUG = True
 
@@ -288,7 +329,7 @@ class ZombieTest(ActivityBaseTestCase):
     def check_query_count(self, queryset):
         ci = len(connection.queries)
 
-        result = list([map(unicode, (x.actor, x.target, x.action_object))
+        result = list([map(text_type, (x.actor, x.target, x.action_object))
             for x in queryset])
         self.assertTrue(len(connection.queries) - ci <= 4,
             'Too many queries, got %d expected no more than 4' %
@@ -296,11 +337,13 @@ class ZombieTest(ActivityBaseTestCase):
         return result
 
     def test_query_count(self):
+        User = get_user_model()
         queryset = model_stream(User)
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 10)
 
     def test_query_count_sliced(self):
+        User = get_user_model()
         queryset = model_stream(User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
@@ -309,6 +352,7 @@ class ZombieTest(ActivityBaseTestCase):
 class GFKManagerTestCase(TestCase):
 
     def setUp(self):
+        User = get_user_model()
         self.user_ct = ContentType.objects.get_for_model(User)
         self.group_ct = ContentType.objects.get_for_model(Group)
         self.group, _ = Group.objects.get_or_create(name='CoolGroup')

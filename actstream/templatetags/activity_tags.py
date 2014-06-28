@@ -1,16 +1,13 @@
-from actstream.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.base import TemplateDoesNotExist
 from django.template.loader import render_to_string, find_template
 
+from actstream.models import Follow, Action
+
 
 register = Library()
-
-
-def _is_following_helper(context, actor):
-    return Follow.objects.is_following(context.get('user'), actor)
 
 
 class DisplayActivityFollowUrl(Node):
@@ -92,8 +89,6 @@ class DisplayAction(AsNode):
         templates = [
             'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'actstream/action.html',
-            'activity/%s/action.html' % action_instance.verb.replace(' ', '_'),
-            'activity/action.html',
         ]
         return render_to_string(templates, {'action': action_instance},
             context)
@@ -103,7 +98,7 @@ def display_action(parser, token):
     """
     Renders the template for the action description
 
-    Example::
+    ::
 
         {% display_action action %}
     """
@@ -114,7 +109,7 @@ def is_following(user, actor):
     """
     Returns true if the given user is following the actor
 
-    Example::
+    ::
 
         {% if request.user|is_following:another_user %}
             You are already following {{ another_user }}
@@ -127,7 +122,7 @@ def follow_url(parser, token):
     """
     Renders the URL of the follow view for a particular actor instance
 
-    Example::
+    ::
 
         <a href="{% follow_url other_user %}">
             {% if request.user|is_following:other_user %}
@@ -148,7 +143,7 @@ def follow_all_url(parser, token):
     """
     Renders the URL to follow an object as both actor and target
 
-    Example::
+    ::
 
         <a href="{% follow_all_url other_user %}">
             {% if request.user|is_following:other_user %}
@@ -169,7 +164,7 @@ def actor_url(parser, token):
     """
     Renders the URL for a particular actor instance
 
-    Example::
+    ::
 
         <a href="{% actor_url request.user %}">View your actions</a>
         <a href="{% actor_url another_user %}">{{ another_user }}'s actions</a>
@@ -182,19 +177,33 @@ def actor_url(parser, token):
     else:
         return DisplayActivityActorUrl(*bits[1:])
 
+
+def activity_stream(context, stream_type, *args, **kwargs):
+    """
+    Renders an activity stream as a list into the template's context.
+    Streams loaded by stream_type can be the default ones (eg user, actor, etc.) or a user defined stream.
+    Extra args/kwargs are passed into the stream call.
+
+    ::
+
+        {% activity_stream 'actor' user %}
+        {% for action in stream %}
+            {% display_action action %}
+        {% endfor %}
+    """
+    if stream_type == 'model':
+        stream_type = 'model_actions'
+    if not hasattr(Action.objects, stream_type):
+        raise TemplateSyntaxError('Action manager has no attribute: %s' % stream_type)
+    ctxvar = kwargs.pop('as', 'stream')
+    context[ctxvar] = getattr(Action.objects, stream_type)(*args, **kwargs)
+    return ''
+
+
+register.filter(activity_stream)
 register.filter(is_following)
 register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
 register.tag(actor_url)
-
-@register.filter
-def backwards_compatibility_check(template_name):
-    backwards = False
-    try:
-        find_template('actstream/action.html')
-    except TemplateDoesNotExist:
-        backwards = True
-    if backwards:
-        template_name = template_name.replace('actstream/', 'activity/')
-    return template_name
+register.simple_tag(takes_context=True)(activity_stream)

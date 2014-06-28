@@ -34,7 +34,7 @@ $(function () {
 {% endif %}
 <ul>
 {% for action in action_list %}
-    <li>{% include 'actstream/action.html'|backwards_compatibility_check %}</li>
+    <li>{% include 'actstream/action.html' %}</li>
 {% empty %}
 {% trans "No actions yet" %}
 {% endfor %}
