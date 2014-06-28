@@ -120,3 +120,15 @@ or from the ``GenericRelation`` on any actionable model instance.
 
     user_instance = User.objects.all()[0]
     user_instance.actor_actions.mystream('commented')
+
+
+You can also now access it using the ``activity_stream`` templatetag in your Django templates.
+
+.. code-block:: django
+
+    {% load activity_tags %}
+
+    {% activity_stream 'mystream' user_instance 'commented' %}
+    {% for action in stream %}
+        {% display_action action %}
+    {% endfor %}

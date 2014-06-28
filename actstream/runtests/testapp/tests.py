@@ -2,7 +2,6 @@ from datetime import datetime
 
 import django
 from django.utils.unittest import skipUnless
-from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream import action, registry

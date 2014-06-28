@@ -98,7 +98,7 @@ def display_action(parser, token):
     """
     Renders the template for the action description
 
-    Example::
+    ::
 
         {% display_action action %}
     """
@@ -109,7 +109,7 @@ def is_following(user, actor):
     """
     Returns true if the given user is following the actor
 
-    Example::
+    ::
 
         {% if request.user|is_following:another_user %}
             You are already following {{ another_user }}
@@ -122,7 +122,7 @@ def follow_url(parser, token):
     """
     Renders the URL of the follow view for a particular actor instance
 
-    Example::
+    ::
 
         <a href="{% follow_url other_user %}">
             {% if request.user|is_following:other_user %}
@@ -143,7 +143,7 @@ def follow_all_url(parser, token):
     """
     Renders the URL to follow an object as both actor and target
 
-    Example::
+    ::
 
         <a href="{% follow_all_url other_user %}">
             {% if request.user|is_following:other_user %}
@@ -164,7 +164,7 @@ def actor_url(parser, token):
     """
     Renders the URL for a particular actor instance
 
-    Example::
+    ::
 
         <a href="{% actor_url request.user %}">View your actions</a>
         <a href="{% actor_url another_user %}">{{ another_user }}'s actions</a>
@@ -184,7 +184,7 @@ def activity_stream(context, stream_type, *args, **kwargs):
     Streams loaded by stream_type can be the default ones (eg user, actor, etc.) or a user defined stream.
     Extra args/kwargs are passed into the stream call.
 
-    Example::
+    ::
 
         {% activity_stream 'actor' user %}
         {% for action in stream %}
