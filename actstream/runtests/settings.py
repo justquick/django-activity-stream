@@ -118,3 +118,9 @@ if django.VERSION >= (1, 5):
     AUTH_USER_MODEL = 'testapp.MyUser'
 
 TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+
+
+if 'COVERAGE' in os.environ:
+    INSTALLED_APPS += ('django_coverage',)
+    TEST_RUNNER = 'django_coverage.coverage_runner.CoverageRunner'
+    COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage'
