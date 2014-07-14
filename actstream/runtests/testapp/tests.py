@@ -42,7 +42,7 @@ class TestAppTests(ActivityBaseTestCase):
         from testapp.models import MyUser
 
         self.assertEqual(User, MyUser)
-        self.assertEqual(self.user.get_full_name(), 'full')
+        self.assertEqual(self.user.get_full_name(), 'test')
 
     def test_registration(self):
         instance = Unregistered.objects.create(name='fubar')
