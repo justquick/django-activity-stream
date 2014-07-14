@@ -1,15 +1,16 @@
 box: wercker/python
 build:
     steps:
-        - virtualenv:
-            name: setup virtualenv
-            install_wheel: false
-
-        - pip-install
-            packages_list: "tox==1.7.1"
-
         - script:
-            name: tox
+            name: virtualenv
             code: |
-                tox
+                virtualenv as.venv
+        - script:
+            name: pip
+            code: |
+                ./as.venv/bin/pip install tox
+        - script:
+            name: tox test
+            code: |
+                ./hvz.venv/bin/tox
 
