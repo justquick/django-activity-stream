@@ -1,0 +1,19 @@
+box: wercker/python
+# Build definition
+build:
+    # The steps that will be executed on build
+    steps:
+        # A step that sets up the python virtual environment
+        - virtualenv:
+            name: setup virtualenv
+            install_wheel: false # Enable wheel to speed up builds (experimental)
+
+        # A step that executes `pip install` command.
+        - pip-install
+            packages_list: tox==1.7.1
+        
+        - script:
+            name: tox
+            code: |
+                tox
+
