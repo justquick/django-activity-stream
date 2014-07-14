@@ -116,7 +116,7 @@ html_sidebars = {
 }
 html_static_path = ['_static']
 html_theme_options = {
-    'logo': 'logo.png',
+    'logo': 'logo.jpg',
     'logo_text_align': 'center',
     'description': 'Generic activity streams for Django',
     'github_user': 'justquick',
