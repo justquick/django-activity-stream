@@ -12,5 +12,5 @@ build:
         - script:
             name: tox test
             code: |
-                ./hvz.venv/bin/tox
+                ./as.venv/bin/tox
 
