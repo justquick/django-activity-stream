@@ -123,7 +123,7 @@ class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
             'uri': get_tag_uri(obj, obj.timestamp),
             'content': obj.description,
             'activity:verb': obj.verb,
-            'published': rfc3339_date(obj.timestamp).decode('utf-8'),
+            'published': rfc3339_date(obj.timestamp),
             'actor': self.format_item_attrs(obj)
         }
         if obj.target:

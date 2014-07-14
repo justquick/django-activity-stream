@@ -70,7 +70,7 @@ class ActivityTestCase(ActivityBaseTestCase):
                  'xml:lang="%s"' % settings.LANGUAGE_CODE]
 
     def setUp(self):
-        User = get_user_model()
+        self.User = User = get_user_model()
         self.user_ct = ContentType.objects.get_for_model(User)
         super(ActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
@@ -122,9 +122,8 @@ class ActivityTestCase(ActivityBaseTestCase):
             ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_following(self):
-        User = get_user_model()
         self.assertEqual(list(following(self.user1)), [self.user2])
-        self.assertEqual(len(following(self.user2, User)), 0)
+        self.assertEqual(len(following(self.user2, self.User)), 0)
 
     def test_followers(self):
         self.assertEqual(list(followers(self.group)), [self.user2])
@@ -164,8 +163,8 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_model_feed(self):
         expected = [
-            'Activity feed from MyUser',
-            'Public activities of MyUser',
+            'Activity feed from %s' % self.User.__name__,
+            'Public activities of %s' % self.User.__name__,
             'admin commented on CoolGroup 0 minutes ago',
             'Two started following CoolGroup 0 minutes ago',
             'Two joined CoolGroup 0 minutes ago',
@@ -204,16 +203,15 @@ class ActivityTestCase(ActivityBaseTestCase):
             'Activity for Two',
             'admin started following Two 0 minutes ago',
             '<activity:verb>started following</activity:verb>',
-            '<activity:object-type>my user</activity:object-type>',
+            '<activity:object-type>%s</activity:object-type>' % self.user_ct.name,
             '<uri>%s</uri>' % get_tag_uri(action, action.timestamp)
         ]
         atom = self.client.get('/feed/%s/%s/as/' % (self.user_ct.pk, self.user2.pk)).content.decode()
         self.assertAllIn(self.atom_base + expected, atom)
 
     def test_doesnt_generate_duplicate_follow_records(self):
-        User = get_user_model()
         g = Group.objects.get_or_create(name='DupGroup')[0]
-        s = User.objects.get_or_create(username='dupuser')[0]
+        s = self.User.objects.get_or_create(username='dupuser')[0]
 
         f1 = follow(s, g)
         self.assertTrue(f1 is not None, "Should have received a new follow "
@@ -336,7 +334,7 @@ class ZombieTest(ActivityBaseTestCase):
     zombie = 1
 
     def setUp(self):
-        User = get_user_model()
+        self.User = User = get_user_model()
         super(ZombieTest, self).setUp()
         settings.DEBUG = True
 
@@ -375,14 +373,12 @@ class ZombieTest(ActivityBaseTestCase):
         return result
 
     def test_query_count(self):
-        User = get_user_model()
-        queryset = model_stream(User)
+        queryset = model_stream(self.User)
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 10)
 
     def test_query_count_sliced(self):
-        User = get_user_model()
-        queryset = model_stream(User)[:5]
+        queryset = model_stream(self.User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
 
