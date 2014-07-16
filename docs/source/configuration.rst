@@ -39,7 +39,7 @@ For Django versions 1.7 or later, you should use `AppConfig <https://docs.django
         name = 'myapp'
 
         def ready(self):
-            registry.register(self.get_models('MyModel'))
+            registry.register(self.get_model('MyModel'))
 
     # myapp/__init__.py
     default_app_config = 'myapp.apps.MyAppConfig'
