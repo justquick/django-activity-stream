@@ -14,6 +14,8 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
+    Action = get_model('actstream', 'Action')
+
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
     if django.VERSION >= (1, 7):
@@ -30,6 +32,8 @@ def setup_generic_relations(model_class):
         rel = generic.GenericRelation('actstream.Action', **kwargs
                         ).contribute_to_class(model_class, attr)
         relations[field] = rel
+
+        setattr(Action, attr_value, None)
     return relations
 
 
