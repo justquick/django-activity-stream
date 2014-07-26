@@ -32,10 +32,6 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['follow_id', 'action_id'])
 
-
-        # Changing field 'Action.data'
-        db.alter_column(u'actstream_action', 'data', self.gf('jsonfield.fields.JSONField')(null=True))
-
     def backwards(self, orm):
         # Deleting field 'Follow.last_updated'
         db.delete_column(u'actstream_follow', 'last_updated')
@@ -49,10 +45,6 @@ class Migration(SchemaMigration):
         # Removing M2M table for field unread_actions on 'Follow'
         db.delete_table(db.shorten_name(u'actstream_follow_unread_actions'))
 
-
-        # Changing field 'Action.data'
-        db.alter_column(u'actstream_action', 'data', self.gf('django.db.models.fields.TextField')(null=True))
-
     models = {
         u'actstream.action': {
             'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
@@ -60,7 +52,7 @@ class Migration(SchemaMigration):
             'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': u"orm['contenttypes.ContentType']"}),
             'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
+            'data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
