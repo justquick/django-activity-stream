@@ -1,5 +1,6 @@
 from random import choice
 import re
+import time
 
 from django.db import connection
 from django.test import TestCase
@@ -256,7 +257,9 @@ class UnreadActionsTestCase(GroupActivityTestCase):
     def setUp(self):
         super(UnreadActionsTestCase, self).setUp()
 
-        # adjust objects followed
+        # adjust objects followed, after a 10ms delay to make sure that unread
+        # action tracking starts 'well' after the last action was logged
+        time.sleep(0.01)
 
         # User1 follows User2 (modification of existing Follow object)
         follow(self.user1, self.user2, track_unread=True)
