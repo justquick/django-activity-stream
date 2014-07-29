@@ -94,7 +94,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'actstream',
-    'testapp'
+    'testapp',
+    'testapp_nested'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
