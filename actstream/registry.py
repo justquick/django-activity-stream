@@ -1,6 +1,8 @@
 from inspect import isclass
+import re
 
 import django
+from django.conf import settings
 from django.db.models import get_model
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
@@ -52,10 +54,15 @@ def validate(model_class, exception_class=ImproperlyConfigured):
             'The model %s is abstract, so it cannot be registered with '
             'actstream.' % model_class.__name__)
     if not model_class._meta.installed:
-        raise exception_class(
-            'The model %s is not installed, please put %s in your '
-            'INSTALLED_APPS setting.' % (model_class.__name__,
-                                         model_class._meta.app_label))
+        # _meta.installed is only reliable in Django 1.7+
+        if django.VERSION > (1, 7) \
+                or re.sub('\.models.*$', '', model_class.__module__) \
+                not in settings.INSTALLED_APPS:
+            raise exception_class(
+                'The model %s is not installed, please put %s in your '
+                'INSTALLED_APPS setting.' % (model_class.__name__,
+                                             model_class._meta.app_label))
+
     return model_class
 
 
