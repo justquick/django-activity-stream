@@ -79,6 +79,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.user1.is_superuser = self.user1.is_staff = True
         self.user1.save()
         self.user2 = User.objects.get_or_create(username='Two')[0]
+        self.user3 = User.objects.get_or_create(username='Three')[0]
 
         # User1 joins group
         self.user1.groups.add(self.group)
@@ -103,6 +104,8 @@ class ActivityTestCase(ActivityBaseTestCase):
         # Group responds to comment
         action.send(self.group, verb='responded to', target=self.comment)
 
+        # User 3 did something but doesn't following someone
+        action.send(self.user3, verb='liked actstream')
 
     def test_aauser1(self):
         self.assertSetEqual(self.user1.actor_actions.all(), [
@@ -131,6 +134,11 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)
         self.assertFalse(user_stream(self.user1))
+
+        self.assertSetEqual(
+            user_stream(self.user3, with_user_activity=True),
+            ['Three liked actstream 0 minutes ago']
+        )
 
     def test_stream(self):
         self.assertSetEqual(user_stream(self.user1), [

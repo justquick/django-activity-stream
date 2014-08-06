@@ -86,13 +86,13 @@ class ActionManager(GFKManager):
             user=obj).values_list('content_type_id',
                                   'object_id', 'actor_only')
 
-        if not len(follow_gfks):
-            return qs.none()
-
         for content_type_id, object_id, actor_only in follow_gfks.iterator():
             actors_by_content_type[content_type_id].append(object_id)
             if not actor_only:
                 others_by_content_type[content_type_id].append(object_id)
+
+        if len(actors_by_content_type) + len(others_by_content_type) == 0:
+            return qs.none()
 
         for content_type_id, object_ids in actors_by_content_type.items():
             q = q | Q(
