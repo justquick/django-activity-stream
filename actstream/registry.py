@@ -41,6 +41,17 @@ def label(model_class):
     return '%s_%s' % (model_class._meta.app_label, model_name)
 
 
+def is_installed(model_class):
+    # _meta.installed is only reliable in Django 1.7+
+    if not model_class._meta.installed:
+        return False
+    if django.VERSION > (1, 7) and model_class._meta.installed:
+        return True
+    if re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS:
+        return True
+    return False
+
+
 def validate(model_class, exception_class=ImproperlyConfigured):
     if isinstance(model_class, string_types):
         model_class = get_model(*model_class.split('.'))
@@ -49,12 +60,12 @@ def validate(model_class, exception_class=ImproperlyConfigured):
             'Object %r is not a Model class.' % model_class)
     if model_class._meta.abstract:
         raise exception_class(
-            'The model %s is abstract, so it cannot be registered with '
-            'actstream.' % model_class.__name__)
-    if not model_class._meta.installed:
+            'The model %r is abstract, so it cannot be registered with '
+            'actstream.' % model_class)
+    if not is_installed(model_class):
         raise exception_class(
-            'The model %s is not installed, please put %s in your '
-            'INSTALLED_APPS setting.' % (model_class.__name__,
+            'The model %r is not installed, please put the app "%s" in your '
+            'INSTALLED_APPS setting.' % (model_class,
                                          model_class._meta.app_label))
     return model_class
 
