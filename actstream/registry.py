@@ -1,6 +1,8 @@
 from inspect import isclass
+import re
 
 import django
+from django.conf import settings
 from django.db.models import get_model
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
@@ -42,14 +44,13 @@ def label(model_class):
 
 
 def is_installed(model_class):
-    # _meta.installed is only reliable in Django 1.7+
-    if not model_class._meta.installed:
-        return False
-    if django.VERSION > (1, 7) and model_class._meta.installed:
-        return True
-    if re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS:
-        return True
-    return False
+    """
+    Returns True if a model_class is installed.
+    model_class._meta.installed is only reliable in Django 1.7+
+    """
+    if django.VERSION > (1, 7):
+        return model_class._meta.installed
+    return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):
