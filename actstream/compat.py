@@ -5,6 +5,7 @@ Django>=1.5 compatibility utilities
 from django.conf import settings
 
 user_model_label = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+username_field = lambda: getattr(get_user_model(), 'USERNAME_FIELD', 'username')
 
 try:
     from django.contrib.auth import get_user_model

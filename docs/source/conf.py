@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Django Activity Stream'
-copyright = u'%s, Justin Quick' % datetime.now().year
+copyright = u'2010-%s, Justin Quick' % datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -116,7 +116,7 @@ html_sidebars = {
 }
 html_static_path = ['_static']
 html_theme_options = {
-    'logo': 'logo.png',
+    'logo': 'logo.jpg',
     'logo_text_align': 'center',
     'description': 'Generic activity streams for Django',
     'github_user': 'justquick',

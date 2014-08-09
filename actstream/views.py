@@ -76,7 +76,7 @@ def user(request, username):
     """
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
-    user = get_object_or_404(User, username=username, is_active=True)
+    user = get_object_or_404(User, **{'is_active': True, compat.username_field(): username})
     return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
         'ctype': ContentType.objects.get_for_model(User),
         'actor': user, 'action_list': models.user_stream(user)

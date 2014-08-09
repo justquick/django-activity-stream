@@ -34,5 +34,9 @@ Decorators
 Templatetags
 -------------
 
+Start off your templates by adding::
+
+    {% load activity_tags %}
+
 .. automodule:: actstream.templatetags.activity_tags
     :members: activity_stream, is_following, display_action, follow_url, actor_url

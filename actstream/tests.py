@@ -17,6 +17,7 @@ from actstream.actions import follow, unfollow
 from actstream.signals import action
 from actstream.registry import register, unregister
 from actstream.compat import get_user_model
+from actstream.feeds import get_tag_uri
 
 
 def render(src, **ctx):
@@ -62,9 +63,15 @@ class ActivityBaseTestCase(TestCase):
 class ActivityTestCase(ActivityBaseTestCase):
     urls = 'actstream.urls'
     actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
+    rss_base = ['<?xml version="1.0" encoding="utf-8"?>\n', '<rss ',
+                'xmlns:atom="http://www.w3.org/2005/Atom"', 'version="2.0"']
+    atom_base = ['<?xml version="1.0" encoding="utf-8"?>\n',
+                 'xmlns="http://www.w3.org/2005/Atom"',
+                 'xml:lang="%s"' % settings.LANGUAGE_CODE]
 
     def setUp(self):
-        User = get_user_model()
+        self.User = User = get_user_model()
+        self.user_ct = ContentType.objects.get_for_model(User)
         super(ActivityTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.user1 = User.objects.get_or_create(username='admin')[0]
@@ -118,9 +125,8 @@ class ActivityTestCase(ActivityBaseTestCase):
             ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
 
     def test_following(self):
-        User = get_user_model()
         self.assertEqual(list(following(self.user1)), [self.user2])
-        self.assertEqual(len(following(self.user2, User)), 0)
+        self.assertEqual(len(following(self.user2, self.User)), 0)
 
     def test_followers(self):
         self.assertEqual(list(followers(self.group)), [self.user2])
@@ -150,22 +156,43 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.user2.delete()
         self.assertNotIn('Two', str(user_stream(self.user1)))
 
-    def test_rss(self):
-        self.assertAllIn([
-            '<?xml version="1.0" encoding="utf-8"?>\n',
-            '<rss ',
-            'xmlns:atom="http://www.w3.org/2005/Atom"',
-            'version="2.0"',
-            'Activity feed for your followed actors'
-        ], self.client.get('/feed/').content.decode())
+    def test_feed(self):
+        self.client.login(username='admin', password='admin')
+        expected = [
+            'Activity feed for your followed actors',
+            'Public activities of actors you follow',
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
+        ]
+        rss = self.client.get('/feed/').content.decode()
+        self.assertAllIn(self.rss_base + expected, rss)
+        atom = self.client.get('/feed/atom/').content.decode()
+        self.assertAllIn(self.atom_base + expected, atom)
 
-    def test_atom(self):
-        self.assertAllIn([
-            '<?xml version="1.0" encoding="utf-8"?>\n',
-            'xmlns="http://www.w3.org/2005/Atom"',
-            'xml:lang="%s"' % settings.LANGUAGE_CODE,
-            'Activity feed for your followed actors'
-        ], self.client.get('/feed/atom/').content.decode())
+    def test_model_feed(self):
+        expected = [
+            'Activity feed from %s' % self.User.__name__,
+            'Public activities of %s' % self.User.__name__,
+            'admin commented on CoolGroup 0 minutes ago',
+            'Two started following CoolGroup 0 minutes ago',
+            'Two joined CoolGroup 0 minutes ago',
+            'admin started following Two 0 minutes ago',
+            'admin joined CoolGroup 0 minutes ago',
+        ]
+        rss = self.client.get('/feed/%s/' % self.user_ct.pk).content.decode()
+        self.assertAllIn(self.rss_base + expected, rss)
+        atom = self.client.get('/feed/%s/atom/' % self.user_ct.pk).content.decode()
+        self.assertAllIn(self.atom_base + expected, atom)
+
+    def test_object_feed(self):
+        expected = [
+            'Activity for Two',
+            'admin started following Two 0 minutes ago',
+        ]
+        rss = self.client.get('/feed/%s/%s/' % (self.user_ct.pk, self.user2.pk)).content.decode()
+        self.assertAllIn(self.rss_base + expected, rss)
+        atom = self.client.get('/feed/%s/%s/atom/' % (self.user_ct.pk, self.user2.pk)).content.decode()
+        self.assertAllIn(self.atom_base + expected, atom)
 
     def test_action_object(self):
         created_action = action.send(self.user1, verb='created comment',
@@ -178,10 +205,21 @@ class ActivityTestCase(ActivityBaseTestCase):
             'admin created comment admin: Sweet Group!... on CoolGroup 0 '
                 'minutes ago')
 
+    def test_activitystream_feed(self):
+        action = Action.objects.get(actor_object_id=self.user1.pk, verb='started following')
+        expected = [
+            'Activity for Two',
+            'admin started following Two 0 minutes ago',
+            '<activity:verb>started following</activity:verb>',
+            '<activity:object-type>%s</activity:object-type>' % self.user_ct.name,
+            '<uri>%s</uri>' % get_tag_uri(action, action.timestamp)
+        ]
+        atom = self.client.get('/feed/%s/%s/as/' % (self.user_ct.pk, self.user2.pk)).content.decode()
+        self.assertAllIn(self.atom_base + expected, atom)
+
     def test_doesnt_generate_duplicate_follow_records(self):
-        User = get_user_model()
         g = Group.objects.get_or_create(name='DupGroup')[0]
-        s = User.objects.get_or_create(username='dupuser')[0]
+        s = self.User.objects.get_or_create(username='dupuser')[0]
 
         f1 = follow(s, g)
         self.assertTrue(f1 is not None, "Should have received a new follow "
@@ -225,20 +263,17 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_tag_follow_url(self):
         src = '{% follow_url user %}'
         output = render(src, user=self.user1)
-        ct = ContentType.objects.get_for_model(self.user1)
-        self.assertEqual(output, '/follow/%s/%s/' % (ct.pk, self.user1.pk))
+        self.assertEqual(output, '/follow/%s/%s/' % (self.user_ct.pk, self.user1.pk))
 
     def test_tag_follow_all_url(self):
         src = '{% follow_all_url user %}'
         output = render(src, user=self.user1)
-        ct = ContentType.objects.get_for_model(self.user1)
-        self.assertEqual(output, '/follow_all/%s/%s/' % (ct.pk, self.user1.pk))
+        self.assertEqual(output, '/follow_all/%s/%s/' % (self.user_ct.pk, self.user1.pk))
 
     def test_tag_actor_url(self):
         src = '{% actor_url user %}'
         output = render(src, user=self.user1)
-        ct = ContentType.objects.get_for_model(self.user1)
-        self.assertEqual(output, '/actors/%s/%s/' % (ct.pk, self.user1.pk))
+        self.assertEqual(output, '/actors/%s/%s/' % (self.user_ct.pk, self.user1.pk))
 
     def test_tag_display_action(self):
         src = '{% display_action action %}'
@@ -307,7 +342,7 @@ class ZombieTest(ActivityBaseTestCase):
     zombie = 1
 
     def setUp(self):
-        User = get_user_model()
+        self.User = User = get_user_model()
         super(ZombieTest, self).setUp()
         settings.DEBUG = True
 
@@ -346,14 +381,12 @@ class ZombieTest(ActivityBaseTestCase):
         return result
 
     def test_query_count(self):
-        User = get_user_model()
-        queryset = model_stream(User)
+        queryset = model_stream(self.User)
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 10)
 
     def test_query_count_sliced(self):
-        User = get_user_model()
-        queryset = model_stream(User)[:5]
+        queryset = model_stream(self.User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
 
