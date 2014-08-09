@@ -125,3 +125,4 @@ if 'COVERAGE' in os.environ:
     INSTALLED_APPS += ('django_coverage',)
     TEST_RUNNER = 'django_coverage.coverage_runner.CoverageRunner'
     COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage'
+    COVERAGE_REPORT_DATA_FILE = '.coverage'
