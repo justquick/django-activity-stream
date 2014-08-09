@@ -20,8 +20,9 @@ env:
   - TOX_ENV=pypy-dj1.4
   - TOX_ENV=py2.7-dj1.4
   - TOX_ENV=py2.6-dj1.4
+  - TOX_ENV=coverage
 install:
-  - pip install tox==1.7.2 coveralls==0.4.2 coverage==3.7.1
+  - pip install tox==1.7.2 coveralls==0.4.2
 script:
   - tox -e $TOX_ENV
 notifications:
@@ -29,3 +30,5 @@ notifications:
 branches:
   only:
     - master
+after_success:
+  coveralls
