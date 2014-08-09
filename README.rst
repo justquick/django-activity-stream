@@ -3,9 +3,10 @@ Django Activity Stream
 
 
 .. image:: https://coveralls.io/repos/justquick/django-activity-stream/badge.png
-  :target: https://coveralls.io/r/justquick/django-activity-stream
+    :target: https://coveralls.io/r/justquick/django-activity-stream
 
 .. image:: https://travis-ci.org/justquick/django-activity-stream.svg?branch=master
+    :target: https://travis-ci.org/justquick/django-activity-stream
 
 .. image:: https://pypip.in/v/django-activity-stream/badge.png
     :target: https://crate.io/packages/django-activity-stream/
