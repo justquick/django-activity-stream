@@ -21,19 +21,11 @@ env:
   - TOX_ENV=py2.7-dj1.4
   - TOX_ENV=py2.6-dj1.4
 install:
-  - pip install tox==1.7.1
-addons:
-  postgresql: "9.3"
-before_script:
-  - psql -c 'create database test;' -U postgres
-  - mysql -e 'create database test;'  
+  - pip install tox==1.7.2 coveralls==0.4.2 coverage==3.7.1
 script:
   - tox -e $TOX_ENV
-  - DATABASE_ENGINE=postgres DATABASE_USER=postgres DATABASE_PASSWORD="" tox -e $TOX_ENV 
-  - DATABASE_ENGINE=mysql DATABASE_USER=travis DATABASE_PASSWORD="" tox -e $TOX_ENV
 notifications:
   email: false
 branches:
   only:
-    - develop
     - master
