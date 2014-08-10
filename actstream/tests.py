@@ -205,18 +205,6 @@ class ActivityTestCase(ActivityBaseTestCase):
             'admin created comment admin: Sweet Group!... on CoolGroup 0 '
                 'minutes ago')
 
-    def test_activitystream_feed(self):
-        action = Action.objects.get(actor_object_id=self.user1.pk, verb='started following')
-        expected = [
-            'Activity for Two',
-            'admin started following Two 0 minutes ago',
-            '<activity:verb>started following</activity:verb>',
-            '<activity:object-type>%s</activity:object-type>' % self.user_ct.name,
-            '<uri>%s</uri>' % get_tag_uri(action, action.timestamp)
-        ]
-        atom = self.client.get('/feed/%s/%s/as/' % (self.user_ct.pk, self.user2.pk)).content.decode()
-        self.assertAllIn(self.atom_base + expected, atom)
-
     def test_doesnt_generate_duplicate_follow_records(self):
         g = Group.objects.get_or_create(name='DupGroup')[0]
         s = self.User.objects.get_or_create(username='dupuser')[0]

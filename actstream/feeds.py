@@ -24,65 +24,28 @@ def get_url(obj):
     return reverse('actstream_actor', None, (ctype.pk, obj.pk))
 
 
-class AtomWithContentFeed(Atom1Feed):
-
-    def add_item_elements(self, handler, item):
-        super(AtomWithContentFeed, self).add_item_elements(handler, item)
-        if 'content' in item:
-            handler.addQuickElement('content', item['content'],
-                                    {'type': 'html'})
-
-
-class ObjectActivityFeed(Feed):
+class ActivityStreamsAtomFeed(Atom1Feed):
     """
-    Feed of Activity for a given object (where the object is the Object or
-    Target).
-    """
-
-    def get_object(self, request, content_type_id, object_id):
-        obj = get_object_or_404(ContentType, pk=content_type_id)
-        return obj.get_object_for_this_type(pk=object_id)
-
-    def title(self, obj):
-        return 'Activity for %s' % obj
-
-    def link(self, obj):
-        return get_url(obj)
-
-    def description(self, obj):
-        return 'Activity for %s' % obj
-
-    def items(self, obj):
-        i = target_stream(obj) | action_object_stream(obj)
-        return i[:30] if i else []
-
-    def item_extra_kwargs(self, obj):
-        return {'content': obj.description}
-
-
-class AtomObjectActivityFeed(ObjectActivityFeed):
-    feed_type = AtomWithContentFeed
-    subtitle = ObjectActivityFeed.description
-
-
-class ActivityStreamsFeed(AtomWithContentFeed):
-    """
-    Custom feed generator for Activity Stream feeds
+    Feed class for the v1.0 Atom Activity Stream Spec
     """
 
     def root_attributes(self):
-        attrs = super(ActivityStreamsFeed, self).root_attributes()
+        attrs = super(ActivityStreamsAtomFeed, self).root_attributes()
         attrs['xmlns:activity'] = 'http://activitystrea.ms/spec/1.0/'
         return attrs
 
     def add_root_elements(self, handler):
-        super(ActivityStreamsFeed, self).add_root_elements(handler)
+        super(ActivityStreamsAtomFeed, self).add_root_elements(handler)
 
     def add_item_elements(self, handler, item):
+        super(ActivityStreamsAtomFeed, self).add_item_elements(handler, item)
         actor = item.pop('actor')
         target = item.pop('target', None)
         action_object = item.pop('action_object', None)
-        super(ActivityStreamsFeed, self).add_item_elements(handler, item)
+        content = item.pop('content', None)
+
+        if content:
+            handler.addQuickElement('content', content, {'type': 'html'})
         [handler.addQuickElement(key, value)
          for key, value in item.items() if value]
 
@@ -101,8 +64,7 @@ class ActivityStreamsFeed(AtomWithContentFeed):
             handler.endElement('activity:target')
 
 
-class ActivityStreamsObjectActivityFeed(AtomObjectActivityFeed):
-    feed_type = ActivityStreamsFeed
+class ActivityStreamsBaseFeed(Feed):
 
     def feed_extra_kwargs(self, obj):
         """
@@ -166,9 +128,41 @@ class ModelActivityFeed(Feed):
         return i[:30] if i else []
 
 
-class AtomModelActivityFeed(ModelActivityFeed):
-    feed_type = Atom1Feed
+class AtomModelActivityFeed(ActivityStreamsBaseFeed, ModelActivityFeed):
+    feed_type = ActivityStreamsAtomFeed
     subtitle = ModelActivityFeed.description
+
+
+class ObjectActivityFeed(Feed):
+    """
+    Feed of Activity for a given object (where the object is the Object or
+    Target).
+    """
+
+    def get_object(self, request, content_type_id, object_id):
+        obj = get_object_or_404(ContentType, pk=content_type_id)
+        return obj.get_object_for_this_type(pk=object_id)
+
+    def title(self, obj):
+        return 'Activity for %s' % obj
+
+    def link(self, obj):
+        return get_url(obj)
+
+    def description(self, obj):
+        return 'Activity for %s' % obj
+
+    def items(self, obj):
+        i = target_stream(obj) | action_object_stream(obj)
+        return i[:30] if i else []
+
+    def item_extra_kwargs(self, obj):
+        return {'content': obj.description}
+
+
+class AtomObjectActivityFeed(ActivityStreamsBaseFeed, ObjectActivityFeed):
+    feed_type = ActivityStreamsAtomFeed
+    subtitle = ObjectActivityFeed.description
 
 
 class UserActivityFeed(Feed):
@@ -196,6 +190,6 @@ class UserActivityFeed(Feed):
         return i[:30] if i else []
 
 
-class AtomUserActivityFeed(UserActivityFeed):
-    feed_type = Atom1Feed
+class AtomUserActivityFeed(ActivityStreamsBaseFeed, UserActivityFeed):
+    feed_type = ActivityStreamsAtomFeed
     subtitle = UserActivityFeed.description
