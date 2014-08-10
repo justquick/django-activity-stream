@@ -17,7 +17,6 @@ from actstream.actions import follow, unfollow
 from actstream.signals import action
 from actstream.registry import register, unregister
 from actstream.compat import get_user_model
-from actstream.feeds import get_tag_uri
 
 
 def render(src, **ctx):
