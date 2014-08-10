@@ -1,4 +1,5 @@
 from random import choice
+from datetime import datetime
 
 from django.db import connection
 from django.test import TestCase
@@ -10,6 +11,7 @@ from django.template.loader import Template, Context
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.utils.six import text_type
+from django.utils.timesince import timesince
 
 from actstream.models import (Action, Follow, model_stream, user_stream,
                               actor_stream, following, followers)
@@ -61,6 +63,7 @@ class ActivityBaseTestCase(TestCase):
 
 class ActivityTestCase(ActivityBaseTestCase):
     urls = 'actstream.urls'
+    maxDiff = None
     actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
     rss_base = ['<?xml version="1.0" encoding="utf-8"?>\n', '<rss ',
                 'xmlns:atom="http://www.w3.org/2005/Atom"', 'version="2.0"']
@@ -69,6 +72,8 @@ class ActivityTestCase(ActivityBaseTestCase):
                  'xml:lang="%s"' % settings.LANGUAGE_CODE]
 
     def setUp(self):
+        self.testdate = datetime(2000, 1, 1)
+        self.timesince = timesince(self.testdate).encode('utf8').replace(b'\xc2\xa0', b' ').decode()
         self.User = User = get_user_model()
         self.user_ct = ContentType.objects.get_for_model(User)
         super(ActivityTestCase, self).setUp()
@@ -82,46 +87,47 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         # User1 joins group
         self.user1.groups.add(self.group)
-        self.join_action = action.send(self.user1, verb='joined', target=self.group)[0][1]
+        self.join_action = action.send(self.user1, verb='joined', target=self.group,
+                                       timestamp=self.testdate)[0][1]
 
         # User1 follows User2
-        follow(self.user1, self.user2)
+        follow(self.user1, self.user2, timestamp=self.testdate)
 
         # User2 joins group
         self.user2.groups.add(self.group)
-        action.send(self.user2, verb='joined', target=self.group)
+        action.send(self.user2, verb='joined', target=self.group, timestamp=self.testdate)
 
         # User2 follows group
-        follow(self.user2, self.group)
+        follow(self.user2, self.group, timestamp=self.testdate)
 
         # User1 comments on group
         # Use a site object here and predict the "__unicode__ method output"
-        action.send(self.user1, verb='commented on', target=self.group)
+        action.send(self.user1, verb='commented on', target=self.group, timestamp=self.testdate)
         self.comment = Site.objects.create(
             domain="admin: Sweet Group!...")
 
         # Group responds to comment
-        action.send(self.group, verb='responded to', target=self.comment)
+        action.send(self.group, verb='responded to', target=self.comment, timestamp=self.testdate)
 
         # User 3 did something but doesn't following someone
-        action.send(self.user3, verb='liked actstream')
+        action.send(self.user3, verb='liked actstream', timestamp=self.testdate)
 
     def test_aauser1(self):
         self.assertSetEqual(self.user1.actor_actions.all(), [
-            'admin commented on CoolGroup 0 minutes ago',
-            'admin started following Two 0 minutes ago',
-            'admin joined CoolGroup 0 minutes ago',
+            'admin commented on CoolGroup %s ago' % self.timesince,
+            'admin started following Two %s ago' % self.timesince,
+            'admin joined CoolGroup %s ago' % self.timesince,
         ])
 
     def test_user2(self):
         self.assertSetEqual(actor_stream(self.user2), [
-            'Two started following CoolGroup 0 minutes ago',
-            'Two joined CoolGroup 0 minutes ago',
+            'Two started following CoolGroup %s ago' % self.timesince,
+            'Two joined CoolGroup %s ago' % self.timesince,
         ])
 
     def test_group(self):
         self.assertSetEqual(actor_stream(self.group),
-            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+            ['CoolGroup responded to admin: Sweet Group!... %s ago' % self.timesince])
 
     def test_following(self):
         self.assertEqual(list(following(self.user1)), [self.user2])
@@ -136,16 +142,16 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         self.assertSetEqual(
             user_stream(self.user3, with_user_activity=True),
-            ['Three liked actstream 0 minutes ago']
+            ['Three liked actstream %s ago' % self.timesince]
         )
 
     def test_stream(self):
         self.assertSetEqual(user_stream(self.user1), [
-            'Two started following CoolGroup 0 minutes ago',
-            'Two joined CoolGroup 0 minutes ago',
+            'Two started following CoolGroup %s ago' % self.timesince,
+            'Two joined CoolGroup %s ago' % self.timesince,
         ])
         self.assertSetEqual(user_stream(self.user2),
-            ['CoolGroup responded to admin: Sweet Group!... 0 minutes ago'])
+            ['CoolGroup responded to admin: Sweet Group!... %s ago' % self.timesince])
 
     def test_stream_stale_follows(self):
         """
@@ -160,23 +166,24 @@ class ActivityTestCase(ActivityBaseTestCase):
         expected = [
             'Activity feed for your followed actors',
             'Public activities of actors you follow',
-            'Two started following CoolGroup 0 minutes ago',
-            'Two joined CoolGroup 0 minutes ago',
+            'Two started following CoolGroup %s ago' % self.timesince,
+            'Two joined CoolGroup %s ago' % self.timesince,
         ]
         rss = self.client.get('/feed/').content.decode()
         self.assertAllIn(self.rss_base + expected, rss)
         atom = self.client.get('/feed/atom/').content.decode()
         self.assertAllIn(self.atom_base + expected, atom)
+        print self.client.get('/feed/json/?pretty').content.decode()
 
     def test_model_feed(self):
         expected = [
             'Activity feed from %s' % self.User.__name__,
             'Public activities of %s' % self.User.__name__,
-            'admin commented on CoolGroup 0 minutes ago',
-            'Two started following CoolGroup 0 minutes ago',
-            'Two joined CoolGroup 0 minutes ago',
-            'admin started following Two 0 minutes ago',
-            'admin joined CoolGroup 0 minutes ago',
+            'admin commented on CoolGroup %s ago' % self.timesince,
+            'Two started following CoolGroup %s ago' % self.timesince,
+            'Two joined CoolGroup %s ago' % self.timesince,
+            'admin started following Two %s ago' % self.timesince,
+            'admin joined CoolGroup %s ago' % self.timesince,
         ]
         rss = self.client.get('/feed/%s/' % self.user_ct.pk).content.decode()
         self.assertAllIn(self.rss_base + expected, rss)
@@ -186,7 +193,7 @@ class ActivityTestCase(ActivityBaseTestCase):
     def test_object_feed(self):
         expected = [
             'Activity for Two',
-            'admin started following Two 0 minutes ago',
+            'admin started following Two %s ago' % self.timesince,
         ]
         rss = self.client.get('/feed/%s/%s/' % (self.user_ct.pk, self.user2.pk)).content.decode()
         self.assertAllIn(self.rss_base + expected, rss)
@@ -195,14 +202,13 @@ class ActivityTestCase(ActivityBaseTestCase):
 
     def test_action_object(self):
         created_action = action.send(self.user1, verb='created comment',
-            action_object=self.comment, target=self.group)[0][1]
+            action_object=self.comment, target=self.group, timestamp=self.testdate)[0][1]
 
         self.assertEqual(created_action.actor, self.user1)
         self.assertEqual(created_action.action_object, self.comment)
         self.assertEqual(created_action.target, self.group)
         self.assertEqual(text_type(created_action),
-            'admin created comment admin: Sweet Group!... on CoolGroup 0 '
-                'minutes ago')
+            'admin created comment admin: Sweet Group!... on CoolGroup %s ago' % self.timesince)
 
     def test_doesnt_generate_duplicate_follow_records(self):
         g = Group.objects.get_or_create(name='DupGroup')[0]
@@ -284,7 +290,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         by passing kwargs
         """
         self.assertSetEqual(model_stream(self.user1, verb='commented on'), [
-                'admin commented on CoolGroup 0 minutes ago',
+                'admin commented on CoolGroup %s ago' % self.timesince,
                 ])
 
     def test_user_stream_with_kwargs(self):
@@ -293,7 +299,7 @@ class ActivityTestCase(ActivityBaseTestCase):
         filters in kwargs
         """
         self.assertSetEqual(user_stream(self.user1, verb='joined'), [
-                'Two joined CoolGroup 0 minutes ago',
+                'Two joined CoolGroup %s ago' % self.timesince,
                 ])
 
     def test_is_following_filter(self):
@@ -308,7 +314,7 @@ class ActivityTestCase(ActivityBaseTestCase):
 
         assert text_type(verb) == "Anglais"
         action.send(self.user1, verb=verb, action_object=self.comment,
-                    target=self.group)
+                    target=self.group, timestamp=self.testdate)
         self.assertTrue(Action.objects.filter(verb='English').exists())
         # restore language
         activate(lang)

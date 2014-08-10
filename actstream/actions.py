@@ -16,7 +16,7 @@ except ImportError:
     now = datetime.datetime.now
 
 
-def follow(user, obj, send_action=True, actor_only=True):
+def follow(user, obj, send_action=True, actor_only=True, **kwargs):
     """
     Creates a relationship allowing the object's activities to appear in the
     user's stream.
@@ -25,6 +25,7 @@ def follow(user, obj, send_action=True, actor_only=True):
 
     If ``send_action`` is ``True`` (the default) then a
     ``<user> started following <object>`` action signal is sent.
+    Extra keyword arguments are passed to the action.send call.
 
     If ``actor_only`` is ``True`` (the default) then only actions where the
     object is the actor will appear in the user's activity stream. Set to
@@ -41,7 +42,7 @@ def follow(user, obj, send_action=True, actor_only=True):
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
     if send_action and created:
-        action.send(user, verb=_('started following'), target=obj)
+        action.send(user, verb=_('started following'), target=obj, **kwargs)
     return instance
 
 

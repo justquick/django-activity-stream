@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed, rfc3339_date
@@ -7,10 +9,10 @@ from django.contrib.sites.models import Site
 from django.utils.encoding import force_text
 from django.utils.six import text_type
 from django.utils import datetime_safe
+from django.views.generic import View
+from django.http import HttpResponse
 
 from actstream.models import model_stream, user_stream, any_stream
-
-
 
 
 class AbstractActivityStream(object):
@@ -25,15 +27,16 @@ class AbstractActivityStream(object):
         raise NotImplementedError
 
     def items(self, *args, **kwargs):
-        return self.get_stream(self.get_object(*args, **kwargs), **kwargs)
+        return self.get_stream()(self.get_object(*args, **kwargs))
 
     def get_uri(self, action, obj=None, date=None):
         if date is None:
             date = action.timestamp
         date = datetime_safe.new_datetime(date).strftime('%Y-%m-%d')
-        return 'tag:%s,%s:%s' % (Site.objects.get_current().domain, date, self.get_url(action, obj))
+        return 'tag:%s,%s:%s' % (Site.objects.get_current().domain, date,
+                                 self.get_url(action, obj, False))
 
-    def get_url(self, action, obj=None):
+    def get_url(self, action, obj=None, domain=True):
         if not obj:
             url = reverse('actstream_detail', None, (action.pk,))
         elif hasattr(obj, 'get_absolute_url'):
@@ -41,17 +44,20 @@ class AbstractActivityStream(object):
         else:
             ctype = ContentType.objects.get_for_model(obj)
             url = reverse('actstream_actor', None, (ctype.pk, obj.pk))
-        return add_domain(Site.objects.get_current().domain, url)
+        if domain:
+            return add_domain(Site.objects.get_current().domain, url)
+        return url
 
     def format(self, action):
         item = {
             'id': self.get_uri(action),
             'url': self.get_url(action),
-            'content': action.description,
             'verb': action.verb,
             'published': rfc3339_date(action.timestamp),
             'actor': self.format_actor(action)
         }
+        if action.description:
+            item['content'] = action.description
         if action.target:
             item['target'] = self.format_target(action)
         if action.action_object:
@@ -165,13 +171,48 @@ class ActivityStreamsBaseFeed(AbstractActivityStream, Feed):
         return self.get_stream()(obj)[:30]
 
 
-class ModelActivityFeed(ActivityStreamsBaseFeed):
+class JSONActivityFeed(AbstractActivityStream, View):
+    def dispatch(self, request, *args, **kwargs):
+        return HttpResponse(self.serialize(), content_type='application/json')
+
+    def serialize(self):
+        items = self.items(self.request, *self.args, **self.kwargs)
+        return json.dumps({
+            'totalItems': len(items),
+            'items': [self.format(action) for action in items]
+        }, indent=4 if 'pretty' in self.request.REQUEST else None)
+
+
+class ModelActivityMixin(object):
 
     def get_object(self, request, content_type_id):
         return get_object_or_404(ContentType, pk=content_type_id).model_class()
 
     def get_stream(self):
         return model_stream
+
+
+class ObjectActivityMixin(object):
+
+    def get_object(self, request, content_type_id, object_id):
+        obj = get_object_or_404(ContentType, pk=content_type_id)
+        return obj.get_object_for_this_type(pk=object_id)
+
+    def get_stream(self):
+        return any_stream
+
+
+class UserActivityMixin(object):
+
+    def get_object(self, request):
+        if request.user.is_authenticated():
+            return request.user
+
+    def get_stream(self):
+        return user_stream
+
+
+class ModelActivityFeed(ModelActivityMixin, ActivityStreamsBaseFeed):
 
     def title(self, model):
         return 'Activity feed from %s' % model.__name__
@@ -184,24 +225,11 @@ class ModelActivityFeed(ActivityStreamsBaseFeed):
         return 'Public activities of %s' % model.__name__
 
 
-class AtomModelActivityFeed(ModelActivityFeed):
-    feed_type = ActivityStreamsAtomFeed
-    subtitle = ModelActivityFeed.description
-
-
-class ObjectActivityFeed(ActivityStreamsBaseFeed):
+class ObjectActivityFeed(ObjectActivityMixin, ActivityStreamsBaseFeed):
     """
     Feed of Activity for a given object (where the object is the Object or
     Target).
     """
-
-    def get_object(self, request, content_type_id, object_id):
-        obj = get_object_or_404(ContentType, pk=content_type_id)
-        return obj.get_object_for_this_type(pk=object_id)
-
-    def get_stream(self):
-        return any_stream
-
     def title(self, obj):
         return 'Activity for %s' % obj
 
@@ -212,19 +240,7 @@ class ObjectActivityFeed(ActivityStreamsBaseFeed):
         return 'Activity for %s' % obj
 
 
-class AtomObjectActivityFeed(ObjectActivityFeed):
-    feed_type = ActivityStreamsAtomFeed
-    subtitle = ObjectActivityFeed.description
-
-
-class UserActivityFeed(ActivityStreamsBaseFeed):
-
-    def get_object(self, request):
-        if request.user.is_authenticated():
-            return request.user
-
-    def get_stream(self):
-        return user_stream
+class UserActivityFeed(UserActivityMixin, ActivityStreamsBaseFeed):
 
     def title(self, user):
         return 'Activity feed for your followed actors'
@@ -241,6 +257,28 @@ class UserActivityFeed(ActivityStreamsBaseFeed):
         return 'Public activities of actors you follow'
 
 
+class AtomModelActivityFeed(ModelActivityFeed):
+    feed_type = ActivityStreamsAtomFeed
+    subtitle = ModelActivityFeed.description
+
+
+class AtomObjectActivityFeed(ObjectActivityFeed):
+    feed_type = ActivityStreamsAtomFeed
+    subtitle = ObjectActivityFeed.description
+
+
 class AtomUserActivityFeed(UserActivityFeed):
     feed_type = ActivityStreamsAtomFeed
     subtitle = UserActivityFeed.description
+
+
+class UserJSONActivityFeed(UserActivityMixin, JSONActivityFeed):
+    pass
+
+
+class ModelJSONActivityFeed(ModelActivityMixin, JSONActivityFeed):
+    pass
+
+
+class ObjectJSONActivityFeed(ObjectActivityMixin, JSONActivityFeed):
+    pass
