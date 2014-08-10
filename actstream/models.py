@@ -155,6 +155,7 @@ action_object_stream = Action.objects.action_object
 target_stream = Action.objects.target
 user_stream = Action.objects.user
 model_stream = Action.objects.model_actions
+any_stream = Action.objects.any
 followers = Follow.objects.followers
 following = Follow.objects.following
 
