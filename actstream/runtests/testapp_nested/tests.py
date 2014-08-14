@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.registry import register, registry
-from actstream.tests import ActivityBaseTestCase
+from actstream.tests.base import ActivityBaseTestCase
 
 from testapp_nested.models import my_model
 

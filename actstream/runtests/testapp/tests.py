@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from actstream import action, registry
 from actstream.models import Action, actor_stream, model_stream
 from actstream.compat import get_user_model
-from actstream.tests import render, ActivityBaseTestCase
+from actstream.tests.base import render, ActivityBaseTestCase
 
 from testapp.models import Abstract, Unregistered
 
