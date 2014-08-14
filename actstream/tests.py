@@ -173,7 +173,6 @@ class ActivityTestCase(ActivityBaseTestCase):
         self.assertAllIn(self.rss_base + expected, rss)
         atom = self.client.get('/feed/atom/').content.decode()
         self.assertAllIn(self.atom_base + expected, atom)
-        print self.client.get('/feed/json/?pretty').content.decode()
 
     def test_model_feed(self):
         expected = [
