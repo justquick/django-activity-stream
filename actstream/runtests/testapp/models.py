@@ -23,7 +23,7 @@ class Player(models.Model):
         return '#%d' % self.pk
 
 
-if django.VERSION <= (1, 7):
+if django.VERSION[:2] <= (1, 7):
     register(Player)
 
 
@@ -42,7 +42,7 @@ class Unregistered(Abstract):
     pass
 
 
-if django.VERSION >= (1, 5):
+if django.VERSION[:2] >= (1, 5):
     from django.contrib.admin import site
     from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -74,5 +74,5 @@ if django.VERSION >= (1, 5):
 
     site.register(MyUser)
 
-    if django.VERSION <= (1, 7):
+    if django.VERSION[:2] <= (1, 7):
         register(MyUser)

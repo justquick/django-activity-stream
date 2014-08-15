@@ -16,7 +16,7 @@ class ZombieTest(ActivityBaseTestCase):
     zombie = 1
 
     def setUp(self):
-        self.User = User = get_user_model()
+        self.User = get_user_model()
         super(ZombieTest, self).setUp()
         settings.DEBUG = True
 
@@ -48,10 +48,10 @@ class ZombieTest(ActivityBaseTestCase):
         ci = len(connection.queries)
 
         result = list([map(text_type, (x.actor, x.target, x.action_object))
-            for x in queryset])
+                       for x in queryset])
         self.assertTrue(len(connection.queries) - ci <= 4,
-            'Too many queries, got %d expected no more than 4' %
-                len(connection.queries))
+                        'Too many queries, got %d expected no more than 4' %
+                        len(connection.queries))
         return result
 
     def test_query_count(self):

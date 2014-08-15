@@ -1,10 +1,9 @@
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.utils.six import text_type
-
+from django.core.urlresolvers import reverse
 
 from actstream.models import (Action, Follow, model_stream, user_stream,
                               actor_stream, following, followers)
@@ -31,7 +30,8 @@ class ActivityTestCase(DataTestCase):
 
     def test_group(self):
         self.assertSetEqual(actor_stream(self.group),
-            ['CoolGroup responded to admin: Sweet Group!... %s ago' % self.timesince])
+                            ['CoolGroup responded to admin: Sweet Group!... '
+                             '%s ago' % self.timesince])
 
     def test_following(self):
         self.assertEqual(list(following(self.user1)), [self.user2])
@@ -55,7 +55,8 @@ class ActivityTestCase(DataTestCase):
             'Two joined CoolGroup %s ago' % self.timesince,
         ])
         self.assertSetEqual(user_stream(self.user2),
-            ['CoolGroup responded to admin: Sweet Group!... %s ago' % self.timesince])
+                            ['CoolGroup responded to admin: '
+                             'Sweet Group!... %s ago' % self.timesince])
 
     def test_stream_stale_follows(self):
         """
@@ -66,14 +67,16 @@ class ActivityTestCase(DataTestCase):
         self.assertNotIn('Two', str(user_stream(self.user1)))
 
     def test_action_object(self):
-        created_action = action.send(self.user1, verb='created comment',
-            action_object=self.comment, target=self.group, timestamp=self.testdate)[0][1]
+        created = action.send(self.user1, verb='created comment',
+                              action_object=self.comment, target=self.group,
+                              timestamp=self.testdate)[0][1]
 
-        self.assertEqual(created_action.actor, self.user1)
-        self.assertEqual(created_action.action_object, self.comment)
-        self.assertEqual(created_action.target, self.group)
-        self.assertEqual(text_type(created_action),
-            'admin created comment admin: Sweet Group!... on CoolGroup %s ago' % self.timesince)
+        self.assertEqual(created.actor, self.user1)
+        self.assertEqual(created.action_object, self.comment)
+        self.assertEqual(created.target, self.group)
+        self.assertEqual(text_type(created),
+                         'admin created comment admin: Sweet Group!... on '
+                         'CoolGroup %s ago' % self.timesince)
 
     def test_doesnt_generate_duplicate_follow_records(self):
         g = Group.objects.get_or_create(name='DupGroup')[0]
@@ -81,21 +84,23 @@ class ActivityTestCase(DataTestCase):
 
         f1 = follow(s, g)
         self.assertTrue(f1 is not None, "Should have received a new follow "
-            "record")
+                                        "record")
         self.assertTrue(isinstance(f1, Follow), "Returns a Follow object")
 
-        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
-            content_type=ContentType.objects.get_for_model(g)).count(),
-            "Should only have 1 follow record here")
+        follows = Follow.objects.filter(user=s, object_id=g.pk,
+                                        content_type=self.group_ct)
+        self.assertEqual(1, follows.count(),
+                         "Should only have 1 follow record here")
 
         f2 = follow(s, g)
-        self.assertEqual(1, Follow.objects.filter(user=s, object_id=g.pk,
-            content_type=ContentType.objects.get_for_model(g)).count(),
-            "Should still only have 1 follow record here")
+        follows = Follow.objects.filter(user=s, object_id=g.pk,
+                                        content_type=self.group_ct)
+        self.assertEqual(1, follows.count(),
+                         "Should still only have 1 follow record here")
         self.assertTrue(f2 is not None, "Should have received a Follow object")
         self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
         self.assertEqual(f1, f2, "Should have received the same Follow "
-            "object that I first submitted")
+                                 "object that I first submitted")
 
     def test_y_no_orphaned_follows(self):
         follows = Follow.objects.count()
@@ -121,17 +126,20 @@ class ActivityTestCase(DataTestCase):
     def test_tag_follow_url(self):
         src = '{% follow_url user %}'
         output = render(src, user=self.user1)
-        self.assertEqual(output, '/follow/%s/%s/' % (self.user_ct.pk, self.user1.pk))
+        self.assertEqual(output, reverse('actstream_follow', args=(
+            self.user_ct.pk, self.user1.pk)))
 
     def test_tag_follow_all_url(self):
         src = '{% follow_all_url user %}'
         output = render(src, user=self.user1)
-        self.assertEqual(output, '/follow_all/%s/%s/' % (self.user_ct.pk, self.user1.pk))
+        self.assertEqual(output, reverse('actstream_follow_all', args=(
+            self.user_ct.pk, self.user1.pk)))
 
     def test_tag_actor_url(self):
         src = '{% actor_url user %}'
         output = render(src, user=self.user1)
-        self.assertEqual(output, '/actors/%s/%s/' % (self.user_ct.pk, self.user1.pk))
+        self.assertEqual(output, reverse('actstream_actor', args=(
+            self.user_ct.pk, self.user1.pk)))
 
     def test_tag_display_action(self):
         src = '{% display_action action %}'
@@ -155,8 +163,8 @@ class ActivityTestCase(DataTestCase):
         by passing kwargs
         """
         self.assertSetEqual(model_stream(self.user1, verb='commented on'), [
-                'admin commented on CoolGroup %s ago' % self.timesince,
-                ])
+            'admin commented on CoolGroup %s ago' % self.timesince,
+        ])
 
     def test_user_stream_with_kwargs(self):
         """
@@ -164,8 +172,8 @@ class ActivityTestCase(DataTestCase):
         filters in kwargs
         """
         self.assertSetEqual(user_stream(self.user1, verb='joined'), [
-                'Two joined CoolGroup %s ago' % self.timesince,
-                ])
+            'Two joined CoolGroup %s ago' % self.timesince,
+        ])
 
     def test_is_following_filter(self):
         src = '{% if user|is_following:group %}yup{% endif %}'
@@ -177,11 +185,10 @@ class ActivityTestCase(DataTestCase):
         activate("fr")
         verb = _('English')
 
-        assert text_type(verb) == "Anglais"
+        self.assertEqual(verb, "Anglais")
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group, timestamp=self.testdate)
         self.assertTrue(Action.objects.filter(verb='English').exists())
-        # restore language
         activate(lang)
 
     def test_none_returns_an_empty_queryset(self):
@@ -190,5 +197,6 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_with_user_activity(self):
+        self.assertNotIn(self.join_action, list(user_stream(self.user1)))
         self.assertIn(self.join_action,
                       list(user_stream(self.user1, with_user_activity=True)))

@@ -16,8 +16,8 @@ User = get_user_model()
 
 
 class TestAppTests(ActivityBaseTestCase):
-
     def setUp(self):
+        super(TestAppTests, self).setUp()
         self.user = User.objects.create(username='test')
         action.send(self.user, verb='was created')
 
@@ -37,7 +37,7 @@ class TestAppTests(ActivityBaseTestCase):
         self.assertEqual(newaction.data['tags'], ['sayings'])
         self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
 
-    @skipUnless(django.VERSION >= (1, 5), 'Django>=1.5 Required')
+    @skipUnless(django.VERSION[:2] >= (1, 5), 'Django>=1.5 Required')
     def test_customuser(self):
         from testapp.models import MyUser
 

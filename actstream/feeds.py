@@ -12,7 +12,7 @@ from django.utils import datetime_safe
 from django.views.generic import View
 from django.http import HttpResponse
 
-from actstream.models import model_stream, user_stream, any_stream
+from actstream.models import Action, model_stream, user_stream, any_stream
 
 
 class AbstractActivityStream(object):
@@ -173,14 +173,15 @@ class ActivityStreamsBaseFeed(AbstractActivityStream, Feed):
 
 class JSONActivityFeed(AbstractActivityStream, View):
     def dispatch(self, request, *args, **kwargs):
-        return HttpResponse(self.serialize(), content_type='application/json')
+        return HttpResponse(self.serialize(request, *args, **kwargs),
+                            content_type='application/json')
 
-    def serialize(self):
-        items = self.items(self.request, *self.args, **self.kwargs)
+    def serialize(self, request, *args, **kwargs):
+        items = self.items(request, *args, **kwargs)
         return json.dumps({
             'totalItems': len(items),
             'items': [self.format(action) for action in items]
-        }, indent=4 if 'pretty' in self.request.REQUEST else None)
+        }, indent=4 if 'pretty' in request.REQUEST else None)
 
 
 class ModelActivityMixin(object):
@@ -210,6 +211,19 @@ class UserActivityMixin(object):
 
     def get_stream(self):
         return user_stream
+
+
+class CustomStreamMixin(object):
+    name = None
+
+    def get_object(self):
+        return
+
+    def get_stream(self):
+        return getattr(Action.objects, self.name)
+
+    def items(self, *args, **kwargs):
+        return self.get_stream()(*args[1:], **kwargs)
 
 
 class ModelActivityFeed(ModelActivityMixin, ActivityStreamsBaseFeed):
@@ -281,4 +295,7 @@ class ModelJSONActivityFeed(ModelActivityMixin, JSONActivityFeed):
 
 
 class ObjectJSONActivityFeed(ObjectActivityMixin, JSONActivityFeed):
+    pass
+
+class CustomJSONActivityFeed(CustomStreamMixin, JSONActivityFeed):
     pass

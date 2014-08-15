@@ -18,7 +18,7 @@ def setup_generic_relations(model_class):
     """
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
-    if django.VERSION >= (1, 7):
+    if django.VERSION[:2] >= (1, 7):
         related_attr_name = 'related_query_name'
     relations = {}
     for field in ('actor', 'target', 'action_object'):
@@ -48,7 +48,7 @@ def is_installed(model_class):
     Returns True if a model_class is installed.
     model_class._meta.installed is only reliable in Django 1.7+
     """
-    if django.VERSION > (1, 7):
+    if django.VERSION[:2] > (1, 7):
         return model_class._meta.installed
     return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
 
