@@ -2,17 +2,7 @@ import django
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-from django.contrib.comments.signals import comment_was_posted
-
-from actstream import action
 from actstream.registry import register
-
-
-def comment_action(sender, comment=None, target=None, **kwargs):
-    if comment.user:
-        action.send(comment.user, verb='commented', action_object=comment,
-                    target=comment.content_object)
-comment_was_posted.connect(comment_action)
 
 
 @python_2_unicode_compatible
