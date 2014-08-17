@@ -23,3 +23,4 @@ To generate an action anywhere in your code, simply import the action signal and
     action.send(request.user, verb='reached level 10')
     action.send(request.user, verb='joined', target=group)
     action.send(request.user, verb='created comment', action_object=comment, target=group)
+    action.send(request.user, verb='created comment', action_object=comment, preposition='in', target=group)
