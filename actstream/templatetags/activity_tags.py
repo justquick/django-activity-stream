@@ -50,6 +50,8 @@ class AsNode(Node):
         """
         Class method to parse and return a Node.
         """
+        tag_error = "Accepted formats {%% %(tagname)s %(args)s %%} or " \
+                    "{%% %(tagname)s %(args)s as [var] %%}"
         bits = token.split_contents()
         args_count = len(bits) - 1
         if args_count >= 2 and bits[-2] == 'as':
@@ -59,11 +61,10 @@ class AsNode(Node):
             as_var = None
         if args_count != cls.args_count:
             arg_list = ' '.join(['[arg]' * cls.args_count])
-            raise TemplateSyntaxError("Accepted formats {%% %(tagname)s "
-                "%(args)s %%} or {%% %(tagname)s %(args)s as [var] %%}" %
-                {'tagname': bits[0], 'args': arg_list})
-        args = [parser.compile_filter(token) for token in
-            bits[1:args_count + 1]]
+            raise TemplateSyntaxError(tag_error % {'tagname': bits[0],
+                                                   'args': arg_list})
+        args = [parser.compile_filter(tkn)
+                for tkn in bits[1:args_count + 1]]
         return cls(args, varname=as_var)
 
     def __init__(self, args, varname=None):
@@ -90,7 +91,7 @@ class DisplayAction(AsNode):
             'actstream/action.html',
         ]
         return render_to_string(templates, {'action': action_instance},
-            context)
+                                context)
 
 
 def display_action(parser, token):

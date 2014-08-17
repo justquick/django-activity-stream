@@ -16,7 +16,7 @@ ADMINS = (
 ENGINE = os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
 DATABASES = {
     'default': {
-        'ENGINE':  ENGINE,
+        'ENGINE': ENGINE,
         'NAME': 'test',
         'OPTIONS': {
         }

@@ -1,10 +1,8 @@
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
 
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 
-from actstream.compat import smart_text
 from actstream import settings
 
 

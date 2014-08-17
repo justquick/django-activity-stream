@@ -29,8 +29,8 @@ def setup_generic_relations(model_class):
             'object_id_field': '%s_object_id' % field,
             related_attr_name: attr_value
         }
-        rel = generic.GenericRelation('actstream.Action', **kwargs
-                        ).contribute_to_class(model_class, attr)
+        rel = generic.GenericRelation('actstream.Action', **kwargs)
+        rel = rel.contribute_to_class(model_class, attr)
         relations[field] = rel
     return relations
 
@@ -76,7 +76,7 @@ class ActionableModelRegistry(dict):
     def register(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
             model_class = validate(class_or_label)
-            if not model_class in self:
+            if model_class not in self:
                 self[model_class] = setup_generic_relations(model_class)
 
     def unregister(self, *model_classes_or_labels):
@@ -89,7 +89,7 @@ class ActionableModelRegistry(dict):
         if not isclass(model_class_or_object):
             model_class_or_object = model_class_or_object.__class__
         model_class = validate(model_class_or_object, RuntimeError)
-        if not model_class in self:
+        if model_class not in self:
             raise ImproperlyConfigured(
                 'The model %s is not registered. Please use actstream.registry '
                 'to register it.' % model_class.__name__)

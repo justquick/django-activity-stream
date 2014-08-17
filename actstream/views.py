@@ -29,12 +29,12 @@ def follow_unfollow(request, content_type_id, object_id, do_follow=True, actor_o
     actor defined by ``content_type_id``, ``object_id``.
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
-    actor = get_object_or_404(ctype.model_class(), pk=object_id)
+    instance = get_object_or_404(ctype.model_class(), pk=object_id)
 
     if do_follow:
-        actions.follow(request.user, actor, actor_only=actor_only)
+        actions.follow(request.user, instance, actor_only=actor_only)
         return respond(request, 201)   # CREATED
-    actions.unfollow(request.user, actor)
+    actions.unfollow(request.user, instance)
     return respond(request, 204)   # NO CONTENT
 
 
@@ -56,9 +56,9 @@ def followers(request, content_type_id, object_id):
     ``content_type_id``, ``object_id``.
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
-    actor = get_object_or_404(ctype.model_class(), pk=object_id)
+    instance = get_object_or_404(ctype.model_class(), pk=object_id)
     return render_to_response(('actstream/followers.html', 'activity/followers.html'), {
-        'followers': models.followers(actor), 'actor': actor
+        'followers': models.followers(instance), 'actor': instance
     }, context_instance=RequestContext(request))
 
 
@@ -66,9 +66,9 @@ def following(request, user_id):
     """
     Returns a list of actors that the user identified by ``user_id`` is following (eg who im following).
     """
-    user = get_object_or_404(User, pk=user_id)
+    instance = get_object_or_404(User, pk=user_id)
     return render_to_response(('actstream/following.html', 'activity/following.html'), {
-        'following': models.following(user), 'user': user
+        'following': models.following(instance), 'user': instance
     }, context_instance=RequestContext(request))
 
 
@@ -76,10 +76,10 @@ def user(request, username):
     """
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
-    user = get_object_or_404(User, **{'is_active': True, compat.username_field(): username})
+    instance = get_object_or_404(User, **{'is_active': True, compat.username_field(): username})
     return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
         'ctype': ContentType.objects.get_for_model(User),
-        'actor': user, 'action_list': models.user_stream(user)
+        'actor': user, 'action_list': models.user_stream(instance)
     }, context_instance=RequestContext(request))
 
 

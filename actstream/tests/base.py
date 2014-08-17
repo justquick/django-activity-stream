@@ -1,4 +1,3 @@
-import os
 from json import loads
 from datetime import datetime
 from inspect import getargspec
@@ -50,10 +49,6 @@ class ActivityBaseTestCase(TestCase):
 
     def assertSetEqual(self, l1, l2, msg=None):
         self.assertSequenceEqual(set(map(text_type, l1)), set(l2))
-
-    def assertAllIn(self, bits, string):
-        for bit in bits:
-            self.assertIn(bit, string)
 
     def assertAllIn(self, bits, string):
         for bit in bits:
@@ -124,4 +119,3 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User 3 did something but doesn't following someone
         action.send(self.user3, verb='liked actstream', timestamp=self.testdate)
-

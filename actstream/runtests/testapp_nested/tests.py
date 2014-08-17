@@ -13,6 +13,7 @@ class NotInstalledModel(models.Model):
     class Meta:
         app_label = 'testapp_not_installed'
 
+
 class TestAppNestedTests(ActivityBaseTestCase):
     def test_registration(self):
         self.assertIn(my_model.NestedModel, registry)

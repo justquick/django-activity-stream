@@ -297,5 +297,6 @@ class ModelJSONActivityFeed(ModelActivityMixin, JSONActivityFeed):
 class ObjectJSONActivityFeed(ObjectActivityMixin, JSONActivityFeed):
     pass
 
+
 class CustomJSONActivityFeed(CustomStreamMixin, JSONActivityFeed):
     pass

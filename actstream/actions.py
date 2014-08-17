@@ -106,7 +106,7 @@ def action_handler(verb, **kwargs):
 
     for opt in ('target', 'action_object'):
         obj = kwargs.pop(opt, None)
-        if not obj is None:
+        if obj is not None:
             check(obj)
             setattr(newaction, '%s_object_id' % opt, obj.pk)
             setattr(newaction, '%s_content_type' % opt,

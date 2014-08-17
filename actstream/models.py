@@ -29,8 +29,8 @@ class Follow(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=255)
     follow_object = generic.GenericForeignKey()
-    actor_only = models.BooleanField("Only follow actions where the object is "
-        "the target.", default=True)
+    actor_only = models.BooleanField("Only follow actions where "
+                                     "the object is the target.", default=True)
     started = models.DateTimeField(default=now)
     objects = FollowManager()
 
@@ -78,18 +78,17 @@ class Action(models.Model):
     verb = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
-    target_content_type = models.ForeignKey(ContentType, related_name='target',
-        blank=True, null=True)
+    target_content_type = models.ForeignKey(ContentType, blank=True, null=True,
+                                            related_name='target')
     target_object_id = models.CharField(max_length=255, blank=True, null=True)
     target = generic.GenericForeignKey('target_content_type',
-        'target_object_id')
+                                       'target_object_id')
 
-    action_object_content_type = models.ForeignKey(ContentType,
-        related_name='action_object', blank=True, null=True)
-    action_object_object_id = models.CharField(max_length=255, blank=True,
-        null=True)
+    action_object_content_type = models.ForeignKey(ContentType, blank=True, null=True,
+                                                   related_name='action_object')
+    action_object_object_id = models.CharField(max_length=255, blank=True, null=True)
     action_object = generic.GenericForeignKey('action_object_content_type',
-        'action_object_object_id')
+                                              'action_object_object_id')
 
     timestamp = models.DateTimeField(default=now)
 
@@ -134,8 +133,8 @@ class Action(models.Model):
         """
         Returns the URL to the ``actstream_action_object`` view for the current action object
         """
-        return reverse('actstream_actor', None,
-            (self.action_object_content_type.pk, self.action_object_object_id))
+        return reverse('actstream_actor', None, (
+            self.action_object_content_type.pk, self.action_object_object_id))
 
     def timesince(self, now=None):
         """
@@ -146,7 +145,7 @@ class Action(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('actstream.views.detail', [self.pk])
+        return 'actstream.views.detail', [self.pk]
 
 
 # convenient accessors

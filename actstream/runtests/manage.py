@@ -14,6 +14,7 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
 
+
 def clean_args():
     newargs, engine = [], os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
     for arg in sys.argv[:]:

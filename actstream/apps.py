@@ -24,11 +24,7 @@ class ActstreamConfig(AppConfig):
 
     def ready(self):
         action.connect(action_handler, dispatch_uid='actstream.models')
-
-        if hasattr(self, 'get_model'):
-            action_class = self.get_model('action')
-        else:
-            from actstream.models import Action as action_class
+        action_class = self.get_model('action')
 
         if settings.USE_JSONFIELD:
             try:
