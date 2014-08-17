@@ -48,7 +48,7 @@ def is_installed(model_class):
     Returns True if a model_class is installed.
     model_class._meta.installed is only reliable in Django 1.7+
     """
-    if django.VERSION[:2] > (1, 7):
+    if django.VERSION[:2] >= (1, 7):
         return model_class._meta.installed
     return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
 
