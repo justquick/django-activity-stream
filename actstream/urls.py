@@ -41,6 +41,8 @@ urlpatterns = patterns('actstream.views',
     # Follower and Actor lists
     url(r'^followers/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$',
         'followers', name='actstream_followers'),
+    url(r'^following/(?P<user_id>\d+)/$',
+        'following', name='actstream_following'),
     url(r'^actors/(?P<content_type_id>\d+)/(?P<object_id>\d+)/$',
         'actor', name='actstream_actor'),
     url(r'^actors/(?P<content_type_id>\d+)/$',

@@ -44,7 +44,7 @@ def stream(request):
     Index page for authenticated user's activity stream. (Eg: Your feed at
     github.com)
     """
-    return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
+    return render_to_response('actstream/actor.html', {
         'ctype': ContentType.objects.get_for_model(User),
         'actor': request.user, 'action_list': models.user_stream(request.user)
     }, context_instance=RequestContext(request))
@@ -57,7 +57,7 @@ def followers(request, content_type_id, object_id):
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
     instance = get_object_or_404(ctype.model_class(), pk=object_id)
-    return render_to_response(('actstream/followers.html', 'activity/followers.html'), {
+    return render_to_response('actstream/followers.html', {
         'followers': models.followers(instance), 'actor': instance
     }, context_instance=RequestContext(request))
 
@@ -67,7 +67,7 @@ def following(request, user_id):
     Returns a list of actors that the user identified by ``user_id`` is following (eg who im following).
     """
     instance = get_object_or_404(User, pk=user_id)
-    return render_to_response(('actstream/following.html', 'activity/following.html'), {
+    return render_to_response('actstream/following.html', {
         'following': models.following(instance), 'user': instance
     }, context_instance=RequestContext(request))
 
@@ -77,9 +77,9 @@ def user(request, username):
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
     instance = get_object_or_404(User, **{'is_active': True, compat.username_field(): username})
-    return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
+    return render_to_response('actstream/actor.html', {
         'ctype': ContentType.objects.get_for_model(User),
-        'actor': user, 'action_list': models.user_stream(instance)
+        'actor': instance, 'action_list': models.user_stream(instance)
     }, context_instance=RequestContext(request))
 
 
@@ -87,7 +87,7 @@ def detail(request, action_id):
     """
     ``Action`` detail view (pretty boring, mainly used for get_absolute_url)
     """
-    return render_to_response(('actstream/detail.html', 'activity/detail.html'), {
+    return render_to_response('actstream/detail.html', {
         'action': get_object_or_404(models.Action, pk=action_id)
     }, context_instance=RequestContext(request))
 
@@ -98,9 +98,9 @@ def actor(request, content_type_id, object_id):
     ``object_id``.
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
-    actor = get_object_or_404(ctype.model_class(), pk=object_id)
-    return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
-        'action_list': models.actor_stream(actor), 'actor': actor,
+    instance = get_object_or_404(ctype.model_class(), pk=object_id)
+    return render_to_response('actstream/actor.html', {
+        'action_list': models.actor_stream(instance), 'actor': instance,
         'ctype': ctype
     }, context_instance=RequestContext(request))
 
@@ -111,8 +111,8 @@ def model(request, content_type_id):
     ``object_id``.
     """
     ctype = get_object_or_404(ContentType, pk=content_type_id)
-    actor = ctype.model_class()
-    return render_to_response(('actstream/actor.html', 'activity/actor.html'), {
-        'action_list': models.model_stream(actor), 'ctype': ctype,
-        'actor': actor
+    model_class = ctype.model_class()
+    return render_to_response('actstream/actor.html', {
+        'action_list': models.model_stream(model_class), 'ctype': ctype,
+        'actor': model_class
     }, context_instance=RequestContext(request))
