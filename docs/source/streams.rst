@@ -89,7 +89,7 @@ When returning a queryset, you do NOT need to call ``fetch_generic_relations()``
 Example
 --------
 
-To start writing your custom stream module, create a file in your app called ``managers.py``
+To start writing your custom stream module, create a file in your app called ``myapp/managers.py``
 
 .. code-block:: python
 
@@ -107,6 +107,8 @@ To start writing your custom stream module, create a file in your app called ``m
             if time is None:
                 time = datetime.now()
             return obj.actor_actions.filter(verb = verb, timestamp__lte = time)
+
+If you havent done so already, configure this manager to be your default ``Action`` manager by setting the :ref:`manager` setting.
 
 This defines a manager with one custom stream which filters for 'posted' actions by verb and timestamp.
 

@@ -55,7 +55,7 @@ Here is an example of what you can set in your ``settings.py``
 .. code-block:: python
 
     ACTSTREAM_SETTINGS = {
-        'MANAGER': 'myapp.streams.MyActionManager',
+        'MANAGER': 'myapp.managers.MyActionManager',
         'FETCH_RELATIONS': True,
         'USE_PREFETCH': True,
         'USE_JSONFIELD': True,
@@ -70,9 +70,11 @@ Here is an example of what you can set in your ``settings.py``
 
 Supported settings are defined below.
 
+.. _manager:
 
 MANAGER
 ********
+
 
 The Python import path of the manager to use for ``Action.objects``.
 Add your own manager here to create custom streams.
