@@ -90,9 +90,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admindocs',
-    'django.contrib.comments',
     'django.contrib.sites',
-    'django.contrib.messages',
+    'django.contrib.comments',
     'actstream',
     'testapp',
     'testapp_nested'

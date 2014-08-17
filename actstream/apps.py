@@ -12,9 +12,6 @@ except (ImportError, ImproperlyConfigured):
     DatabaseOperations = None
 
 
-from actstream import settings
-
-
 def fixed_last_executed_query(self, cursor, sql, params):
     """
     Patches error with MySQL + Django<=1.5: https://code.djangoproject.com/ticket/19954
@@ -26,6 +23,7 @@ class ActstreamConfig(AppConfig):
     name = 'actstream'
 
     def ready(self):
+        from actstream import settings
         from actstream.signals import action
         from actstream.actions import action_handler
 

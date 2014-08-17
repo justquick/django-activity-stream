@@ -1,4 +1,5 @@
 from django.db import models
+import django
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.registry import register, registry
@@ -16,7 +17,8 @@ class NotInstalledModel(models.Model):
 
 class TestAppNestedTests(ActivityBaseTestCase):
     def test_registration(self):
-        register(my_model.NestedModel)
+        if django.VERSION[:2] < (1, 7):
+            register(my_model.NestedModel)
         self.assertIn(my_model.NestedModel, registry)
 
     def test_not_installed(self):

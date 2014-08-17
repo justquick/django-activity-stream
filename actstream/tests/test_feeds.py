@@ -8,7 +8,6 @@ from actstream.tests import base
 
 class FeedsTestCase(base.DataTestCase):
     urls = 'actstream.urls'
-    actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
 
     @property
     def rss_base(self):

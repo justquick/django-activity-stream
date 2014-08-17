@@ -4,6 +4,7 @@ from datetime import datetime
 from inspect import getargspec
 
 from django.test import TestCase
+from django.db.models import get_model
 from django.template.loader import Template, Context
 from django.utils.six import text_type
 from django.utils.timesince import timesince
@@ -41,6 +42,9 @@ class ActivityBaseTestCase(TestCase):
     maxDiff = None
 
     def setUp(self):
+        self.User = get_user_model()
+        self.user_ct = ContentType.objects.get_for_model(self.User)
+        register(self.User)
         for model in self.actstream_models:
             register(model)
 
@@ -60,18 +64,21 @@ class ActivityBaseTestCase(TestCase):
 
     def tearDown(self):
         for model in self.actstream_models:
+            model = get_model(*model.split('.'))
             unregister(model)
+            model.objects.all().delete()
+        Action.objects.all().delete()
+        Follow.objects.all().delete()
+        self.User.objects.all().delete()
 
     def capture(self, viewname, *args):
         return self.client.get(reverse(viewname, args=args)).content.decode()
 
 
 class DataTestCase(ActivityBaseTestCase):
-    actstream_models = ('auth.User', 'auth.Group', 'sites.Site')
+    actstream_models = ('auth.Group', 'sites.Site')
 
     def setUp(self):
-        self.User = get_user_model()
-        self.user_ct = ContentType.objects.get_for_model(self.User)
         self.testdate = datetime(2000, 1, 1)
         self.timesince = timesince(self.testdate).encode('utf8').replace(
             b'\xc2\xa0', b' ').decode()
@@ -118,9 +125,3 @@ class DataTestCase(ActivityBaseTestCase):
         # User 3 did something but doesn't following someone
         action.send(self.user3, verb='liked actstream', timestamp=self.testdate)
 
-    def tearDown(self):
-        for obj in (self.group, self.user1, self.user2, self.user3, self.comment):
-            if obj.pk:
-                obj.delete()
-        Follow.objects.all().delete()
-        Action.objects.all().delete()

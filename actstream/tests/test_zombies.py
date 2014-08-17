@@ -11,7 +11,6 @@ from .base import ActivityBaseTestCase
 
 
 class ZombieTest(ActivityBaseTestCase):
-    actstream_models = ('auth.User',)
     human = 10
     zombie = 1
 
