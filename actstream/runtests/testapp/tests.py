@@ -9,7 +9,7 @@ from actstream.models import Action, actor_stream, model_stream
 from actstream.compat import get_user_model
 from actstream.tests.base import render, ActivityBaseTestCase
 
-from testapp.models import Abstract, Unregistered
+from actstream.runtests.testapp.models import Abstract, Unregistered
 
 
 User = get_user_model()
@@ -39,7 +39,7 @@ class TestAppTests(ActivityBaseTestCase):
 
     @skipUnless(django.VERSION[:2] >= (1, 5), 'Django>=1.5 Required')
     def test_customuser(self):
-        from testapp.models import MyUser
+        from actstream.runtests.testapp.models import MyUser
 
         self.assertEqual(User, MyUser)
         self.assertEqual(self.user.get_full_name(), 'test')

@@ -2,8 +2,6 @@ import django
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-from actstream.registry import register
-
 
 @python_2_unicode_compatible
 class Player(models.Model):
@@ -11,10 +9,6 @@ class Player(models.Model):
 
     def __str__(self):
         return '#%d' % self.pk
-
-
-if django.VERSION[:2] <= (1, 7):
-    register(Player)
 
 
 @python_2_unicode_compatible
@@ -33,7 +27,6 @@ class Unregistered(Abstract):
 
 
 if django.VERSION[:2] >= (1, 5):
-    from django.contrib.admin import site
     from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
     class MyUserManager(BaseUserManager):
@@ -62,7 +55,8 @@ if django.VERSION[:2] >= (1, 5):
             return self.username
         get_short_name = get_full_name
 
-    site.register(MyUser)
 
-    if django.VERSION[:2] <= (1, 7):
-        register(MyUser)
+if django.VERSION[:2] < (1, 7):
+    from actstream.runtests.testapp.apps import TestappConfig
+
+    TestappConfig().ready()

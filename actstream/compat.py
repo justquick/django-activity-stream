@@ -22,3 +22,14 @@ try:
     from django.contrib.contenttypes import fields as generic
 except ImportError:
     from django.contrib.contenttypes import generic
+
+try:
+    from django.apps import AppConfig
+except ImportError:
+    from django.db import models
+
+    class AppConfig(object):
+        name = None
+
+        def get_model(self, model_name):
+            return models.get_model(self.name.split('.')[-1], model_name, only_installed=False)

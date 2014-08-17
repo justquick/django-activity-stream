@@ -1,7 +1,4 @@
-try:
-    from django.apps import AppConfig
-except ImportError:
-    AppConfig = object
+from actstream.compat import AppConfig
 
 
 class TestappNestedConfig(AppConfig):

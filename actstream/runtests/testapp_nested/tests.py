@@ -1,4 +1,3 @@
-import django
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 
@@ -16,8 +15,6 @@ class NotInstalledModel(models.Model):
 
 class TestAppNestedTests(ActivityBaseTestCase):
     def test_registration(self):
-        if django.VERSION[:2] < (1, 7):
-            register(my_model.NestedModel)
         self.assertIn(my_model.NestedModel, registry)
 
     def test_not_installed(self):
