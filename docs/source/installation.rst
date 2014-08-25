@@ -39,6 +39,7 @@ Add the activity urls to your urlconf::
         ...
     )
 
+The activity urls are not required for basic usage but provide useful url endpoints to get ``atom`` and ``json`` formatted feeds of activites associated with various sources and handle following, unfollowing and querying of followers.
 
 3rd Party Extras
 ----------------
