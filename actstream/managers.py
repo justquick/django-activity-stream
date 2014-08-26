@@ -168,7 +168,9 @@ class FollowManager(GFKManager):
         Eg following(user, User) will only return users following the given user
         """
         qs = self.filter(user=user)
+        ctype_filters = Q()
         for model in models:
             check(model)
-            qs = qs.filter(content_type=ContentType.objects.get_for_model(model))
+            ctype_filters |= Q(content_type=ContentType.objects.get_for_model(model))
+        qs = qs.filter(ctype_filters)
         return [follow.follow_object for follow in qs.fetch_generic_relations('follow_object')]
