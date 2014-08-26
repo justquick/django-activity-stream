@@ -102,6 +102,11 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(f1, f2, "Should have received the same Follow "
                                  "object that I first submitted")
 
+    def test_following_models_OR_query(self):
+        follow(self.user1, self.group, timestamp=self.testdate)
+        self.assertEqual([self.user2, self.group],
+                         following(self.user1, Group, self.User))
+
     def test_y_no_orphaned_follows(self):
         follows = Follow.objects.count()
         self.user2.delete()
