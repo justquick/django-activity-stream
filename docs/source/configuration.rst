@@ -2,17 +2,12 @@ Configuration
 ==============
 
 
-Models
--------
+Model Registration
+------------------
 
 In order to have your models be either an actor, target, or action object they must first be registered with actstream.
 In v0.5 and above, actstream has a registry of all actionable model classes.
 When you register them, actstream sets up certain GenericRelations that are required for generating activity streams.
-
-.. warning::
-
-    Introducing the registry change makes the ACTSTREAM_SETTINGS['MODELS'] setting obsolte so please use the register functions instead.
-
 
 You normally call register right after your model is defined (models.py) but you can call it anytime before you need to generate actions or activity streams.
 
@@ -44,6 +39,9 @@ For Django versions 1.7 or later, you should use `AppConfig <https://docs.django
     # myapp/__init__.py
     default_app_config = 'myapp.apps.MyAppConfig'
 
+.. note::
+
+    Introducing the registry change makes the ``ACTSTREAM_SETTINGS['MODELS']`` setting obsolete so please use the register functions instead.
 
 Settings
 --------
@@ -75,9 +73,12 @@ Supported settings are defined below.
 MANAGER
 ********
 
+The activity-stream manager is the `Django manager <https://docs.djangoproject.com/en/dev/topics/db/managers/>`__ interface used for querying activity data from the database.
+As per the Django convention, the manager is accessible via each Model and is set up by the ``register`` method described above.
 
 The Python import path of the manager to use for ``Action.objects``.
 Add your own manager here to create custom streams.
+There can only be one activity-stream manager class per Django project.
 
 For more info, see :ref:`custom-streams`
 
