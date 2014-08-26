@@ -6,3 +6,4 @@ dist
 MANIFEST
 __pycache__
 /coverage/
+/.coverage
