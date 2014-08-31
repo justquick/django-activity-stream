@@ -73,16 +73,15 @@ Supported settings are defined below.
 MANAGER
 ********
 
-The activity-stream manager is the `Django manager <https://docs.djangoproject.com/en/dev/topics/db/managers/>`__ interface used for querying activity data from the database.
-As per the Django convention, the manager is accessible via each Model and is set up by the ``register`` method described above.
+The action manager is the `Django manager <https://docs.djangoproject.com/en/dev/topics/db/managers/>`_ interface used for querying activity data from the database.
 
 The Python import path of the manager to use for ``Action.objects``.
 Add your own manager here to create custom streams.
-There can only be one activity-stream manager class per Django project.
+There can only be one manager class per Django project.
 
 For more info, see :ref:`custom-streams`
 
-Defaults to ``actstream.managers.ActionManager``
+Defaults to :class:`actstream.managers.ActionManager`
 
 FETCH_RELATIONS
 ***************

@@ -55,7 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Django Activity Stream'
-copyright = u'2010-%s, Justin Quick' % datetime.now().year
+copyright = u'2010-%s, Justin Quick. Activity Streams logo released under ' \
+            u'<a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons 3.0</a>' % datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -95,7 +96,7 @@ exclude_patterns = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'tango'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []

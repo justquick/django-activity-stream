@@ -22,7 +22,9 @@ Basic app configuration
 
 Then to add the Django Activity Stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
 
-The app should go somewhere after all the apps that are going to be generating activities like ``django.contrib.auth``::
+The app should go somewhere after all the apps that are going to be generating activities like ``django.contrib.auth``
+
+.. code-block:: python
 
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -31,7 +33,9 @@ The app should go somewhere after all the apps that are going to be generating a
         ...
     )
 
-Add the activity urls to your urlconf::
+Add the activity urls to your urlconf
+
+.. code-block:: python
 
     urlpatterns = patterns('',
         ...
@@ -39,7 +43,7 @@ Add the activity urls to your urlconf::
         ...
     )
 
-The activity urls are not required for basic usage but provide useful url endpoints to get ``atom`` and ``json`` formatted feeds of activites associated with various sources and handle following, unfollowing and querying of followers.
+The activity urls are not required for basic usage but provide activity :ref:`feeds` and handle following, unfollowing and querying of followers.
 
 3rd Party Extras
 ----------------

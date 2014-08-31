@@ -10,8 +10,10 @@ Using Builtin Streams
 
 There are several builtin streams which cover the basics, but you are never limited to them.
 
-User
------
+.. _user-stream:
+
+User Streams
+------------
 
 User streams are the most important, like your News Feed on `github <https://github.com/>`_. Basically you follow anyone (or anything) on your site and their actions show up here.
 These streams take one argument which is a ``User`` instance which is the one doing the following (usually ``request.user``).
@@ -26,8 +28,10 @@ If optional parameter ``with_user_activity`` is passed as ``True``, the stream w
 
 Generates a stream of ``Actions`` from objects that ``request.user`` follows
 
-Actor
-------
+.. _actor-stream:
+
+Actor Streams
+-------------
 
 Actor streams show you what a particular actor object has done. Helpful for viewing "My Activities".
 
@@ -39,9 +43,10 @@ Actor streams show you what a particular actor object has done. Helpful for view
 
 Generates a stream of ``Actions`` where the ``request.user`` was the ``actor``
 
+.. _object-stream:
 
-Action Object
---------------
+Action Object Streams
+---------------------
 
 Action object streams show you what actions a particular instance was used as the ``action_objct``
 
@@ -53,8 +58,10 @@ Action object streams show you what actions a particular instance was used as th
 
 Generates a stream of ``Actions`` where the ``comment`` was generated as the ``action_object``
 
-Model
-------
+.. _model-stream:
+
+Model Streams
+-------------
 
 Model streams offer a much broader scope showing ALL ``Actions`` from any particular model.
 Argument may be a class or instance of the model.
@@ -66,6 +73,22 @@ Argument may be a class or instance of the model.
     model_stream(request.user)
 
 Generates a stream of ``Actions`` from all ``User`` instances.
+
+.. _any-stream:
+
+Any Streams
+-------------
+
+Any streams shows you what actions a particular object was involved in either acting as the ``actor``, ``target`` or ``action_object``.
+
+.. code-block:: python
+
+    from actstream.models import any_stream
+
+    any_stream(request.user)
+
+Generates a stream of ``Actions`` where ``request.user`` was involved in any part.
+
 
 
 .. _custom-streams:
