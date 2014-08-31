@@ -17,19 +17,31 @@ from actstream.models import Action, model_stream, user_stream, any_stream
 
 class AbstractActivityStream(object):
     """
-    Abstract base class for generic stream rendering.
+    Abstract base class for all stream rendering.
     Supports hooks for fetching streams and formatting actions.
     """
     def get_stream(self, *args, **kwargs):
+        """
+        Returns a stream method to use.
+        """
         raise NotImplementedError
 
     def get_object(self, *args, **kwargs):
+        """
+        Returns the object (eg user or actor) that the stream is for.
+        """
         raise NotImplementedError
 
     def items(self, *args, **kwargs):
+        """
+        Returns a queryset of Actions to use based on the stream method and object.
+        """
         return self.get_stream()(self.get_object(*args, **kwargs))
 
     def get_uri(self, action, obj=None, date=None):
+        """
+        Returns an RFC3987 IRI ID for the given object, action and date.
+        """
         if date is None:
             date = action.timestamp
         date = datetime_safe.new_datetime(date).strftime('%Y-%m-%d')
@@ -37,6 +49,10 @@ class AbstractActivityStream(object):
                                  self.get_url(action, obj, False))
 
     def get_url(self, action, obj=None, domain=True):
+        """
+        Returns an RFC3987 IRI for a HTML representation of the given object, action.
+        If domain is true, the current site's domain will be added.
+        """
         if not obj:
             url = reverse('actstream_detail', None, (action.pk,))
         elif hasattr(obj, 'get_absolute_url'):
@@ -49,12 +65,16 @@ class AbstractActivityStream(object):
         return url
 
     def format(self, action):
+        """
+        Returns a formatted dictionary for the given action.
+        """
         item = {
             'id': self.get_uri(action),
             'url': self.get_url(action),
             'verb': action.verb,
             'published': rfc3339_date(action.timestamp),
-            'actor': self.format_actor(action)
+            'actor': self.format_actor(action),
+            'title': text_type(action),
         }
         if action.description:
             item['content'] = action.description
@@ -65,6 +85,9 @@ class AbstractActivityStream(object):
         return item
 
     def format_item(self, action, item_type='actor'):
+        """
+        Returns a formatted dictionary for an individual item based on the action and item_type.
+        """
         obj = getattr(action, item_type)
         return {
             'id': self.get_uri(action, obj),
@@ -74,12 +97,21 @@ class AbstractActivityStream(object):
         }
 
     def format_actor(self, action):
+        """
+        Returns a formatted dictionary for the actor of the action.
+        """
         return self.format_item(action)
 
     def format_target(self, action):
+        """
+        Returns a formatted dictionary for the target of the action.
+        """
         return self.format_item(action, 'target')
 
     def format_action_object(self, action):
+        """
+        Returns a formatted dictionary for the action object of the action.
+        """
         return self.format_item(action, 'action_object')
 
 
@@ -148,6 +180,7 @@ class ActivityStreamsBaseFeed(AbstractActivityStream, Feed):
         feed generator.
         """
         item = self.format(action)
+        item.pop('title', None)
         item['uri'] = item.pop('url')
         item['activity:verb'] = item.pop('verb')
         return item
@@ -172,6 +205,9 @@ class ActivityStreamsBaseFeed(AbstractActivityStream, Feed):
 
 
 class JSONActivityFeed(AbstractActivityStream, View):
+    """
+    Feed that generates feeds compatible with the v1.0 JSON Activity Stream spec
+    """
     def dispatch(self, request, *args, **kwargs):
         return HttpResponse(self.serialize(request, *args, **kwargs),
                             content_type='application/json')
@@ -240,10 +276,6 @@ class ModelActivityFeed(ModelActivityMixin, ActivityStreamsBaseFeed):
 
 
 class ObjectActivityFeed(ObjectActivityMixin, ActivityStreamsBaseFeed):
-    """
-    Feed of Activity for a given object (where the object is the Object or
-    Target).
-    """
     def title(self, obj):
         return 'Activity for %s' % obj
 
@@ -271,32 +303,54 @@ class UserActivityFeed(UserActivityMixin, ActivityStreamsBaseFeed):
         return 'Public activities of actors you follow'
 
 
+class AtomUserActivityFeed(UserActivityFeed):
+    """
+    Atom feed of Activity for a given user (where actions are those that the given user follows).
+    """
+    feed_type = ActivityStreamsAtomFeed
+    subtitle = UserActivityFeed.description
+
+
 class AtomModelActivityFeed(ModelActivityFeed):
+    """
+    Atom feed of Activity for a given model (where actions involve the given model as any of the entities).
+    """
     feed_type = ActivityStreamsAtomFeed
     subtitle = ModelActivityFeed.description
 
 
 class AtomObjectActivityFeed(ObjectActivityFeed):
+    """
+    Atom feed of Activity for a given object (where actions involve the given object as any of the entities).
+    """
     feed_type = ActivityStreamsAtomFeed
     subtitle = ObjectActivityFeed.description
 
 
-class AtomUserActivityFeed(UserActivityFeed):
-    feed_type = ActivityStreamsAtomFeed
-    subtitle = UserActivityFeed.description
-
-
 class UserJSONActivityFeed(UserActivityMixin, JSONActivityFeed):
+    """
+    JSON feed of Activity for a given user (where actions are those that the given user follows).
+    """
     pass
 
 
 class ModelJSONActivityFeed(ModelActivityMixin, JSONActivityFeed):
+    """
+    JSON feed of Activity for a given model (where actions involve the given model as any of the entities).
+    """
     pass
 
 
 class ObjectJSONActivityFeed(ObjectActivityMixin, JSONActivityFeed):
+    """
+    JSON feed of Activity for a given object (where actions involve the given object as any of the entities).
+    """
     pass
 
 
 class CustomJSONActivityFeed(CustomStreamMixin, JSONActivityFeed):
+    """
+    JSON feed of Activity for a custom stream. self.name should be the name of the custom stream as defined in the Manager
+    and arguments may be passed either in the url or when calling as_view(...)
+    """
     pass
