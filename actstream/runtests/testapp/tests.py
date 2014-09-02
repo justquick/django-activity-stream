@@ -59,3 +59,6 @@ class TestAppTests(ActivityBaseTestCase):
         {% endfor %}
         ''', user=self.user)
         self.assertAllIn([str(action) for action in stream], output)
+
+        self.assertEqual(self.capture('testapp_custom_feed',
+                                      'was created')['totalItems'], 1)

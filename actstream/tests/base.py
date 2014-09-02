@@ -67,7 +67,11 @@ class ActivityBaseTestCase(TestCase):
         self.User.objects.all().delete()
 
     def capture(self, viewname, *args):
-        return self.client.get(reverse(viewname, args=args)).content.decode()
+        response = self.client.get(reverse(viewname, args=args))
+        content = response.content.decode()
+        if response['Content-Type'] == 'application/json':
+            return loads(content)
+        return content
 
 
 class DataTestCase(ActivityBaseTestCase):
