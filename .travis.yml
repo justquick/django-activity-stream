@@ -2,11 +2,11 @@ language: python
 python:
   - "2.7"
 env:
-  - TOX_ENV=pypy-djdev
-  - TOX_ENV=py3.4-djdev
-  - TOX_ENV=py3.3-djdev
-  - TOX_ENV=py3.2-djdev
-  - TOX_ENV=py2.7-djdev
+  - TOX_ENV=pypy-dj1.7
+  - TOX_ENV=py3.4-dj1.7
+  - TOX_ENV=py3.3-dj1.7
+  - TOX_ENV=py3.2-dj1.7
+  - TOX_ENV=py2.7-dj1.7
   - TOX_ENV=pypy-dj1.6
   - TOX_ENV=py3.3-dj1.6
   - TOX_ENV=py3.2-dj1.6
