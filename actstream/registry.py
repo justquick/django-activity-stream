@@ -16,7 +16,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = get_model('actstream', 'Action')
+    Action = get_model('actstream', 'action')
 
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
@@ -35,6 +35,7 @@ def setup_generic_relations(model_class):
         rel = rel.contribute_to_class(model_class, attr)
         relations[field] = rel
 
+        # @@@ I'm not entirely sure why this works
         setattr(Action, attr_value, None)
     return relations
 
