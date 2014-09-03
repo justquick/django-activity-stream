@@ -92,9 +92,9 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.sites',
     'django.contrib.comments',
-    'actstream',
     'actstream.runtests.testapp',
-    'actstream.runtests.testapp_nested'
+    'actstream.runtests.testapp_nested',
+    'actstream',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
