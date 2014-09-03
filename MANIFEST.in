@@ -1,3 +1,2 @@
 include setup.py README.rst AUTHORS.txt LICENSE.txt CHANGELOG.rst
-recursive-include actstream *.py *.html *.txt *.po
-recursive-include docs *.rst *.png *.txt Makefile
+recursive-include actstream *.py *.html *.txt *.po *.mo

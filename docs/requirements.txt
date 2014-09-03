@@ -1,4 +1,3 @@
-Django>=1.6,<1.7
-Sphinx
+Sphinx==1.2.2
 git+https://github.com/justquick/alabaster.git#egg=alabaster
 django-jsonfield==0.9.12

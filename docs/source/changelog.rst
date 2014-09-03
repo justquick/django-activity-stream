@@ -1,6 +1,20 @@
 Changelog
 ==========
 
+0.5.1
+-----
+
+  - Coverage testing using coveralls.io
+  - Feeds refactoring to include JSON and custom feeds
+  - Added "any" builtin stream
+  - Following method bugfix
+  - Register method bugfix
+  - Is installed check bugfix
+  - Tests for nested app models
+  - Moar tests!
+  - Added actstream/base.html template for extensibility help
+
+
 0.5.0
 -----
 
