@@ -33,6 +33,7 @@ Contents:
    data
    follow
    streams
+   templatetags
    feeds
    changelog
    api

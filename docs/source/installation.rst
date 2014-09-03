@@ -22,7 +22,7 @@ Basic app configuration
 
 Then to add the Django Activity Stream to your project add the app ``actstream`` to your ``INSTALLED_APPS`` and urlconf.
 
-The app should go somewhere after all the apps that are going to be generating activities like ``django.contrib.auth``
+In Django versions older than 1.7, the app must be placed somewhere after all the apps that are going to be generating activities (eg ``django.contrib.auth``).
 
 .. code-block:: python
 
