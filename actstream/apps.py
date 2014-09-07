@@ -5,6 +5,7 @@ from actstream import settings
 from actstream.signals import action
 from actstream.actions import action_handler
 from actstream.compat import AppConfig
+from actstream.registry import registry
 
 try:
     from django.db.backends.mysql.base import DatabaseOperations
@@ -23,8 +24,10 @@ class ActstreamConfig(AppConfig):
     name = 'actstream'
 
     def ready(self):
+
         action.connect(action_handler, dispatch_uid='actstream.models')
-        action_class = self.get_model('action')
+
+        registry.ready()
 
         if settings.USE_JSONFIELD:
             try:
@@ -32,6 +35,9 @@ class ActstreamConfig(AppConfig):
             except ImportError:
                 raise ImproperlyConfigured('You must have django-jsonfield installed '
                                            'if you wish to use a JSONField on your actions')
+
+            action_class = self.get_model('action')
+
             JSONField(blank=True, null=True).contribute_to_class(action_class, 'data')
 
         if DatabaseOperations:
