@@ -18,7 +18,10 @@ A special ``action`` signal is provided for creating the actions.
 
     post_save.connect(my_handler, sender=MyModel)
 
-To generate an action anywhere in your code, simply import the action signal and send it with your actor, verb, target, and any other important arguments.
+There are several ways to generate actions in your code. You can do it through custom forms or by overriding predefined model methods, such as Model.save(). More on this last option can be found here: <https://docs.djangoproject.com/en/dev/topics/db/models/#overriding-predefined-model-methods>.
+
+The logic is to simply import the action signal and send it with your actor, verb, target, and any other important arguments.
+
 
 .. code-block:: python
 
