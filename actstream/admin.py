@@ -2,8 +2,13 @@ from django.contrib import admin
 
 from actstream import models
 
+# Use django-generic-admin widgets if available
+try:
+    from genericadmin.admin import GenericAdminModelAdmin as ModelAdmin
+except ImportError:
+    ModelAdmin = admin.ModelAdmin
 
-class ActionAdmin(admin.ModelAdmin):
+class ActionAdmin(ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('__str__', 'actor', 'verb', 'target')
     list_editable = ('verb',)
@@ -12,7 +17,7 @@ class ActionAdmin(admin.ModelAdmin):
                      'action_object_content_type')
 
 
-class FollowAdmin(admin.ModelAdmin):
+class FollowAdmin(ModelAdmin):
     list_display = ('__str__', 'user', 'follow_object', 'actor_only', 'started')
     list_editable = ('user',)
     list_filter = ('user', 'started',)
