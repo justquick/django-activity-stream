@@ -68,7 +68,7 @@ Supported Environments
 The following Python/Django versions and database configurations have been tested to work with the latest version of django-activity-stream.
 
 * PostgreSQL 9.1, 9.2 and 9.3
-    * **Psy** = `psycopg2 2.5.3 <http://initd.org/psycopg/docs/>`_
+    * **Psy** = `psycopg2 2.5.4 <http://initd.org/psycopg/docs/>`_
     * **PCffi** = `psycopg2cffi 2.5.2 <https://github.com/chtd/psycopg2cffi>`_
 * MySQL 5.5 and 5.6
     * **My** = `MySQL-python 1.2.5 <https://github.com/farcepest/MySQLdb1>`_
