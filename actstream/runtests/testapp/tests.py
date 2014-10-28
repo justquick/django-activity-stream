@@ -8,6 +8,7 @@ from actstream.signals import action
 from actstream.registry import register, unregister
 from actstream.models import Action, actor_stream, model_stream
 from actstream.tests.base import render, ActivityBaseTestCase
+from actstream.settings import USE_JSONFIELD
 
 from actstream.runtests.testapp.models import Abstract, Unregistered
 
@@ -25,21 +26,6 @@ class TestAppTests(ActivityBaseTestCase):
     def test_mystream(self):
         self.assertEqual(len(self.user.actor_actions.testbar('was created')), 1)
         self.assertEqual(len(self.user.action_object_actions.testbar('was created')), 0)
-
-    def test_jsonfield(self):
-        action.send(self.user, verb='said', text='foobar', tags=['sayings'],
-                    more_data={'pk': self.user.pk})
-        newaction = Action.objects.filter(verb='said')[0]
-        self.assertEqual(newaction.data['text'], 'foobar')
-        self.assertEqual(newaction.data['tags'], ['sayings'])
-        self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
-
-    @skipUnless(django.VERSION[:2] >= (1, 5), 'Django>=1.5 Required')
-    def test_customuser(self):
-        from actstream.runtests.testapp.models import MyUser
-
-        self.assertEqual(self.User, MyUser)
-        self.assertEqual(self.user.get_full_name(), 'test')
 
     def test_registration(self):
         instance = Unregistered.objects.create(name='fubar')
@@ -62,3 +48,19 @@ class TestAppTests(ActivityBaseTestCase):
 
         self.assertEqual(self.capture('testapp_custom_feed',
                                       'was created')['totalItems'], 1)
+
+    @skipUnless(django.VERSION[:2] >= (1, 5), 'Django>=1.5 Required')
+    def test_customuser(self):
+        from actstream.runtests.testapp.models import MyUser
+
+        self.assertEqual(self.User, MyUser)
+        self.assertEqual(self.user.get_full_name(), 'test')
+
+    if USE_JSONFIELD:
+        def test_jsonfield(self):
+            action.send(self.user, verb='said', text='foobar', tags=['sayings'],
+                        more_data={'pk': self.user.pk})
+            newaction = Action.objects.filter(verb='said')[0]
+            self.assertEqual(newaction.data['text'], 'foobar')
+            self.assertEqual(newaction.data['tags'], ['sayings'])
+            self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
