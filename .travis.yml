@@ -23,8 +23,12 @@ env:
   - TOX_ENV=coverage
 install:
   - pip install tox==1.7.2 coveralls==0.4.2
+addons:
+  postgresql: "9.3"
+before_script:
+  - psql -c 'create database test;' -U postgres
 script:
-  - tox -e $TOX_ENV
+  - DATABASE_ENGINE=postgres DATABASE_USER=postgres DATABASE_PASSWORD="" tox -e $TOX_ENV
 notifications:
   email: false
 branches:
