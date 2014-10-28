@@ -19,9 +19,9 @@ class ViewsTest(DataTestCase):
         attrs = lambda item: dict([(key, value)
                                    for key, value in item.__dict__.items()
                                    if not key.startswith('_')])
+        self.assertEqual(len(qs1), len(qs2))
         for i, item in enumerate(qs1):
             self.assertDictEqual(attrs(item), attrs(qs2[i]))
-        self.assertEqual(len(qs1), len(qs2))
 
     def test_follow_unfollow(self):
         response = self.get('actstream_follow', self.user_ct.pk, self.user3.pk)
