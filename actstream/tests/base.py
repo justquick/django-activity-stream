@@ -47,8 +47,10 @@ class ActivityBaseTestCase(TestCase):
         for model in self.actstream_models:
             register(model)
 
-    def assertSetEqual(self, l1, l2, msg=None):
-        self.assertSequenceEqual(set(map(text_type, l1)), set(l2))
+    def assertSetEqual(self, l1, l2, msg=None, domap=True):
+        if domap:
+            l1 = map(text_type, l1)
+        self.assertSequenceEqual(set(l1), set(l2), msg)
 
     def assertAllIn(self, bits, string):
         for bit in bits:

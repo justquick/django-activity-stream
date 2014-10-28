@@ -104,8 +104,8 @@ class ActivityTestCase(DataTestCase):
 
     def test_following_models_OR_query(self):
         follow(self.user1, self.group, timestamp=self.testdate)
-        self.assertEqual([self.user2, self.group],
-                         following(self.user1, Group, self.User))
+        self.assertSetEqual([self.user2, self.group],
+                            following(self.user1, Group, self.User), domap=False)
 
     def test_y_no_orphaned_follows(self):
         follows = Follow.objects.count()
