@@ -24,9 +24,15 @@ DATABASES = {
 }
 
 if 'postgres' in ENGINE or 'mysql' in ENGINE:
+    USER, PASSWORD = 'test', 'test'
+    if os.environ.get('TRAVIS', False):
+        if 'mysql' in ENGINE:
+            USER, PASSWORD = 'travis', ''
+        else:
+            USER, PASSWORD = 'postgres', ''
     DATABASES['default'].update(
-        USER=os.environ.get('DATABASE_USER', 'test'),
-        PASSWORD=os.environ.get('DATABASE_PASSWORD', 'test'),
+        USER=os.environ.get('DATABASE_USER', USER),
+        PASSWORD=os.environ.get('DATABASE_PASSWORD', PASSWORD),
         HOST=os.environ.get('DATABASE_HOST', 'localhost')
     )
 
