@@ -7,6 +7,13 @@ env:
   - TOX_ENV=py3.3-dj1.7
   - TOX_ENV=py3.2-dj1.7
   - TOX_ENV=py2.7-dj1.7
+  - TOX_ENV=pypy3-dj1.7-mysql
+  - TOX_ENV=pypy-dj1.7-mysql
+  - TOX_ENV=py3.4-dj1.7-mysql
+  - TOX_ENV=py2.7-dj1.7-mysql
+  - TOX_ENV=pypy-dj1.7-postgres
+  - TOX_ENV=py3.4-dj1.7-postgres
+  - TOX_ENV=py2.7-dj1.7-postgres
   - TOX_ENV=pypy-dj1.6
   - TOX_ENV=py3.3-dj1.6
   - TOX_ENV=py3.2-dj1.6
@@ -22,13 +29,11 @@ env:
   - TOX_ENV=py2.6-dj1.4
   - TOX_ENV=coverage
 install:
-  - pip install tox==1.7.2 coveralls==0.4.2
+  - pip install tox==1.8.1 coveralls==0.4.4
 addons:
   postgresql: "9.3"
-before_script:
-  - psql -c 'create database test;' -U postgres
 script:
-  - DATABASE_ENGINE=postgres DATABASE_USER=postgres DATABASE_PASSWORD="" tox -e $TOX_ENV
+  - tox -e $TOX_ENV
 notifications:
   email: false
 branches:
