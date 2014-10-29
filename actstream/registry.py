@@ -12,11 +12,20 @@ from django.utils.six import string_types
 from actstream.compat import generic
 
 
+class RegistrationError(Exception):
+    pass
+
+
 def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
     Action = get_model('actstream', 'action')
+
+    if Action is None:
+        raise RegistrationError('Unable get actstream.Action. Potential circular imports '
+                                'in initialisation. Try moving actstream app to come after the '
+                                'apps which have models to register in the INSTALLED_APPS setting.')
 
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
