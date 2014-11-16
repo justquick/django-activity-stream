@@ -1,3 +1,5 @@
+# -*- coding: utf-8  -*-
+
 from django.contrib.auth.models import Group
 
 from django.utils.translation import ugettext_lazy as _
@@ -48,6 +50,15 @@ class ActivityTestCase(DataTestCase):
             user_stream(self.user3, with_user_activity=True),
             ['Three liked actstream %s ago' % self.timesince]
         )
+
+    def test_follow_unicode(self):
+        """ Reproduce bug #201, that pops, for example, in django admin
+        """
+        self.user1.username = 'éé'
+        self.user1.save()
+        f = follow(self.user1, self.user2)
+        # just to check that it do not meet a UnicodeDecodeError
+        self.assertIn('éé', str(f))
 
     def test_stream(self):
         self.assertSetEqual(user_stream(self.user1), [
