@@ -144,7 +144,7 @@ class Action(models.Model):
         Shortcut for the ``django.utils.timesince.timesince`` function of the
         current timestamp.
         """
-        return djtimesince(self.timestamp, now).encode('utf8').replace(b'\xc2\xa0', b' ').decode()
+        return djtimesince(self.timestamp, now).encode('utf8').replace(b'\xc2\xa0', b' ').decode('utf8')
 
     @models.permalink
     def get_absolute_url(self):
