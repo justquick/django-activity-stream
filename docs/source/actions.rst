@@ -22,6 +22,16 @@ There are several ways to generate actions in your code. You can do it through c
 
 The logic is to simply import the action signal and send it with your actor, verb, target, and any other important arguments.
 
+Keep in mind that changes made through the admin pages will not trigger actions unless you override them as well. The code below is an example on how you can bind actions to the admin save_model:
+
+.. code-block:: python
+
+    class ConcertAdmin(admin.ModelAdmin):
+        def save_model(self, request, obj, form, change):
+            action.send(obj.band, verb='booked a concert', action_object=obj, target=obj.location)
+            obj.save()
+ 
+The examples below show how you can trigger the actions in other places of your code:
 
 .. code-block:: python
 
