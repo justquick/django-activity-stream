@@ -53,3 +53,15 @@ The end result is a link that is a toggle.
             follow
         {% endif %}
     </a>
+
+The code above will generate the url for the user to only follow actions where the object is the target. If you want the user to follow an object as both actor and target, you need to use the ``follow_all_url`` tag.
+
+.. code-block:: django
+
+    <a href="{% follow_all_url other_user %}">
+        {% if request.user|is_following:other_user %}
+            stop following
+        {% else %}
+            follow
+        {% endif %}
+    </a>
