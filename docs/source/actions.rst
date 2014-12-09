@@ -28,8 +28,8 @@ Keep in mind that changes made through the admin pages will not trigger actions 
 
     class ConcertAdmin(admin.ModelAdmin):
         def save_model(self, request, obj, form, change):
-            action.send(obj.band, verb='booked a concert', action_object=obj, target=obj.location)
             obj.save()
+            action.send(obj.band, verb='booked a concert', action_object=obj, target=obj.location)
  
 The examples below show how you can trigger the actions in other places of your code:
 
