@@ -151,19 +151,25 @@ class FollowManager(GFKManager):
         queryset = self.for_object(instance)
         return queryset.filter(user=user).exists()
 
+    def followers_qs(self, actor):
+        """
+        Returns a queryset of User objects who are following the given actor (eg my followers).
+        """
+        check(actor)
+        return self.filter(
+            content_type=ContentType.objects.get_for_model(actor),
+            object_id=actor.pk
+        ).select_related('user')
+
     def followers(self, actor):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
         """
-        check(actor)
-        return [follow.user for follow in self.filter(
-            content_type=ContentType.objects.get_for_model(actor),
-            object_id=actor.pk
-        ).select_related('user')]
+        return [follow.user for follow in self.followers_qs(actor)]
 
-    def following(self, user, *models):
+    def following_qs(self, user, *models):
         """
-        Returns a list of actors that the given user is following (eg who im following).
+        Returns a queryset of actors that the given user is following (eg who im following).
         Items in the list can be of any model unless a list of restricted models are passed.
         Eg following(user, User) will only return users following the given user
         """
@@ -173,4 +179,12 @@ class FollowManager(GFKManager):
             check(model)
             ctype_filters |= Q(content_type=ContentType.objects.get_for_model(model))
         qs = qs.filter(ctype_filters)
-        return [follow.follow_object for follow in qs.fetch_generic_relations('follow_object')]
+        return qs.fetch_generic_relations('follow_object')
+
+    def following(self, user, *models):
+        """
+        Returns a list of actors that the given user is following (eg who im following).
+        Items in the list can be of any model unless a list of restricted models are passed.
+        Eg following(user, User) will only return users following the given user
+        """
+        return [follow.follow_object for follow in self.following_qs(user, *models)]
