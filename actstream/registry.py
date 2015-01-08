@@ -87,11 +87,22 @@ def validate(model_class, exception_class=ImproperlyConfigured):
 
 class ActionableModelRegistry(dict):
 
+    def __init__(self):
+
+        # List to store references like 'myapp.MyModel' to be processed in the 'ready' function
+        self.string_model_references = []
+
     def register(self, *model_classes_or_labels):
+        """If the input is a string reference like 'myapp.MyModel' we store for processing later in
+        the ``ready`` method. Otherwise we assume it is a class it register it now.
+        """
         for class_or_label in model_classes_or_labels:
-            model_class = validate(class_or_label)
-            if model_class not in self:
-                self[model_class] = setup_generic_relations(model_class)
+            if isinstance(class_or_label, basestring):
+                self.string_model_references.append(class_or_label)
+            else:
+                model_class = validate(class_or_label)
+                if model_class not in self:
+                    self[model_class] = setup_generic_relations(model_class)
 
     def unregister(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
@@ -107,6 +118,17 @@ class ActionableModelRegistry(dict):
             raise ImproperlyConfigured(
                 'The model %s is not registered. Please use actstream.registry '
                 'to register it.' % model_class.__name__)
+
+    def ready(self):
+        """Imports and registers each string model reference and then clears the references list"""
+
+        for entry in self.string_model_references:
+            model_class = get_model(*entry.split('.'))
+            self.register(model_class)
+
+        # Clear the list so we don't risk double registering a model
+        self.string_model_references = []
+
 
 registry = ActionableModelRegistry()
 register = registry.register
