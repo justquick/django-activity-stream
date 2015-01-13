@@ -93,3 +93,8 @@ class GFKManagerTestCase(TestCase):
             (a.id, a.actor, a.target) for a in generic()]
         self.assertEqual(action_actor_targets,
                          action_actor_targets_fetch_generic_target)
+
+        # compare to fetching generic relations via contributed attributes
+        self.assertEqual(
+                list(actions()),
+                list(Action.objects.filter(actions_with_testapp_myuser_as_actor=self.user1)))
