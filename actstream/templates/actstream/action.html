@@ -3,7 +3,7 @@
 {{ action.verb }}
 {% if action.action_object %}
     {% if action.action_object.get_absolute_url %}<a href="{{ action.action_object.get_absolute_url }}">{{ action.action_object }}</a>
-    {% else %}<a href="{{ action.target_url }}">{{ action.action_object }}</a>{% endif %}
+    {% else %}<a href="{{ action.action_object_url }}">{{ action.action_object }}</a>{% endif %}
 {% endif %}
 {% if action.action_object and action.target %}to{% endif %}
 {% if action.target %}
