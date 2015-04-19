@@ -25,8 +25,10 @@ except ImportError:
 
 try:
     from django.apps import AppConfig
+    user_model_class = lambda: AppConfig.get_model(*user_model_label.split('.'))
 except ImportError:
     from django.db import models
+    user_model_class = lambda: models.get_model(*user_model_label.split('.'))
 
     class AppConfig(object):
         name = None

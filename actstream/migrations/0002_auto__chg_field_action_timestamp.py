@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from actstream.compat import user_model_label
+from actstream.compat import user_model_label, user_model_class
 
 
 class Migration(SchemaMigration):
@@ -57,7 +57,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         user_model_label: {
-            'Meta': {'object_name': user_model_label.split('.')[-1]},
+            'Meta': {'object_name': user_model_label.split('.')[-1], 'db_table': "'"+user_model_class()._meta.db_table+"'"},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
