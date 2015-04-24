@@ -3,7 +3,7 @@ import re
 
 import django
 from django.conf import settings
-from django.db.models import get_model
+from django.apps import apps
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import string_types
@@ -20,7 +20,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = get_model('actstream', 'action')
+    Action = apps.get_model('actstream', 'action')
 
     if Action is None:
         raise RegistrationError('Unable get actstream.Action. Potential circular imports '
