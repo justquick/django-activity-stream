@@ -3,7 +3,11 @@ import re
 
 import django
 from django.conf import settings
-from django.db.models import get_model
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except (ImportError, AttributeError):
+    from django.db.models import get_model
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import string_types

@@ -1,6 +1,10 @@
 import datetime
 
-from django.db.models import get_model
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except (ImportError, AttributeError): # django 1.6 compatibility
+    from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
