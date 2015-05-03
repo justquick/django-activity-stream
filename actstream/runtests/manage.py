@@ -14,17 +14,7 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
 
-
-def clean_args():
-    newargs, engine = [], os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
-    for arg in sys.argv[:]:
-        if '--engine=' in arg:
-            engine = arg.split('--engine=')[1]
-        else:
-            newargs.append(arg)
-    return newargs, engine
-
-sys.argv, engine = clean_args()
+engine = os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
 
 if engine.startswith('mysql'):
     engine = 'django.db.backends.mysql'
@@ -33,9 +23,24 @@ elif engine.startswith('postgre'):
 else:
     engine = 'django.db.backends.sqlite3'
 
-if hasattr(sys, 'pypy_version_info') and engine.endswith('psycopg2') and bytes != str:
-    # PyPy3 does not have a psycopg implementation
-    sys.exit(0)
+try:
+    import django
+except SyntaxError:
+    sys.stderr.write('Unable to import django (older python version)\n')
+    exit(0)
+
+PYPY = hasattr(sys, 'pypy_version_info')
+version = sys.version_info[:2]
+PY3 = version[0] == 3
+if PYPY and engine.endswith('psycopg2') and bytes != str:
+    sys.stderr.write('PyPy3 does not have a psycopg implementation\n')
+    exit(0)
+if django.VERSION[:2] <= (1, 4) and PY3:
+    sys.stderr.write('Django<=1.4 does not support Python3\n')
+    exit(0)
+if version == (2, 6) and django.VERSION[:2] >= (1, 7):
+    sys.stderr.write('Django>=1.7 does not support Python2.6\n')
+    exit(0)
 
 os.environ['DATABASE_ENGINE'] = engine
 
@@ -51,7 +56,6 @@ try:
 except ImportError:
     pass
 
-import django
 try:
     django.setup()
 except AttributeError:

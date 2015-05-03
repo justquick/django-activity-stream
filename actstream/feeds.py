@@ -217,7 +217,7 @@ class JSONActivityFeed(AbstractActivityStream, View):
         return json.dumps({
             'totalItems': len(items),
             'items': [self.format(action) for action in items]
-        }, indent=4 if 'pretty' in request.REQUEST else None)
+        }, indent=4 if 'pretty' in request.GET or 'pretty' in request.POST else None)
 
 
 class ModelActivityMixin(object):

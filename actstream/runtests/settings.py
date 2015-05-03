@@ -17,7 +17,7 @@ ENGINE = os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
 DATABASES = {
     'default': {
         'ENGINE': ENGINE,
-        'NAME': 'test',
+        'NAME': ':memory:',
         'OPTIONS': {
         }
     }
@@ -31,6 +31,7 @@ if 'postgres' in ENGINE or 'mysql' in ENGINE:
         else:
             USER, PASSWORD = 'postgres', ''
     DATABASES['default'].update(
+        NAME='test',
         USER=os.environ.get('DATABASE_USER', USER),
         PASSWORD=os.environ.get('DATABASE_PASSWORD', PASSWORD),
         HOST=os.environ.get('DATABASE_HOST', 'localhost')
@@ -97,7 +98,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admindocs',
     'django.contrib.sites',
-    'django.contrib.comments',
     'actstream.runtests.testapp',
     'actstream.runtests.testapp_nested',
     'actstream',
@@ -120,10 +120,25 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
+if django.VERSION[:2] < (1, 7):
+    SOUTH_MIGRATION_MODULES = {
+        'actstream': 'actstream.south_migrations',
+        'testapp': 'testapp.south_migrations',
+        'testapp_nested': 'testapp_nested.south_migrations',
+    }
+    INSTALLED_APPS += ('south',)
+    SOUTH_TESTS_MIGRATE = False
+
 if django.VERSION[:2] >= (1, 5):
     AUTH_USER_MODEL = 'testapp.MyUser'
 
-TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+
+try:
+    import django.test.simple
+except ImportError:
+    pass
+else:
+    TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
 
 
 if 'COVERAGE' in os.environ:

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import django
-from django.utils.unittest import skipUnless
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.signals import action
@@ -49,12 +48,12 @@ class TestAppTests(ActivityBaseTestCase):
         self.assertEqual(self.capture('testapp_custom_feed',
                                       'was created')['totalItems'], 1)
 
-    @skipUnless(django.VERSION[:2] >= (1, 5), 'Django>=1.5 Required')
     def test_customuser(self):
-        from actstream.runtests.testapp.models import MyUser
+        if django.VERSION[:2] >= (1, 5):
+            from actstream.runtests.testapp.models import MyUser
 
-        self.assertEqual(self.User, MyUser)
-        self.assertEqual(self.user.get_full_name(), 'test')
+            self.assertEqual(self.User, MyUser)
+            self.assertEqual(self.user.get_full_name(), 'test')
 
     if USE_JSONFIELD:
         def test_jsonfield(self):

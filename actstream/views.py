@@ -16,8 +16,9 @@ def respond(request, code):
     Responds to the request with the given response code.
     If ``next`` is in the form, it will redirect instead.
     """
-    if 'next' in request.REQUEST:
-        return HttpResponseRedirect(request.REQUEST['next'])
+    redirect = request.GET.get('next', request.POST.get('next'))
+    if redirect:
+        return HttpResponseRedirect(redirect)
     return type('Response%d' % code, (HttpResponse, ), {'status_code': code})()
 
 

@@ -1,6 +1,5 @@
 import datetime
 
-from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
@@ -8,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from actstream import settings
 from actstream.signals import action
 from actstream.registry import check
+from actstream.compat import get_model
 
 try:
     from django.utils import timezone

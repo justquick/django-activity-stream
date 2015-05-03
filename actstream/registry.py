@@ -3,13 +3,12 @@ import re
 
 import django
 from django.conf import settings
-from django.db.models import get_model
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import string_types
 
 
-from actstream.compat import generic
+from actstream.compat import generic, get_model
 
 
 class RegistrationError(Exception):

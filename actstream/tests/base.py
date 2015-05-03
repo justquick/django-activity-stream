@@ -3,8 +3,7 @@ from datetime import datetime
 from inspect import getargspec
 
 from django.test import TestCase
-from django.db.models import get_model
-from django.template.loader import Template, Context
+from django.template import Template, Context
 from django.utils.six import text_type
 from django.utils.timesince import timesince
 from django.contrib.sites.models import Site
@@ -14,7 +13,7 @@ from django.core.urlresolvers import reverse
 
 from actstream.models import Action, Follow
 from actstream.registry import register, unregister
-from actstream.compat import get_user_model
+from actstream.compat import get_user_model, get_model
 from actstream.actions import follow
 from actstream.signals import action
 
