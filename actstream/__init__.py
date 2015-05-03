@@ -1,6 +1,6 @@
 try:
     from actstream.signals import action
-except ImportError:
+except:
     pass
 
 __version_info__ = {
