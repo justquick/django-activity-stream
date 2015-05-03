@@ -3,35 +3,35 @@ python:
   - "2.7"
 env:
   - TOX_ENV=pypy-dj1.7-sqlite
-  - TOX_ENV=py3.4-dj1.7-sqlite
-  - TOX_ENV=py3.3-dj1.7-sqlite
-  - TOX_ENV=py3.2-dj1.7-sqlite
-  - TOX_ENV=py2.7-dj1.7-sqlite
+  - TOX_ENV=py34-dj1.7-sqlite
+  - TOX_ENV=py33-dj1.7-sqlite
+  - TOX_ENV=py32-dj1.7-sqlite
+  - TOX_ENV=py27-dj1.7-sqlite
   - TOX_ENV=pypy-dj1.8-sqlite
-  - TOX_ENV=py3.4-dj1.8-sqlite
-  - TOX_ENV=py3.3-dj1.8-sqlite
-  - TOX_ENV=py3.2-dj1.8-sqlite
-  - TOX_ENV=py2.7-dj1.8-sqlite  
+  - TOX_ENV=py34-dj1.8-sqlite
+  - TOX_ENV=py33-dj1.8-sqlite
+  - TOX_ENV=py32-dj1.8-sqlite
+  - TOX_ENV=py27-dj1.8-sqlite  
   - TOX_ENV=pypy3-dj1.8-mysql
   - TOX_ENV=pypy-dj1.8-mysql
-  - TOX_ENV=py3.4-dj1.8-mysql
-  - TOX_ENV=py2.7-dj1.8-mysql
+  - TOX_ENV=py34-dj1.8-mysql
+  - TOX_ENV=py27-dj1.8-mysql
   - TOX_ENV=pypy-dj1.8-postgres
-  - TOX_ENV=py3.4-dj1.8-postgres
-  - TOX_ENV=py2.7-dj1.8-postgres
+  - TOX_ENV=py34-dj1.8-postgres
+  - TOX_ENV=py27-dj1.8-postgres
   - TOX_ENV=pypy-dj1.6-sqlite
-  - TOX_ENV=py3.3-dj1.6-sqlite
-  - TOX_ENV=py3.2-dj1.6-sqlite
-  - TOX_ENV=py2.7-dj1.6-sqlite
-  - TOX_ENV=py2.6-dj1.6-sqlite
+  - TOX_ENV=py33-dj1.6-sqlite
+  - TOX_ENV=py32-dj1.6-sqlite
+  - TOX_ENV=py27-dj1.6-sqlite
+  - TOX_ENV=py26-dj1.6-sqlite
   - TOX_ENV=pypy-dj1.5-sqlite
-  - TOX_ENV=py3.3-dj1.5-sqlite
-  - TOX_ENV=py3.2-dj1.5-sqlite
-  - TOX_ENV=py2.7-dj1.5-sqlite
-  - TOX_ENV=py2.6-dj1.5-sqlite
+  - TOX_ENV=py33-dj1.5-sqlite
+  - TOX_ENV=py32-dj1.5-sqlite
+  - TOX_ENV=py27-dj1.5-sqlite
+  - TOX_ENV=py26-dj1.5-sqlite
   - TOX_ENV=pypy-dj1.4-sqlite
-  - TOX_ENV=py2.7-dj1.4-sqlite
-  - TOX_ENV=py2.6-dj1.4-sqlite
+  - TOX_ENV=py27-dj1.4-sqlite
+  - TOX_ENV=py26-dj1.4-sqlite
   - TOX_ENV=coverage
 install:
   - pip install tox==1.8.1 coveralls==0.5
