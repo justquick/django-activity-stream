@@ -25,11 +25,11 @@ class Migration(migrations.Migration):
             name='Action',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, help_text='', auto_created=True)),
-                ('actor_object_id', models.CharField(max_length=255, db_index=True, help_text='')),
+                ('actor_object_id', models.PositiveIntegerField(db_index=True, help_text='')),
                 ('verb', models.CharField(max_length=255, db_index=True, help_text='')),
                 ('description', models.TextField(blank=True, null=True, help_text='')),
-                ('target_object_id', models.CharField(max_length=255, blank=True, null=True, db_index=True, help_text='')),
-                ('action_object_object_id', models.CharField(max_length=255, blank=True, null=True, db_index=True, help_text='')),
+                ('target_object_id', models.PositiveIntegerField(blank=True, null=True, db_index=True, help_text='')),
+                ('action_object_object_id', models.PositiveIntegerField(blank=True, null=True, db_index=True, help_text='')),
                 ('timestamp', models.DateTimeField(db_index=True, default=django.utils.timezone.now, help_text='')),
                 ('public', models.BooleanField(db_index=True, default=True, help_text='')),
                 ('data', DataField(blank=True, null=True, help_text='')),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             name='Follow',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, help_text='', auto_created=True)),
-                ('object_id', models.CharField(max_length=255, db_index=True, help_text='')),
+                ('object_id', models.PositiveIntegerField(db_index=True, help_text='')),
                 ('actor_only', models.BooleanField(verbose_name='Only follow actions where the object is the target.', default=True, help_text='')),
                 ('started', models.DateTimeField(db_index=True, default=django.utils.timezone.now, help_text='')),
                 ('content_type', models.ForeignKey(help_text='', to='contenttypes.ContentType')),
