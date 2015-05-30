@@ -1,4 +1,5 @@
 from inspect import isclass
+import re
 
 import django
 from django.conf import settings
@@ -62,7 +63,7 @@ def is_installed(model_class):
     """
     if django.VERSION[:2] >= (1, 7):
         return model_class._meta.installed
-    return model_class._meta.app_label in settings.INSTALLED_APPS
+    return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS or model_class._meta.app_label in settings.INSTALLED_APPS
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):
