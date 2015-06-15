@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-15 02:56-0400\n"
+"POT-Creation-Date: 2015-06-15 09:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,6 +80,6 @@ msgstr ""
 msgid "Actors that %(user)s follows"
 msgstr ""
 
-#: tests/test_activity.py:202
+#: tests/test_activity.py:213
 msgid "English"
 msgstr ""
