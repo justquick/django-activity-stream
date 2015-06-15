@@ -198,10 +198,13 @@ class ActivityTestCase(DataTestCase):
 
     def test_store_untranslated_string(self):
         lang = get_language()
-        activate("fr")
+        activate('fr')
         verb = _('English')
 
-        self.assertEqual(verb, "Anglais")
+        if hasattr(verb, '_proxy____args'):
+            verb = verb._proxy____args[0]
+
+        self.assertEqual(verb, 'Anglais')
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group, timestamp=self.testdate)
         self.assertTrue(Action.objects.filter(verb='English').exists())
