@@ -201,10 +201,15 @@ class ActivityTestCase(DataTestCase):
         activate('fr')
         verb = _('English')
 
-        if hasattr(verb, '_proxy____args'):
-            verb = verb._proxy____args[0]
+        try:
+            self.assertEqual(verb, 'Anglais')
+        except:
+            if hasattr(verb, '_proxy____args'):
+                verb = verb._proxy____args[0]
+                self.assertEqual(verb, 'Anglais')
+            else:
+                raise
 
-        self.assertEqual(verb, 'Anglais')
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group, timestamp=self.testdate)
         self.assertTrue(Action.objects.filter(verb='English').exists())
