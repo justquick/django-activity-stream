@@ -1,5 +1,5 @@
-   364	Justin Quick        72.1%
-    25	Chris Beaven        5.0%
+   365	Justin Quick        72.1%
+    25	Chris Beaven        4.9%
      6	Deepak Prakash      1.2%
      6	Ben Slavin          1.2%
      5	jordan              1.0%
