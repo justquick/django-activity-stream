@@ -1,53 +1,59 @@
-   332	Justin Quick            71.7%
-    25	Chris Beaven            5.4%
-     6	Deepak Prakash          1.3%
-     6	Ben Slavin              1.3%
-     5	jordan                  1.1%
-     5	Manuel Aristarán        1.1%
-     4	Jason Culverhouse       0.9%
-     4	Trever Shick            0.9%
-     4	Michael Jones           0.9%
-     4	Alexey Boriskin         0.9%
-     4	Piet Delport            0.9%
-     4	Wade Williams           0.9%
-     3	Nolan Brubaker          0.6%
-     3	Josh Ourisman           0.6%
-     3	Christoph Heer          0.6%
-     2	Patrick Altman          0.4%
-     2	David Gouldin           0.4%
-     2	Rob Terhaar             0.4%
-     2	Dmitriy Narkevich       0.4%
-     2	Steve Ivy               0.4%
-     2	Benjamin Kampmann       0.4%
-     2	Walter Scheper          0.4%
-     2	Herman Schaaf           0.4%
-     2	artscoop                0.4%
-     2	Chris                   0.4%
-     2	neelesh                 0.4%
-     2	Matt Katz               0.4%
-     2	Natan Yellin            0.4%
-     2	Paul Collins            0.4%
-     1	Zbigniew Siciarz        0.2%
-     1	Aziz M. Bookwala        0.2%
-     1	Ben Lopatin             0.2%
-     1	Bob Cribbs              0.2%
-     1	Bojan Mihelac           0.2%
-     1	Can Burak Cilingir      0.2%
-     1	Donald Stufft           0.2%
-     1	Elf M. Sternberg        0.2%
-     1	Filip Wasilewski        0.2%
-     1	Jj                      0.2%
-     1	Pedro Alcocer           0.2%
-     1	Pedro Burón             0.2%
-     1	Peter Walker            0.2%
-     1	Sandip Agrawal          0.2%
-     1	Santiago Piccinini      0.2%
-     1	Tamas Leposa            0.2%
-     1	Tom Clancy              0.2%
-     1	Vineet                  0.2%
-     1	Xavier L                0.2%
-     1	Aaron Williamson        0.2%
-     1	joaoxsouls              0.2%
-     1	jpic                    0.2%
-     1	laginha                 0.2%
+   364	Justin Quick        72.1%
+    25	Chris Beaven        5.0%
+     6	Deepak Prakash      1.2%
+     6	Ben Slavin          1.2%
+     5	jordan              1.0%
+     5	Manuel Aristarán    1.0%
+     4	Trever Shick        0.8%
+     4	Jason Culverhouse   0.8%
+     4	Piet Delport        0.8%
+     4	Michael Jones       0.8%
+     4	Alexey Boriskin     0.8%
+     4	Wade Williams       0.8%
+     3	Nolan Brubaker      0.6%
+     3	Bruno Amaral        0.6%
+     3	Christoph Heer      0.6%
+     3	Josh Ourisman       0.6%
+     2	Steve Ivy           0.4%
+     2	Benjamin Kampmann   0.4%
+     2	Chris               0.4%
+     2	David Gouldin       0.4%
+     2	Dmitriy Narkevich   0.4%
+     2	Herman Schaaf       0.4%
+     2	Jocelyn Delalande   0.4%
+     2	Matt Katz           0.4%
+     2	Natan Yellin        0.4%
+     2	Patrick Altman      0.4%
+     2	Paul Collins        0.4%
+     2	Rob Terhaar         0.4%
+     2	Ryan Allen          0.4%
+     2	Walter Scheper      0.4%
+     2	artscoop            0.4%
+     2	neelesh             0.4%
+     1	Xavier L            0.2%
+     1	Zbigniew Siciarz    0.2%
+     1	laginha             0.2%
+     1	Pedro Alcocer       0.2%
+     1	Pedro Burón         0.2%
+     1	Peter Walker        0.2%
+     1	Bob Cribbs          0.2%
+     1	joaoxsouls          0.2%
+     1	Alejandro Seguí     0.2%
+     1	Sandip Agrawal      0.2%
+     1	Santiago Piccinini  0.2%
+     1	Aaron Williamson    0.2%
+     1	Tamas Leposa        0.2%
+     1	Tom Clancy          0.2%
+     1	Ben Lopatin         0.2%
+     1	Vineet              0.2%
+     1	Jannon Frank        0.2%
+     1	Jj                  0.2%
+     1	Aziz M. Bookwala    0.2%
+     1	JocelynDelalande    0.2%
+     1	Filip Wasilewski    0.2%
+     1	Elf M. Sternberg    0.2%
+     1	Donald Stufft       0.2%
+     1	jpic                0.2%
+     1	Can Burak Cilingir  0.2%
+     1	Bojan Mihelac       0.2%
 
