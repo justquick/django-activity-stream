@@ -7,6 +7,7 @@ Changelog
   - Django 1.8 support
   - Migrated to new migrations framework in Django core
   - Improved db field indexing for models
+  - Optional django-generic-admin widgets integration (if installed)
   - Minor templating and unicode fixes
   - Admin displays public flag in list display
   - Improved docs
