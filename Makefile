@@ -10,7 +10,9 @@ docs:
 	sphinx-build -W -b html docs/source docs/build/html
 	sphinx-build -W -b linkcheck docs/source docs/build/html
 
-dist:
-	python setup.py sdist && echo "OK?" && read
+authors:
+	git summary | awk '{if(NR>7)print}' > AUTHORS.txt
 
-.PHONY: clean messages docs dist
+all: clean authors messages docs
+
+.PHONY: all

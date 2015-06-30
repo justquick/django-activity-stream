@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-03 13:51-0700\n"
+"POT-Creation-Date: 2015-06-15 09:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,22 +25,22 @@ msgstr ""
 msgid "stopped following"
 msgstr ""
 
-#: models.py:112
+#: models.py:115
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:113
+#: models.py:116
 #, python-format
 msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:115
+#: models.py:118
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
 msgstr ""
 
-#: models.py:116
+#: models.py:119
 #, python-format
 msgid "%(actor)s %(verb)s %(timesince)s ago"
 msgstr ""
@@ -49,19 +49,19 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
-#: templates/actstream/actor.html:25
+#: templates/actstream/actor.html:24
 msgid "UNFOLLOW"
 msgstr ""
 
-#: templates/actstream/actor.html:26
+#: templates/actstream/actor.html:25
 msgid "FOLLOW"
 msgstr ""
 
-#: templates/actstream/actor.html:33
+#: templates/actstream/actor.html:32
 msgid "View my actions"
 msgstr ""
 
-#: templates/actstream/actor.html:39
+#: templates/actstream/actor.html:38
 msgid "No actions yet"
 msgstr ""
 
@@ -80,6 +80,6 @@ msgstr ""
 msgid "Actors that %(user)s follows"
 msgstr ""
 
-#: tests/test_activity.py:191
+#: tests/test_activity.py:213
 msgid "English"
 msgstr ""

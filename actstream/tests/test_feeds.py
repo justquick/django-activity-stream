@@ -13,14 +13,14 @@ class FeedsTestCase(base.DataTestCase):
     def rss_base(self):
         return ['<?xml version="1.0" encoding="utf-8"?>\n', '<rss ',
                 'xmlns:atom="http://www.w3.org/2005/Atom"', 'version="2.0"',
-                '<lastBuildDate>%s</lastBuildDate>' % rfc2822_date(datetime.now())]
+                '<lastBuildDate>%s' % rfc2822_date(datetime.now())[:-3]]
 
     @property
     def atom_base(self):
         return ['<?xml version="1.0" encoding="utf-8"?>\n',
                 'xmlns="http://www.w3.org/2005/Atom"',
                 'xml:lang="%s"' % settings.LANGUAGE_CODE,
-                '<updated>%s</updated>' % rfc3339_date(datetime.now()),
+                '<updated>%s' % rfc3339_date(datetime.now())[:-3],
                 '<uri>http://example.com/detail/',
                 '<id>tag:example.com,2000-01-01:/detail/']
 

@@ -63,6 +63,8 @@ def is_installed(model_class):
     """
     if django.VERSION[:2] >= (1, 7):
         return model_class._meta.installed
+    if model_class._meta.app_label in settings.INSTALLED_APPS:
+        return True
     return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
 
 
