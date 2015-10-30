@@ -38,8 +38,6 @@ def setup_generic_relations(model_class):
             related_attr_name: attr_value
         }
         rel = generic.GenericRelation('actstream.Action', **kwargs)
-        # Need to for compatibility with wagtail and perhaps others?
-        rel.auto_created = True
         rel.contribute_to_class(model_class, attr)
         relations[field] = rel
     return relations
