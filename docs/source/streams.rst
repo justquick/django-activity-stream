@@ -1,12 +1,12 @@
 Action Streams
-===============
+==============
 
 Listings of actions are available for several points of view.
 All streams return a ``QuerySet`` of ``Action`` items sorted by ``-timestamp``.
 
 
 Using Builtin Streams
-**********************
+*********************
 
 There are several builtin streams which cover the basics, but you are never limited to them.
 They are available as simple functions you can import from ``actstream.models``.
@@ -102,7 +102,7 @@ Generates a stream of ``Actions`` from all ``User`` instances.
 .. _any-stream:
 
 Any Streams
--------------
+-----------
 
 Any streams shows you what actions a particular object was involved in either acting as the ``actor``, ``target`` or ``action_object``.
 
@@ -120,7 +120,7 @@ Generates a stream of ``Actions`` where ``request.user`` was involved in any par
 .. _custom-streams:
 
 Writing Custom Streams
-***********************
+**********************
 
 You can override and extend the Action manager ``Action.objects`` to add your own streams.
 The setting ``ACTSTREAM_SETTINGS['MANAGER']`` tells the app which manager to import and use.
@@ -136,7 +136,7 @@ Streams may return:
 When returning a queryset, you do NOT need to call ``fetch_generic_relations()`` or ``select_related(..)``.
 
 Example
---------
+-------
 
 To start writing your custom stream module, create a file in your app called ``myapp/managers.py``
 

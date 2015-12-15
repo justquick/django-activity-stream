@@ -14,13 +14,13 @@ Follow Manager
     :members: followers, following, is_following, for_object
 
 Views
-------
+-----
 
 .. automodule:: actstream.views
     :members: respond, follow_unfollow, stream, followers, following, user, detail, actor, model
 
 Feeds
-------
+-----
 
 .. autoclass:: actstream.feeds.AbstractActivityStream
     :members:
@@ -44,19 +44,19 @@ Compatible with `JSON Activity Streams 1.0 <http://activitystrea.ms/specs/json/1
 .. autoclass:: actstream.feeds.AtomObjectActivityFeed
 
 Actions
---------
+-------
 
 .. automodule:: actstream.actions
     :members: follow, unfollow, is_following, action_handler
 
 Decorators
------------
+----------
 
 .. automodule:: actstream.decorators
     :members: stream
 
 Templatetags
--------------
+------------
 
 Start off your templates by adding::
 

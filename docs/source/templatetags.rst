@@ -1,5 +1,5 @@
 Templatetags
--------------
+------------
 
 Start off your templates by adding the following load tag.
 

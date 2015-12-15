@@ -1,5 +1,5 @@
 Configuration
-==============
+=============
 
 
 Model Registration
@@ -71,7 +71,7 @@ Supported settings are defined below.
 .. _manager:
 
 MANAGER
-********
+*******
 
 The action manager is the `Django manager <https://docs.djangoproject.com/en/dev/topics/db/managers/>`_ interface used for querying activity data from the database.
 
@@ -92,7 +92,7 @@ When ``True``, related generic foreign keys will be prefetched for stream genera
 Defaults to ``True``
 
 USE_PREFETCH
-*************
+************
 
 .. deprecated:: 0.5
 
