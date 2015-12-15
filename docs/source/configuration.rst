@@ -87,7 +87,7 @@ FETCH_RELATIONS
 ***************
 
 Set this to ``False`` to disable ``select_related`` and ``prefetch_related`` when querying for any streams.
-When ``True``, related generic foreign keys will be prefetched for stream generation (preferrable).
+When ``True``, related generic foreign keys will be prefetched for stream generation (preferable).
 
 Defaults to ``True``
 
