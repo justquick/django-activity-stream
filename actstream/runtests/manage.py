@@ -35,6 +35,15 @@ PY3 = version[0] == 3
 if PYPY and engine.endswith('psycopg2') and bytes != str:
     sys.stderr.write('PyPy3 does not have a psycopg implementation\n')
     exit(0)
+if django.VERSION[:2] >= (1, 9)  and version <= (3, 3):
+    sys.stderr.write('Django>=1.9 does not support Python<=3.3\n')
+    exit(0)
+if django.VERSION[:2] <= (1, 8)  and version >= (3, 5):
+    sys.stderr.write('Django<=1.8 does not support Python>=3.5\n')
+    exit(0)
+if django.VERSION[:2] == (1, 8) and version <= (3, 3):
+    sys.stderr.write('Django 1.8 does not support Python<=3.3\n')
+    exit(0)
 if django.VERSION[:2] <= (1, 4) and PY3:
     sys.stderr.write('Django<=1.4 does not support Python3\n')
     exit(0)
