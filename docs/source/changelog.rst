@@ -1,5 +1,5 @@
 Changelog
-==========
+=========
 
 0.6.0
 -----
@@ -74,7 +74,7 @@ Changelog
   - Templatetag cleanup and documentation
 
 0.4.1
-------
+-----
 
  - Templatetag updates
  - Follow anything

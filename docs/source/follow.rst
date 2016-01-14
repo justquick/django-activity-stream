@@ -30,7 +30,7 @@ The request can use either ``GET`` or ``POST``.
     curl -X GET http://localhost:8000/activity/follow/<content_type_id>/<object_id>/ # Follow
     curl -X GET http://localhost:8000/activity/unfollow/<content_type_id>/<object_id>/?next=/blog/ # Unfollow and redirect
 
-If you wish to pass the ``actor_only`` parameter, the procedure is identical, only you will use ``folow_all`` and ``unfolow_all`` in your request.
+If you wish to pass the ``actor_only`` parameter, the procedure is identical, only you will use ``follow_all`` and ``unfollow_all`` in your request.
 For example:
 
 .. code-block:: bash
@@ -43,7 +43,7 @@ Then the current logged in user will follow the actor defined by ``content_type_
 
 There is also a function ``actstream.actions.unfollow`` which removes the link and takes the same arguments as ``actstream.actions.follow``
 
-Now to retrive the follower/following relationships you can use the convient accessors
+Now to retrieve the follower/following relationships you can use the convenient accessors
 
 .. code-block:: python
 

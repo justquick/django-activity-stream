@@ -1,6 +1,6 @@
 
 Generating Actions
-===================
+==================
 
 Generating actions can be done using `Django signals <https://docs.djangoproject.com/en/dev/topics/signals/>`__.
 A special ``action`` signal is provided for creating the actions.
