@@ -85,10 +85,12 @@ The following Python/Django versions and database configurations have been teste
     * **PyMy** = `PyMySQL 0.6.6 <https://github.com/PyMySQL/PyMySQL/>`_
 * **S** = `Sqlite 3.7 <https://docs.python.org/2/library/sqlite3.html>`_
 
-+----------------+------------+------------+------------+------------+------------+------------+---------+
-|                | Py 2.6     | Py 2.7     | Py 3.2     | Py 3.3     | Py 3.4     | PyPy 2     | PyPy 3  |
-+================+============+============+============+============+============+============+=========+
-| Django 1.4     |  Psy/My/S  |  Psy/My/S  |            |            |            | PCffi/My/S |         |
-+----------------+------------+------------+------------+------------+------------+------------+---------+
-| Django 1.5-1.8 |  Psy/My/S  |  Psy/My/S  | Psy/PyMy/S | Psy/PyMy/S | Psy/PyMy/S | PCffi/My/S |  My/S   |
-+----------------+------------+------------+------------+------------+------------+------------+---------+
++----------------+------------+------------+------------+---------+
+|                | Py 2.6-2.7 | Py 3.2-3.5 | PyPy 2     | PyPy 3  |
++================+============+============+============+=========+
+| Django 1.4     |  Psy/My/S  |            | PCffi/My/S |         |
++----------------+------------+------------+------------+---------+
+| Django 1.5-1.9 |  Psy/My/S  | Psy/PyMy/S | PCffi/My/S |  My/S   |
++----------------+------------+------------+------------+---------+
+
+Always make sure that you choose a Django version that is supported by your Python platform version. `See here for details <https://docs.djangoproject.com/en/1.9/faq/install/#what-python-version-can-i-use-with-django>`_
