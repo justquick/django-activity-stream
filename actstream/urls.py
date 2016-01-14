@@ -1,12 +1,13 @@
+import django
 try:
     from django.conf.urls import url, patterns
 except ImportError:
     from django.conf.urls.defaults import url, patterns
 
-from actstream import feeds
+from actstream import feeds, views
 
 
-urlpatterns = patterns('actstream.views',
+urlpatterns = [
     # User feeds
     url(r'^feed/$', feeds.UserActivityFeed(), name='actstream_feed'),
     url(r'^feed/atom/$', feeds.AtomUserActivityFeed(),
@@ -32,23 +33,26 @@ urlpatterns = patterns('actstream.views',
 
     # Follow/Unfollow API
     url(r'^follow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        'follow_unfollow', name='actstream_follow'),
+        views.follow_unfollow, name='actstream_follow'),
     url(r'^follow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        'follow_unfollow', {'actor_only': False}, name='actstream_follow_all'),
+        views.follow_unfollow, {'actor_only': False}, name='actstream_follow_all'),
     url(r'^unfollow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        'follow_unfollow', {'do_follow': False}, name='actstream_unfollow'),
+        views.follow_unfollow, {'do_follow': False}, name='actstream_unfollow'),
 
     # Follower and Actor lists
     url(r'^followers/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        'followers', name='actstream_followers'),
+        views.followers, name='actstream_followers'),
     url(r'^following/(?P<user_id>[^/]+)/$',
-        'following', name='actstream_following'),
+        views.following, name='actstream_following'),
     url(r'^actors/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        'actor', name='actstream_actor'),
+        views.actor, name='actstream_actor'),
     url(r'^actors/(?P<content_type_id>[^/]+)/$',
-        'model', name='actstream_model'),
+        views.model, name='actstream_model'),
 
-    url(r'^detail/(?P<action_id>[^/]+)/$', 'detail', name='actstream_detail'),
-    url(r'^(?P<username>[^/]+)/$', 'user', name='actstream_user'),
-    url(r'^$', 'stream', name='actstream'),
-)
+    url(r'^detail/(?P<action_id>[^/]+)/$', views.detail, name='actstream_detail'),
+    url(r'^(?P<username>[^/]+)/$', views.user, name='actstream_user'),
+    url(r'^$', views.stream, name='actstream'),
+]
+
+if django.VERSION[:2] < (1, 9):
+    urlpatterns = patterns('', *urlpatterns)

@@ -1,3 +1,4 @@
+import django
 try:
     from django.conf.urls import url, patterns
 except ImportError:
@@ -5,8 +6,11 @@ except ImportError:
 
 from actstream import feeds
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^custom/(?P<verb>[-\w\s]+)/$',
         feeds.CustomJSONActivityFeed.as_view(name='testbar'),
         name='testapp_custom_feed'),
-)
+]
+
+if django.VERSION[:2] < (1, 9):
+    urlpatterns = patterns('', *urlpatterns)
