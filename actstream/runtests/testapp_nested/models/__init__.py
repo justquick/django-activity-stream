@@ -1,1 +1,1 @@
-from . import my_model
+from actstream.runtests.testapp_nested.models import my_model

@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 
 from actstream.models import Action
 from actstream.compat import get_user_model
-from .base import LTE
+from actstream.tests.base import LTE
 
 
 class GFKManagerTestCase(TestCase):

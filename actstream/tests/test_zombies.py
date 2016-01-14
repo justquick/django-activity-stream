@@ -7,7 +7,7 @@ from django.utils.six import text_type
 from actstream.compat import get_user_model
 from actstream.signals import action
 from actstream.models import model_stream
-from .base import ActivityBaseTestCase
+from actstream.tests.base import ActivityBaseTestCase
 
 
 class ZombieTest(ActivityBaseTestCase):
@@ -62,4 +62,3 @@ class ZombieTest(ActivityBaseTestCase):
         queryset = model_stream(self.User)[:5]
         result = self.check_query_count(queryset)
         self.assertEqual(len(result), 5)
-

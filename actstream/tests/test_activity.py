@@ -11,7 +11,7 @@ from actstream.models import (Action, Follow, model_stream, user_stream,
                               actor_stream, following, followers)
 from actstream.actions import follow, unfollow
 from actstream.signals import action
-from .base import DataTestCase, render
+from actstream.tests.base import DataTestCase, render
 
 
 class ActivityTestCase(DataTestCase):
@@ -217,4 +217,3 @@ class ActivityTestCase(DataTestCase):
                         target=self.group, timestamp=self.testdate)
             self.assertTrue(Action.objects.filter(verb='English').exists())
             activate(lang)
-

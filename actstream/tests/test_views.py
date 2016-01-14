@@ -2,8 +2,7 @@ from django.core.urlresolvers import reverse
 from django.utils.six.moves.urllib.parse import urlencode
 
 from actstream import models
-
-from .base import DataTestCase
+from actstream.tests.base import DataTestCase
 
 
 class ViewsTest(DataTestCase):
