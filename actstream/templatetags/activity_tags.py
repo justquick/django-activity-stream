@@ -85,13 +85,12 @@ class AsNode(Node):
 class DisplayAction(AsNode):
 
     def render_result(self, context):
-        action_instance = self.args[0].resolve(context)
+        action_instance = context['action'] = self.args[0].resolve(context)
         templates = [
             'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'actstream/action.html',
         ]
-        return render_to_string(templates, {'action': action_instance},
-                                context)
+        return render_to_string(templates, context)
 
 
 def display_action(parser, token):
