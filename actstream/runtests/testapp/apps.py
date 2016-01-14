@@ -1,4 +1,4 @@
-from actstream.compat import AppConfig
+from actstream.compat_apps import AppConfig
 
 
 class TestappConfig(AppConfig):
