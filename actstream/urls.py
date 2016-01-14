@@ -36,6 +36,8 @@ urlpatterns = [
         views.follow_unfollow, name='actstream_follow'),
     url(r'^follow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
         views.follow_unfollow, {'actor_only': False}, name='actstream_follow_all'),
+    url(r'^unfollow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
+        views.follow_unfollow, {'actor_only': False, 'do_follow': False}, name='actstream_follow_all'),
     url(r'^unfollow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
         views.follow_unfollow, {'do_follow': False}, name='actstream_unfollow'),
 
