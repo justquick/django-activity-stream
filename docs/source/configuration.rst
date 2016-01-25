@@ -43,6 +43,33 @@ For Django versions 1.7 or later, you should use `AppConfig <https://docs.django
 
     Introducing the registry change makes the ``ACTSTREAM_SETTINGS['MODELS']`` setting obsolete so please use the register functions instead.
 
+
+Registering Django's default User model from ``contrib.auth.user`` requires a more sophisticated AppConfig class.
+    
+.. code-block:: python
+    from django.apps import AppConfig
+    from django.contrib.auth.checks import check_user_model
+    from django.core import checks
+    from django.db.models.signals import post_migrate
+    from django.utils.translation import ugettext_lazy as _
+    from django.contrib.auth.management import create_permissions
+    from actstream import registry
+
+
+    class DjangoContribAuthConfig(AppConfig):
+        name = 'django.contrib.auth'
+        verbose_name = _("Authentication and Authorization")
+
+        def ready(self):
+            post_migrate.connect(
+                    create_permissions,
+                    dispatch_uid="django.contrib.auth.management.create_permissions")
+            checks.register(check_user_model, checks.Tags.models)
+            registry.register(self.get_model('User'))
+
+.. warning::
+    Failing to include these extra signal connections and checks can have unintended consequences if creating a cutom ``AppConfig`` class for ``django.contrib.auth``'s ``User`` model. In particular, it can prevent django correctly creating new permissions as part of running migrations.  
+
 Settings
 --------
 
