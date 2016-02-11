@@ -142,7 +142,6 @@ else:
 
 
 if 'COVERAGE' in os.environ:
-    INSTALLED_APPS += ('django_coverage',)
-    TEST_RUNNER = 'django_coverage.coverage_runner.CoverageRunner'
-    COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage'
-    COVERAGE_REPORT_DATA_FILE = '.coverage'
+    INSTALLED_APPS += ('django_nose',)
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+    NOSE_ARGS = ('--with-coverage', '--cover-package=actstream', '--cover-html')
