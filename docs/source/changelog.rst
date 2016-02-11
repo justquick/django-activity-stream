@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.6.1
+-----
+
+  - Python 3.5 support
+  - Django 1.9 support
+  - Better AppConf compatibility
+  - More gracefully 404 handling in feeds
+  - New urlpatterns support
+  - Added unfollow_all support view
+  - Improved docs
+
 0.6.0
 -----
 
