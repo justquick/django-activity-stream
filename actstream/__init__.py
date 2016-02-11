@@ -3,6 +3,6 @@ try:
 except:
     pass
 
-__version__ = '0.6.0'
+__version__ = '0.6.1'
 __author__ = 'Justin Quick <justquick@gmail.com>'
 default_app_config = 'actstream.apps.ActstreamConfig'
