@@ -33,6 +33,9 @@ install:
   - pip install tox==2.3.1 coveralls==1.1
 addons:
   postgresql: "9.3"
+services:
+  - mysql
+  - postgresql  
 script:
   - tox -e $TOX_ENV
 notifications:
