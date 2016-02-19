@@ -139,9 +139,3 @@ except ImportError:
     pass
 else:
     TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
-
-
-if 'COVERAGE' in os.environ:
-    INSTALLED_APPS += ('django_nose',)
-    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-    NOSE_ARGS = ('--with-coverage', '--cover-package=actstream', '--cover-html')
