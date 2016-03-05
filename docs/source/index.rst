@@ -18,7 +18,7 @@ An action is a description of an action that was performed (``Verb``) at some in
 
 For example: `justquick <https://github.com/justquick/>`_ ``(actor)`` *closed* ``(verb)`` `issue 2 <https://github.com/justquick/django-activity-stream/issues/2>`_ ``(object)`` on `django-activity-stream <https://github.com/justquick/django-activity-stream/>`_ ``(target)`` 12 hours ago
 
-Nomenclature of this specification is based on the Activity Streams Spec: `<http://activitystrea.ms/>`_
+Nomenclature of this specification is based on the `Activity Streams Spec <http://activitystrea.ms/>`_
 
 
 Contents:
@@ -27,6 +27,7 @@ Contents:
    :maxdepth: 2
    :glob:
 
+   concepts
    installation
    configuration
    actions
