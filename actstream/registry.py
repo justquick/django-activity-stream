@@ -40,7 +40,7 @@ def setup_generic_relations(model_class):
             related_attr_name: attr_value
         }
         rel = generic.GenericRelation('actstream.Action', **kwargs)
-        rel = rel.contribute_to_class(model_class, attr)
+        rel.contribute_to_class(model_class, attr)
         relations[field] = rel
 
         # @@@ I'm not entirely sure why this works
