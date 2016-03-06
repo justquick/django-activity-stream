@@ -1,11 +1,13 @@
+.. _changelog:
+
 Changelog
 =========
 
 0.6.1
 -----
 
-  - Python 3.5 support
-  - Django 1.9 support
+  - **Python 3.5 support**
+  - **Django 1.9 support**
   - Better AppConf compatibility
   - More gracefully 404 handling in feeds
   - New urlpatterns support
@@ -15,7 +17,7 @@ Changelog
 0.6.0
 -----
 
-  - Django 1.8 support
+  - **Django 1.8 support**
   - Migrated to new migrations framework in Django core
   - Improved db field indexing for models
   - Optional django-generic-admin widgets integration (if installed)
@@ -40,10 +42,10 @@ Changelog
 0.5.0
 -----
 
-  - Django 1.6 and 1.7 support
-  - Python 3 and PyPy support
+  - **Django 1.6 and 1.7 support**
+  - **Python 3 and PyPy support**
+  - **Dropped support for Django 1.3 or older**
   - Added new activity_stream templatetag
-  - Dropping support for Django<=1.3 and rely on prefetch_related.
   - Added register method for actionable models
   - Dropped support for ACTSTREAM_SETTINGS['MODELS'] setting
   - Added AppConf to support Django>=1.7
@@ -52,7 +54,7 @@ Changelog
 0.4.5
 -----
 
-  - Django 1.5 support including custom User model
+  - **Django 1.5 support** including custom User model
   - Translations and templates install fixes
   - Fixes for MySQL migrations
   - Tox testing for Py 2.6, 2.7 and Django 1.3, 1.4, 1.5
