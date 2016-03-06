@@ -10,7 +10,7 @@ settings.py to enable it.
 
 .. note::
 
-    This feature requires that you have `django-jsonfield <https://github.com/bradjasper/django-jsonfield/>`_ installed
+    This feature requires that you have `django-jsonfield <https://bitbucket.org/schinckel/django-jsonfield/>`_ installed
 
 You can send the custom data as extra keyword arguments to the ``action`` signal.
 
