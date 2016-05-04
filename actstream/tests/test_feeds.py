@@ -13,7 +13,7 @@ class FeedsTestCase(base.DataTestCase):
     def rss_base(self):
         return ['<?xml version="1.0" encoding="utf-8"?>\n', '<rss ',
                 'xmlns:atom="http://www.w3.org/2005/Atom"', 'version="2.0"',
-                '<lastBuildDate>%s' % rfc2822_date(datetime.now())[:-3]]
+                '<language>%s' % settings.LANGUAGE_CODE]
 
     @property
     def atom_base(self):
