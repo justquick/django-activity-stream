@@ -35,4 +35,4 @@ For example: `justquick <https://github.com/justquick/>`_ ``(actor)`` *closed* `
 
 Nomenclature of this specification is based on the Activity Streams Spec: `<http://activitystrea.ms/>`_
 
-For complete documentation see `Django Activity Stream Documentation <https://django-activity-stream.readthedocs.org/en/latest/>`_
+For complete documentation see `Django Activity Stream Documentation <http://django-activity-stream.rtfd.io/en/latest/>`_
