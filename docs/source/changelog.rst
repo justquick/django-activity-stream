@@ -3,6 +3,15 @@
 Changelog
 =========
 
+0.6.2
+-----
+
+  - Proxy Model support
+  - Brazilian Portuguese translations
+  - Added new migration to remove data field if not being used
+  - URL naming changed for actstream_unfollow_all
+  - Test fix
+
 0.6.1
 -----
 

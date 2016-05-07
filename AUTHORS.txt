@@ -1,63 +1,68 @@
-   392	Justin Quick        72.5%
-    25	Chris Beaven        4.6%
-     6	Ben Slavin          1.1%
-     6	Deepak Prakash      1.1%
-     5	jordan              0.9%
-     5	Manuel Aristarán    0.9%
-     4	Wade Williams       0.7%
-     4	Trever Shick        0.7%
-     4	Jason Culverhouse   0.7%
-     4	Alexey Boriskin     0.7%
-     4	Piet Delport        0.7%
-     4	Michael Jones       0.7%
-     3	Bruno Amaral        0.6%
-     3	Nolan Brubaker      0.6%
-     3	Christoph Heer      0.6%
-     3	Josh Ourisman       0.6%
-     2	Tiago Henriques     0.4%
-     2	Artem Khurshudov    0.4%
-     2	Benjamin Kampmann   0.4%
-     2	Chris               0.4%
-     2	David Gouldin       0.4%
-     2	Dmitriy Narkevich   0.4%
-     2	Herman Schaaf       0.4%
-     2	Jocelyn Delalande   0.4%
-     2	Matt Katz           0.4%
-     2	Natan Yellin        0.4%
-     2	Patrick Altman      0.4%
-     2	Paul Collins        0.4%
-     2	Rob Terhaar         0.4%
-     2	Ryan Allen          0.4%
-     2	Steve Ivy           0.4%
-     2	Walter Scheper      0.4%
-     2	artscoop            0.4%
-     2	jbsag               0.4%
-     2	neelesh             0.4%
-     1	Alejandro Seguí     0.2%
-     1	Xavier L            0.2%
-     1	Zbigniew Siciarz    0.2%
-     1	Pedro Alcocer       0.2%
-     1	Pedro Burón         0.2%
-     1	Peter Walker        0.2%
-     1	Bob Cribbs          0.2%
-     1	jpic                0.2%
-     1	laginha             0.2%
-     1	Sandip Agrawal      0.2%
-     1	Santiago Piccinini  0.2%
-     1	joaoxsouls          0.2%
-     1	Tamas Leposa        0.2%
-     1	Aaron Williamson    0.2%
-     1	Tom Clancy          0.2%
-     1	Ben Lopatin         0.2%
-     1	Jannon Frank        0.2%
-     1	Frank Wickström     0.2%
-     1	Jj                  0.2%
-     1	Vineet              0.2%
-     1	JocelynDelalande    0.2%
-     1	Filip Wasilewski    0.2%
-     1	Elf M. Sternberg    0.2%
-     1	Donald Stufft       0.2%
-     1	Aziz M. Bookwala    0.2%
-     1	Michael Bertolacci  0.2%
-     1	Can Burak Cilingir  0.2%
-     1	Bojan Mihelac       0.2%
+   410	Justin Quick          72.7%
+    25	Chris Beaven          4.4%
+     6	Ben Slavin            1.1%
+     6	Deepak Prakash        1.1%
+     5	Manuel Aristarán      0.9%
+     5	jordan                0.9%
+     4	Piet Delport          0.7%
+     4	Trever Shick          0.7%
+     4	Jason Culverhouse     0.7%
+     4	Alexey Boriskin       0.7%
+     4	Wade Williams         0.7%
+     4	Michael Jones         0.7%
+     3	Bruno Amaral          0.5%
+     3	Nolan Brubaker        0.5%
+     3	Christoph Heer        0.5%
+     3	Josh Ourisman         0.5%
+     2	Steve Ivy             0.4%
+     2	Artem Khurshudov      0.4%
+     2	Benjamin Kampmann     0.4%
+     2	Chris                 0.4%
+     2	David Gouldin         0.4%
+     2	Dmitriy Narkevich     0.4%
+     2	Herman Schaaf         0.4%
+     2	Jocelyn Delalande     0.4%
+     2	Matt Katz             0.4%
+     2	Natan Yellin          0.4%
+     2	Patrick Altman        0.4%
+     2	Paul Collins          0.4%
+     2	Rob Terhaar           0.4%
+     2	Ryan Allen            0.4%
+     2	Tiago Henriques       0.4%
+     2	Walter Scheper        0.4%
+     2	artscoop              0.4%
+     2	jbsag                 0.4%
+     2	neelesh               0.4%
+     1	Keith Bussell         0.2%
+     1	Aziz M. Bookwala      0.2%
+     1	Michael Bertolacci    0.2%
+     1	Can Burak Cilingir    0.2%
+     1	Alejandro Seguí       0.2%
+     1	Bojan Mihelac         0.2%
+     1	Xavier L              0.2%
+     1	Zbigniew Siciarz      0.2%
+     1	Pedro Alcocer         0.2%
+     1	Pedro Burón           0.2%
+     1	Peter Walker          0.2%
+     1	Bob Cribbs            0.2%
+     1	jpic                  0.2%
+     1	laginha               0.2%
+     1	Sandip Agrawal        0.2%
+     1	Santiago Piccinini    0.2%
+     1	Aaron Williamson      0.2%
+     1	Tamas Leposa          0.2%
+     1	joaoxsouls            0.2%
+     1	Tom Clancy            0.2%
+     1	Filip Wasilewski      0.2%
+     1	Frank Wickström       0.2%
+     1	Gilberto Magalhães    0.2%
+     1	Hanu Prateek Kunduru  0.2%
+     1	Ben Lopatin           0.2%
+     1	Jannon Frank          0.2%
+     1	Elf M. Sternberg      0.2%
+     1	Jj                    0.2%
+     1	Vineet                0.2%
+     1	JocelynDelalande      0.2%
+     1	Donald Stufft         0.2%
+     1	Denis                 0.2%
+     1	David Burke           0.2%
