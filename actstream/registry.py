@@ -88,11 +88,15 @@ def validate(model_class, exception_class=ImproperlyConfigured):
 
 class ActionableModelRegistry(dict):
 
-    def register(self, *model_classes_or_labels):
+    def register(self, *model_classes_or_labels, **kwargs):
+        add_generic_relations = kwargs.get('add_generic_relations', True)
         for class_or_label in model_classes_or_labels:
             model_class = validate(class_or_label)
             if model_class not in self:
-                self[model_class] = setup_generic_relations(model_class)
+                if add_generic_relations:
+                    self[model_class] = setup_generic_relations(model_class)
+                else:
+                    self[model_class] = []
 
     def unregister(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
