@@ -30,7 +30,7 @@ class ActstreamConfig(AppConfig):
         if settings.USE_JSONFIELD:
             if JSONField is None:
                 raise ImproperlyConfigured('You must have either django-jsonfield installed, '
-                                           'or Django>=1.8 installed (with native postgres JSONField support), '
+                                           'or Django>=1.9 installed (with native postgres JSONField support), '
                                            'if you wish to use a JSONField on your actions')
             JSONField(blank=True, null=True).contribute_to_class(action_class, 'data')
 

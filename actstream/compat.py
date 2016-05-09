@@ -38,7 +38,7 @@ except ImportError:
 JSONField = None
 if is_postgres:
     try:
-        # Django >= 1.8 has native Postgres jsonb support
+        # Django >= 1.9 has native Postgres jsonb support
         from django.contrib.postgres.fields import JSONField
     except ImportError:
         pass
