@@ -28,7 +28,10 @@ class ActstreamConfig(AppConfig):
 
         if settings.USE_JSONFIELD:
             try:
-                from jsonfield.fields import JSONField
+                if settings.USE_POSTGRES:
+                    from django.contrib.postgres.fields import JSONField
+                else:
+                    from jsonfield.fields import JSONField
             except ImportError:
                 raise ImproperlyConfigured('You must have django-jsonfield installed '
                                            'if you wish to use a JSONField on your actions')

@@ -5,10 +5,13 @@ from django.db import models, migrations
 import django.utils.timezone
 from django.conf import settings
 
-from actstream.settings import USE_JSONFIELD
+from actstream.settings import USE_JSONFIELD, USE_POSTGRES
 
 if USE_JSONFIELD:
-    from jsonfield.fields import JSONField as DataField
+    if USE_POSTGRES:
+        from django.contrib.postgres.fields import JSONField as DataField
+    else:
+        from jsonfield.fields import JSONField as DataField
 else:
     DataField = models.TextField
 
