@@ -113,6 +113,9 @@ def action_handler(verb, **kwargs):
             setattr(newaction, '%s_content_type' % opt,
                     ContentType.objects.get_for_model(obj))
     if settings.USE_JSONFIELD and len(kwargs):
-        newaction.data = json.dumps(kwargs)
+        if not settings.USE_POSTGRES:
+            newaction.data = json.dumps(kwargs)
+        else:
+            newaction.data = kwargs
     newaction.save(force_insert=True)
     return newaction
