@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.6.3
+-----
+
+  - MySQL monkey patch removal
+  - Scrutinizer CI integration
+
 0.6.2
 -----
 

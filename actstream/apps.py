@@ -1,5 +1,4 @@
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.encoding import force_text
 
 from actstream import settings
 from actstream.signals import action
