@@ -1,6 +1,8 @@
 from django.conf import settings
 
 
+ACTSTREAM_ACTION_MODEL = getattr(settings, 'ACTSTREAM_ACTION_MODEL', 'actstream.Action')
+ACTSTREAM_FOLLOW_MODEL = getattr(settings, 'ACTSTREAM_FOLLOW_MODEL', 'actstream.Follow')
 SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
 
 

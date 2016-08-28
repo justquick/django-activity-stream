@@ -38,6 +38,7 @@ class Migration(migrations.Migration):
                 ('target_content_type', models.ForeignKey(blank=True, null=True, help_text='', related_name='target', to='contenttypes.ContentType')),
             ],
             options={
+                'swappable': 'ACTSTREAM_ACTION_MODEL',
                 'ordering': ('-timestamp',),
             },
         ),
@@ -51,6 +52,9 @@ class Migration(migrations.Migration):
                 ('content_type', models.ForeignKey(help_text='', to='contenttypes.ContentType')),
                 ('user', models.ForeignKey(help_text='', to=settings.AUTH_USER_MODEL)),
             ],
+            options={
+                'swappable': 'ACTSTREAM_FOLLOW_MODEL',
+            },
         ),
         migrations.AlterUniqueTogether(
             name='follow',
