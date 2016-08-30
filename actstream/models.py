@@ -2,12 +2,13 @@ from __future__ import unicode_literals
 
 import django
 from django.apps import apps as django_apps
-from django.db import models
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import SimpleLazyObject
+from django.utils.timesince import timesince as djtimesince
+from django.utils.translation import ugettext as _
 
 
 try:
@@ -165,14 +166,14 @@ class Follow(AbstractFollow):
 
 
 # convenient accessors
-actor_stream = Action.objects.actor
-action_object_stream = Action.objects.action_object
-target_stream = Action.objects.target
-user_stream = Action.objects.user
-model_stream = Action.objects.model_actions
-any_stream = Action.objects.any
-followers = Follow.objects.followers
-following = Follow.objects.following
+actor_stream = SimpleLazyObject(lambda: get_action_model().objects.actor)
+action_object_stream = SimpleLazyObject(lambda: get_action_model().objects.action_object)
+target_stream = SimpleLazyObject(lambda: get_action_model().objects.target)
+user_stream = SimpleLazyObject(lambda: get_action_model().objects.user)
+model_stream = SimpleLazyObject(lambda: get_action_model().objects.model_actions)
+any_stream = SimpleLazyObject(lambda: get_action_model().objects.any)
+followers = SimpleLazyObject(lambda: get_follow_model().objects.followers)
+following = SimpleLazyObject(lambda: get_follow_model().objects.following)
 
 
 if django.VERSION[:2] < (1, 7):
