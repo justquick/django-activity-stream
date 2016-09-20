@@ -1,9 +1,6 @@
 from inspect import isclass
-import re
 
-import django
 from django.apps import apps
-from django.conf import settings
 from django.contrib.contenttypes import fields as generic
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
@@ -25,10 +22,9 @@ def setup_generic_relations(model_class):
                                 'in initialisation. Try moving actstream app to come after the '
                                 'apps which have models to register in the INSTALLED_APPS setting.')
 
-    related_attr_name = 'related_name'
+    related_attr_name = 'related_query_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
-    if django.VERSION[:2] >= (1, 7):
-        related_attr_name = 'related_query_name'
+
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
@@ -58,13 +54,8 @@ def label(model_class):
 def is_installed(model_class):
     """
     Returns True if a model_class is installed.
-    model_class._meta.installed is only reliable in Django 1.7+
     """
-    if django.VERSION[:2] >= (1, 7):
-        return model_class._meta.installed
-    if model_class._meta.app_label in settings.INSTALLED_APPS:
-        return True
-    return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
+    return model_class._meta.installed
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):

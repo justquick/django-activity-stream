@@ -70,14 +70,14 @@ Make sure to pick the version of Django and django-activity-stream that supports
 Python
 ******
 
-* **Python 2**: 2.6 and 2.7
-* **Python 3**: 3.2, 3.3, 3.4, and 3.5
+* **Python 2**: 2.7
+* **Python 3**: 3.3, 3.4, and 3.5
 * **PyPy**: 2 and 3
 
 Django
 ******
 
-* **Django**: 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 and 1.9
+* **Django**: 1.8, 1.9 and 1.10
 
 Databases
 *********
@@ -85,7 +85,7 @@ Databases
 django-activity-stream has been tested to work with the following databases but may work on other platforms (YMMV)
 
 * **Sqlite**: 3
-* **PostgreSQL**: 9.1, 9.2 and 9.3
+* **PostgreSQL**: 9.1+
     * Python: `psycopg2 <http://initd.org/psycopg/docs/>`_
     * PyPy: `psycopg2cffi <https://github.com/chtd/psycopg2cffi>`_
 * **MySQL**: 5.5 and 5.6
