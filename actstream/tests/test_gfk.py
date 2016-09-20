@@ -1,9 +1,9 @@
 from django.test import TestCase
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group
 
 from actstream.models import Action
-from actstream.compat import get_user_model
 from actstream.tests.base import LTE
 
 

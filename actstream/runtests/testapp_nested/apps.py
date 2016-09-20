@@ -1,4 +1,4 @@
-from actstream.compat_apps import AppConfig
+from django.apps import AppConfig
 
 
 class TestappNestedConfig(AppConfig):

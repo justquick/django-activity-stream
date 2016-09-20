@@ -2,13 +2,12 @@ from inspect import isclass
 import re
 
 import django
+from django.apps import apps
 from django.conf import settings
+from django.contrib.contenttypes import fields as generic
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import string_types
-
-
-from actstream.compat import generic, get_model
 
 
 class RegistrationError(Exception):
@@ -19,7 +18,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = get_model('actstream', 'action')
+    Action = apps.get_model('actstream', 'action')
 
     if Action is None:
         raise RegistrationError('Unable get actstream.Action. Potential circular imports '
@@ -70,7 +69,7 @@ def is_installed(model_class):
 
 def validate(model_class, exception_class=ImproperlyConfigured):
     if isinstance(model_class, string_types):
-        model_class = get_model(*model_class.split('.'))
+        model_class = apps.get_model(*model_class.split('.'))
     if not isinstance(model_class, ModelBase):
         raise exception_class(
             'Object %r is not a Model class.' % model_class)
