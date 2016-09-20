@@ -36,11 +36,11 @@ Add the activity urls to your urlconf
 
 .. code-block:: python
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         ...
         ('^activity/', include('actstream.urls')),
         ...
-    )
+    ]
 
 The activity urls are not required for basic usage but provide activity :ref:`feeds` and handle following, unfollowing and querying of followers.
 
