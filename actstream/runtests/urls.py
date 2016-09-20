@@ -1,14 +1,9 @@
 import os
 
 import django
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.static import serve
-try:
-    from django.conf.urls import patterns, include, url
-except ImportError:
-    from django.conf.urls.defaults import patterns, include, url
-
-admin.autodiscover()
 
 
 urlpatterns = [
@@ -20,5 +15,3 @@ urlpatterns = [
     url(r'', include('actstream.urls')),
 ]
 
-if django.VERSION[:2] < (1, 9):
-    urlpatterns = patterns('', *urlpatterns)

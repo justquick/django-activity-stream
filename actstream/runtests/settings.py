@@ -120,13 +120,5 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
-if django.VERSION[:2] >= (1, 5):
-    AUTH_USER_MODEL = 'testapp.MyUser'
+AUTH_USER_MODEL = 'testapp.MyUser'
 
-
-try:
-    import django.test.simple
-except ImportError:
-    pass
-else:
-    TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
