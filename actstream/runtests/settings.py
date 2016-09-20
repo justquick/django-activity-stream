@@ -120,15 +120,6 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
-if django.VERSION[:2] < (1, 7):
-    SOUTH_MIGRATION_MODULES = {
-        'actstream': 'actstream.south_migrations',
-        'testapp': 'testapp.south_migrations',
-        'testapp_nested': 'testapp_nested.south_migrations',
-    }
-    INSTALLED_APPS += ('south',)
-    SOUTH_TESTS_MIGRATE = False
-
 if django.VERSION[:2] >= (1, 5):
     AUTH_USER_MODEL = 'testapp.MyUser'
 
