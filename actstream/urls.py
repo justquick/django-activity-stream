@@ -1,8 +1,8 @@
 import django
 try:
-    from django.conf.urls import url, patterns
+    from django.urls import url
 except ImportError:
-    from django.conf.urls.defaults import url, patterns
+    from django.conf.urls import url
 
 from actstream import feeds, views
 
