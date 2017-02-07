@@ -5,7 +5,7 @@ env:
   global:
     - TRAVIS=true
   matrix:
-    - TOX_ENV=py36-dj1.11-postgres
+    - TOX_ENV=py35-dj1.11-postgres
     - TOX_ENV=py27-dj1.11-postgres
     - TOX_ENV=py35-dj1.10-sqlite
     - TOX_ENV=py27-dj1.10-sqlite  
