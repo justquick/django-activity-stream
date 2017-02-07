@@ -1,8 +1,7 @@
-import django
 try:
-    from django.conf.urls import url, patterns
+    from django.urls import url
 except ImportError:
-    from django.conf.urls.defaults import url, patterns
+    from django.conf.urls import url
 
 from actstream import feeds, views
 
@@ -55,6 +54,3 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/$', views.user, name='actstream_user'),
     url(r'^$', views.stream, name='actstream'),
 ]
-
-if django.VERSION[:2] < (1, 9):
-    urlpatterns = patterns('', *urlpatterns)

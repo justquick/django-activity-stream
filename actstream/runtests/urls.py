@@ -1,14 +1,10 @@
 import os
-
-import django
 from django.contrib import admin
 from django.views.static import serve
 try:
-    from django.conf.urls import patterns, include, url
+    from django.urls import include, url
 except ImportError:
-    from django.conf.urls.defaults import patterns, include, url
-
-admin.autodiscover()
+    from django.conf.urls import include, url
 
 
 urlpatterns = [
@@ -19,6 +15,3 @@ urlpatterns = [
     url(r'testapp/', include('testapp.urls')),
     url(r'', include('actstream.urls')),
 ]
-
-if django.VERSION[:2] < (1, 9):
-    urlpatterns = patterns('', *urlpatterns)
