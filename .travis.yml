@@ -1,34 +1,36 @@
 language: python
 python:
-  - "2.7"
+  - "3.5"
 env:
   global:
     - TRAVIS=true
-  matrix:  
-    - TOX_ENV=pypy-dj1.9-sqlite
+  matrix:
+    - TOX_ENV=py36-dj1.11-postgres
+    - TOX_ENV=py27-dj1.11-postgres
+    - TOX_ENV=py35-dj1.10-sqlite
+    - TOX_ENV=py27-dj1.10-sqlite  
+    - TOX_ENV=py35-dj1.10-mysql
+    - TOX_ENV=py27-dj1.10-mysql
+    - TOX_ENV=py35-dj1.10-postgres
+    - TOX_ENV=py27-dj1.10-postgres
     - TOX_ENV=py35-dj1.9-sqlite
     - TOX_ENV=py27-dj1.9-sqlite  
-    - TOX_ENV=pypy-dj1.9-mysql
     - TOX_ENV=py35-dj1.9-mysql
     - TOX_ENV=py27-dj1.9-mysql
-    - TOX_ENV=pypy-dj1.9-postgres
     - TOX_ENV=py35-dj1.9-postgres
     - TOX_ENV=py27-dj1.9-postgres  
-    - TOX_ENV=pypy3-dj1.8-sqlite
-    - TOX_ENV=pypy-dj1.8-sqlite
     - TOX_ENV=py35-dj1.8-sqlite
     - TOX_ENV=py27-dj1.8-sqlite  
-    - TOX_ENV=pypy-dj1.7-sqlite
     - TOX_ENV=py34-dj1.7-sqlite
     - TOX_ENV=py27-dj1.7-sqlite  
     - TOX_ENV=coverage
 install:
-  - pip install tox==2.3.1 coveralls==1.1
+  - pip install tox coveralls==1.1
 services:
   - mysql
   - postgresql  
 addons:
-  postgresql: "9.3"
+  postgresql: "9.5"
 script:
   - tox -e $TOX_ENV
 notifications:
