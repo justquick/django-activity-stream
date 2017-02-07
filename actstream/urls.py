@@ -1,4 +1,3 @@
-import django
 try:
     from django.urls import url
 except ImportError:
@@ -55,6 +54,3 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/$', views.user, name='actstream_user'),
     url(r'^$', views.stream, name='actstream'),
 ]
-
-if django.VERSION[:2] < (1, 9):
-    urlpatterns = patterns('', *urlpatterns)
