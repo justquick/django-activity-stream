@@ -1,8 +1,14 @@
 import django
 try:
-    from django.conf.urls import url, patterns
+	# for Django 1.6 - 1.9
+	from django.conf.urls import url, patterns
 except ImportError:
-    from django.conf.urls.defaults import url, patterns
+	try:
+		# for Django 1.10
+		from django.conf.urls import url
+	except ImportError:
+		# for Django 1.5 or older
+		from django.conf.urls.defaults import url, patterns
 
 from actstream import feeds, views
 
