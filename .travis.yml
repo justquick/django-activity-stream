@@ -21,16 +21,6 @@ env:
     - TOX_ENV=pypy-dj1.7-sqlite
     - TOX_ENV=py34-dj1.7-sqlite
     - TOX_ENV=py27-dj1.7-sqlite  
-    - TOX_ENV=pypy-dj1.6-sqlite
-    - TOX_ENV=py33-dj1.6-sqlite
-    - TOX_ENV=py26-dj1.6-sqlite
-    - TOX_ENV=pypy-dj1.5-sqlite
-    - TOX_ENV=py33-dj1.5-sqlite
-    - TOX_ENV=py27-dj1.5-sqlite
-    - TOX_ENV=py26-dj1.5-sqlite
-    - TOX_ENV=pypy-dj1.4-sqlite
-    - TOX_ENV=py27-dj1.4-sqlite
-    - TOX_ENV=py26-dj1.4-sqlite
     - TOX_ENV=coverage
 install:
   - pip install tox==2.3.1 coveralls==1.1
