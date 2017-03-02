@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.5"
+  - "2.7"
 env:
   global:
     - TRAVIS=true
@@ -30,7 +30,7 @@ services:
   - mysql
   - postgresql  
 addons:
-  postgresql: "9.5"
+  postgresql: "9.3"
 script:
   - tox -e $TOX_ENV
 notifications:
