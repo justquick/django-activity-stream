@@ -8,6 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import string_types
 
 
+from actstream import get_action_model
 from actstream.compat import generic, get_model
 
 
@@ -19,7 +20,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = get_model('actstream', 'action')
+    Action = get_action_model()
 
     if Action is None:
         raise RegistrationError('Unable get actstream.Action. Potential circular imports '
@@ -39,7 +40,7 @@ def setup_generic_relations(model_class):
             'object_id_field': '%s_object_id' % field,
             related_attr_name: attr_value
         }
-        rel = generic.GenericRelation('actstream.Action', **kwargs)
+        rel = generic.GenericRelation(settings.ACTSTREAM_ACTION_MODEL, **kwargs)
         rel.contribute_to_class(model_class, attr)
         relations[field] = rel
 

@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 
 import django
-from django.db import models
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.timesince import timesince as djtimesince
+from django.apps import apps as django_apps
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import SimpleLazyObject
+from django.utils.timesince import timesince as djtimesince
+from django.utils.translation import ugettext as _
 
 
 try:
@@ -22,7 +24,7 @@ from actstream.compat import user_model_label, generic
 
 
 @python_2_unicode_compatible
-class Follow(models.Model):
+class AbstractFollow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
@@ -37,6 +39,7 @@ class Follow(models.Model):
     objects = FollowManager()
 
     class Meta:
+        abstract = True
         unique_together = ('user', 'content_type', 'object_id')
 
     def __str__(self):
@@ -44,7 +47,7 @@ class Follow(models.Model):
 
 
 @python_2_unicode_compatible
-class Action(models.Model):
+class AbstractAction(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
     target).
@@ -102,6 +105,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
+        abstract = True
         ordering = ('-timestamp', )
 
     def __str__(self):
@@ -153,15 +157,25 @@ class Action(models.Model):
         return 'actstream.views.detail', [self.pk]
 
 
+class Action(AbstractAction):
+    class Meta(AbstractAction.Meta):
+        swappable = 'ACTSTREAM_ACTION_MODEL'
+
+
+class Follow(AbstractFollow):
+    class Meta(AbstractFollow.Meta):
+        swappable = 'ACTSTREAM_FOLLOW_MODEL'
+
+
 # convenient accessors
-actor_stream = Action.objects.actor
-action_object_stream = Action.objects.action_object
-target_stream = Action.objects.target
-user_stream = Action.objects.user
-model_stream = Action.objects.model_actions
-any_stream = Action.objects.any
-followers = Follow.objects.followers
-following = Follow.objects.following
+actor_stream = SimpleLazyObject(lambda: get_action_model().objects.actor)
+action_object_stream = SimpleLazyObject(lambda: get_action_model().objects.action_object)
+target_stream = SimpleLazyObject(lambda: get_action_model().objects.target)
+user_stream = SimpleLazyObject(lambda: get_action_model().objects.user)
+model_stream = SimpleLazyObject(lambda: get_action_model().objects.model_actions)
+any_stream = SimpleLazyObject(lambda: get_action_model().objects.any)
+followers = SimpleLazyObject(lambda: get_follow_model().objects.followers)
+following = SimpleLazyObject(lambda: get_follow_model().objects.following)
 
 
 if django.VERSION[:2] < (1, 7):
