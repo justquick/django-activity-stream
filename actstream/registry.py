@@ -113,6 +113,7 @@ class ActionableModelRegistry(dict):
                 'The model %s is not registered. Please use actstream.registry '
                 'to register it.' % model_class.__name__)
 
+
 registry = ActionableModelRegistry()
 register = registry.register
 unregister = registry.unregister
