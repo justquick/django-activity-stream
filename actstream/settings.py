@@ -14,8 +14,11 @@ def get_action_manager():
         return getattr(__import__('.'.join(mod_path[:-1]), {}, {},
                                   [mod_path[-1]]), mod_path[-1])()
     except ImportError:
-        raise ImportError('Cannot import %s try fixing ACTSTREAM_SETTINGS[MANAGER]'
-                          'setting.' % mod)
+        raise ImportError(
+            'Cannot import %s try fixing ACTSTREAM_SETTINGS[MANAGER]'
+            'setting.' % mod
+        )
+
 
 FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 
