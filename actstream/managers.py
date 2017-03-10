@@ -101,7 +101,7 @@ class ActionManager(GFKManager):
             object_content_type = ContentType.objects.get_for_model(obj)
             actors_by_content_type[object_content_type.id].append(obj.pk)
 
-        follow_gfks = get_model('actstream', 'follow').objects.filter(
+        follow_gfks = apps.get_model('actstream', 'follow').objects.filter(
             user=obj).values_list('content_type_id',
                                   'object_id', 'actor_only')
 
