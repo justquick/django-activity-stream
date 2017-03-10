@@ -1,8 +1,8 @@
+from django.apps import AppConfig
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream import settings
 from actstream.signals import action
-from actstream.compat_apps import AppConfig
 
 
 class ActstreamConfig(AppConfig):

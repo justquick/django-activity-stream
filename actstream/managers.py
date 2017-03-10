@@ -1,12 +1,12 @@
 from collections import defaultdict
 
+from django.apps import apps
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
 from actstream.registry import check
-from actstream.compat import get_model
 
 
 class ActionManager(GFKManager):

@@ -1,19 +1,14 @@
-import datetime
-
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from actstream import settings
 from actstream.signals import action
 from actstream.registry import check
-from actstream.compat import get_model
 
-try:
-    from django.utils import timezone
-    now = timezone.now
-except ImportError:
-    now = datetime.datetime.now
+now = timezone.now
 
 
 def follow(user, obj, send_action=True, actor_only=True, **kwargs):
