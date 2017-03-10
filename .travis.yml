@@ -7,6 +7,10 @@ env:
   matrix:
     - TOX_ENV=py35-dj1.11-postgres
     - TOX_ENV=py27-dj1.11-postgres
+    - TOX_ENV=py35-dj1.11-sqlite
+    - TOX_ENV=py27-dj1.11-sqlite
+    - TOX_ENV=py35-dj1.11-mysql
+    - TOX_ENV=py27-dj1.11-mysql 
     - TOX_ENV=py35-dj1.10-sqlite
     - TOX_ENV=py27-dj1.10-sqlite  
     - TOX_ENV=py35-dj1.10-mysql
@@ -25,7 +29,7 @@ env:
     - TOX_ENV=py27-dj1.7-sqlite  
     - TOX_ENV=coverage
 install:
-  - pip install tox coveralls==1.1
+  - pip install tox coveralls
 services:
   - mysql
   - postgresql  
