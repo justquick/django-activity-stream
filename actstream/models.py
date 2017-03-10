@@ -1,24 +1,20 @@
 from __future__ import unicode_literals
 
 import django
+from django.conf import settings
+from django.contrib.contenttypes import fields as generic
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
-
-
-try:
-    from django.utils import timezone
-    now = timezone.now
-except ImportError:
-    from datetime import datetime
-    now = datetime.now
+from django.utils import timezone
 
 from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
-from actstream.compat import user_model_label, generic
+
+now = timezone.now
 
 
 @python_2_unicode_compatible
@@ -26,7 +22,6 @@ class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(user_model_label, on_delete=models.CASCADE, db_index=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, db_index=True)
     object_id = models.CharField(max_length=255, db_index=True)
@@ -163,8 +158,3 @@ any_stream = Action.objects.any
 followers = Follow.objects.followers
 following = Follow.objects.following
 
-
-if django.VERSION[:2] < (1, 7):
-    from actstream.apps import ActstreamConfig
-
-    ActstreamConfig().ready()

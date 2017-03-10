@@ -44,12 +44,6 @@ if PY3 and django.VERSION[:2] <= (1, 8)  and version >= (3, 5):
 if PY3 and django.VERSION[:2] == (1, 8) and version <= (3, 3):
     sys.stderr.write('Django 1.8 does not support Python<=3.3\n')
     exit(0)
-if django.VERSION[:2] <= (1, 4) and PY3:
-    sys.stderr.write('Django<=1.4 does not support Python3\n')
-    exit(0)
-if version == (2, 6) and django.VERSION[:2] >= (1, 7):
-    sys.stderr.write('Django>=1.7 does not support Python2.6\n')
-    exit(0)
 
 os.environ['DATABASE_ENGINE'] = engine
 

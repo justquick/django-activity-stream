@@ -1,10 +1,6 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
-
-try:
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:
-    from django.contrib.contenttypes.generic import GenericForeignKey
 
 from actstream import settings
 

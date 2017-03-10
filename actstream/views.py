@@ -2,13 +2,15 @@ from django.shortcuts import render_to_response, get_object_or_404, render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.csrf import csrf_exempt
 
-from actstream import actions, models, compat
+from actstream import actions, models
 
-User = compat.get_user_model()
+
+User = get_user_model()
 
 
 
@@ -81,6 +83,7 @@ def user(request, username):
     """
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
+
     instance = get_object_or_404(User, **{'is_active': True, compat.username_field(): username})
     return render(request, 'actstream/actor.html', context={
         'ctype': ContentType.objects.get_for_model(User),

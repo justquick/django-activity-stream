@@ -1,10 +1,4 @@
 import os
-from django.contrib import admin
-from django.views.static import serve
-try:
-    from django.urls import include, url
-except ImportError:
-    from django.conf.urls import include, url
 
 
 urlpatterns = [

@@ -1,19 +1,14 @@
-import datetime
-
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from actstream import settings
 from actstream.signals import action
 from actstream.registry import check
-from actstream.compat import get_model
 
-try:
-    from django.utils import timezone
-    now = timezone.now
-except ImportError:
-    now = datetime.datetime.now
+now = timezone.now
 
 
 def follow(user, obj, send_action=True, actor_only=True, **kwargs):
@@ -37,7 +32,7 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
         follow(request.user, group, actor_only=False)
     """
     check(obj)
-    instance, created = get_model('actstream', 'follow').objects.get_or_create(
+    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
@@ -58,7 +53,7 @@ def unfollow(user, obj, send_action=False):
         unfollow(request.user, other_user)
     """
     check(obj)
-    get_model('actstream', 'follow').objects.filter(
+    apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     ).delete()
@@ -77,7 +72,7 @@ def is_following(user, obj):
         is_following(request.user, group)
     """
     check(obj)
-    return get_model('actstream', 'follow').objects.filter(
+    return apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     ).exists()
@@ -95,7 +90,7 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = get_model('actstream', 'action')(
+    newaction = apps.get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=text_type(verb),
