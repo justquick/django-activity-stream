@@ -3,6 +3,17 @@
 Changelog
 =========
 
+0.7.0
+-----
+
+  - Remove django less then 1.7 compatibility
+  - Adjusted URLs with new versions of django
+  - Removed south migrations 
+  - Drop pypy from test matrix
+  - use render function instead of depricated render_to_response
+  - upgrade package depedencies
+
+
 0.6.3
 -----
 
