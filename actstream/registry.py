@@ -22,9 +22,11 @@ def setup_generic_relations(model_class):
     Action = get_model('actstream', 'action')
 
     if Action is None:
-        raise RegistrationError('Unable get actstream.Action. Potential circular imports '
-                                'in initialisation. Try moving actstream app to come after the '
-                                'apps which have models to register in the INSTALLED_APPS setting.')
+        raise RegistrationError(
+            'Unable get actstream.Action. Potential circular imports '
+            'in initialisation. Try moving actstream app to come after the '
+            'apps which have models to register in the INSTALLED_APPS setting.'
+        )
 
     related_attr_name = 'related_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
