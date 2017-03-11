@@ -20,11 +20,20 @@ class TestAppTests(ActivityBaseTestCase):
 
     def test_accessor(self):
         self.assertEqual(len(Action.objects.testfoo(self.user)), 1)
-        self.assertEqual(len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))), 0)
+        self.assertEqual(
+            len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))),
+            0
+        )
 
     def test_mystream(self):
-        self.assertEqual(len(self.user.actor_actions.testbar('was created')), 1)
-        self.assertEqual(len(self.user.action_object_actions.testbar('was created')), 0)
+        self.assertEqual(
+            len(self.user.actor_actions.testbar('was created')),
+            1
+        )
+        self.assertEqual(
+            len(self.user.action_object_actions.testbar('was created')),
+            0
+        )
 
     def test_registration(self):
         instance = Unregistered.objects.create(name='fubar')
@@ -45,8 +54,12 @@ class TestAppTests(ActivityBaseTestCase):
         ''', user=self.user)
         self.assertAllIn([str(action) for action in stream], output)
 
-        self.assertEqual(self.capture('testapp_custom_feed',
-                                      'was created')['totalItems'], 1)
+        self.assertEqual(
+            self.capture(
+                'testapp_custom_feed',
+                'was created')['totalItems'],
+            1
+        )
 
     def test_customuser(self):
         if django.VERSION[:2] >= (1, 5):
