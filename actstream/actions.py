@@ -32,10 +32,14 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
         follow(request.user, group, actor_only=False)
     """
     check(obj)
-    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
+    instance, created = apps.get_model(
+        'actstream',
+        'follow'
+    ).objects.get_or_create(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj),
-        actor_only=actor_only)
+        actor_only=actor_only
+    )
     if send_action and created:
         action.send(user, verb=_('started following'), target=obj, **kwargs)
     return instance
