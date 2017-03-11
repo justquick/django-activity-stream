@@ -1,10 +1,10 @@
 # Django settings for example_project project.
 import os
 import sys
+import django
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import django
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -120,22 +120,4 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 0,
 }
 
-if django.VERSION[:2] < (1, 7):
-    SOUTH_MIGRATION_MODULES = {
-        'actstream': 'actstream.south_migrations',
-        'testapp': 'testapp.south_migrations',
-        'testapp_nested': 'testapp_nested.south_migrations',
-    }
-    INSTALLED_APPS += ('south',)
-    SOUTH_TESTS_MIGRATE = False
-
-if django.VERSION[:2] >= (1, 5):
-    AUTH_USER_MODEL = 'testapp.MyUser'
-
-
-try:
-    import django.test.simple
-except ImportError:
-    pass
-else:
-    TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+AUTH_USER_MODEL = 'testapp.MyUser'
