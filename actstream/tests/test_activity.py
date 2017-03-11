@@ -5,7 +5,10 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.utils.six import text_type
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 from actstream.models import (Action, Follow, model_stream, user_stream,
                               actor_stream, following, followers)
