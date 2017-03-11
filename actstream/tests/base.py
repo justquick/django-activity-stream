@@ -2,18 +2,19 @@ from json import loads
 from datetime import datetime
 from inspect import getargspec
 
+from django.apps import apps
 from django.test import TestCase
 from django.template import Template, Context
 from django.utils.six import text_type
 from django.utils.timesince import timesince
 from django.contrib.sites.models import Site
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
 from actstream.models import Action, Follow
 from actstream.registry import register, unregister
-from actstream.compat import get_user_model, get_model
 from actstream.actions import follow
 from actstream.signals import action
 
@@ -60,7 +61,7 @@ class ActivityBaseTestCase(TestCase):
 
     def tearDown(self):
         for model in self.actstream_models:
-            model = get_model(*model.split('.'))
+            model = apps.get_model(*model.split('.'))
             unregister(model)
             model.objects.all().delete()
         Action.objects.all().delete()
