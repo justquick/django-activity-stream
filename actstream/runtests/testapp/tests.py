@@ -57,8 +57,11 @@ class TestAppTests(ActivityBaseTestCase):
 
     if USE_JSONFIELD:
         def test_jsonfield(self):
-            action.send(self.user, verb='said', text='foobar', tags=['sayings'],
-                        more_data={'pk': self.user.pk})
+            action.send(
+                self.user, verb='said', text='foobar',
+                tags=['sayings'],
+                more_data={'pk': self.user.pk}
+            )
             newaction = Action.objects.filter(verb='said')[0]
             self.assertEqual(newaction.data['text'], 'foobar')
             self.assertEqual(newaction.data['tags'], ['sayings'])
