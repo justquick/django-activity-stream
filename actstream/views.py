@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from actstream import actions, models
 
-USERNAME_FIELD = get_user_model()
+USER_MODEL = get_user_model()
+username_field = lambda: getattr(get_user_model(), 'USERNAME_FIELD', 'username')
 
 
 def respond(request, code):
@@ -50,7 +51,7 @@ def stream(request):
         request,
         'actstream/actor.html',
         context={
-            'ctype': ContentType.objects.get_for_model(USERNAME_FIELD),
+            'ctype': ContentType.objects.get_for_model(USER_MODEL),
             'actor': request.user,
             'action_list': models.user_stream(request.user)
         }
@@ -80,7 +81,7 @@ def following(request, user_id):
     Returns a list of actors that the user identified by ``user_id``
     is following (eg who im following).
     """
-    instance = get_object_or_404(user, pk=user_id)
+    instance = get_object_or_404(USER_MODEL, pk=user_id)
     return render(
         request,
         'actstream/following.html',
@@ -96,14 +97,14 @@ def user(request, username):
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
     instance = get_object_or_404(
-        USERNAME_FIELD,
-        **{'is_active': True, USERNAME_FIELD: username}
+        USER_MODEL,
+        **{'is_active': True, username_field: username}
     )
     return render(
         request,
         'actstream/actor.html',
         context={
-            'ctype': ContentType.objects.get_for_model(USERNAME_FIELD),
+            'ctype': ContentType.objects.get_for_model(USER_MODEL),
             'actor': instance, 'action_list': models.user_stream(instance)
         }
     )
