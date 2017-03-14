@@ -21,4 +21,6 @@ class ActstreamConfig(AppConfig):
                     'You must have django-jsonfield installed '
                     'if you wish to use a JSONField on your actions'
                 )
-            JSONField(blank=True, null=True).contribute_to_class(action_class, 'data')
+            JSONField(
+                blank=True, null=True
+            ).contribute_to_class(action_class, 'data')
