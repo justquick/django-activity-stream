@@ -48,7 +48,7 @@ def stream(request):
     return render(
         request,
         'actstream/actor.html',
-        context={
+        {
             'ctype': ContentType.objects.get_for_model(User),
             'actor': request.user,
             'action_list': models.user_stream(request.user)
@@ -67,7 +67,7 @@ def followers(request, content_type_id, object_id):
     return render(
         request,
         'actstream/followers.html',
-        context={
+        {
             'followers': models.followers(instance),
             'actor': instance
         }
@@ -83,7 +83,7 @@ def following(request, user_id):
     return render(
         request,
         'actstream/following.html',
-        context={
+        {
             'following': models.following(instance),
             'user': instance
         }
@@ -101,7 +101,7 @@ def user(request, username):
     return render(
         request,
         'actstream/actor.html',
-        context={
+        {
             'ctype': ContentType.objects.get_for_model(User),
             'actor': instance, 'action_list': models.user_stream(instance)
         }
@@ -115,7 +115,7 @@ def detail(request, action_id):
     return render(
         request,
         'actstream/detail.html',
-        context={
+        {
             'action': get_object_or_404(models.Action, pk=action_id)
         }
     )
@@ -131,7 +131,7 @@ def actor(request, content_type_id, object_id):
     return render(
         request,
         'actstream/actor.html',
-        context={
+        {
             'action_list': models.actor_stream(instance),
             'actor': instance,
             'ctype': ctype
@@ -149,7 +149,7 @@ def model(request, content_type_id):
     return render(
         request,
         'actstream/actor.html',
-        context={
+        {
             'action_list': models.model_stream(model_class),
             'ctype': ctype,
             'actor': model_class
