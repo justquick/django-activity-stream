@@ -58,6 +58,7 @@ Here is an example of what you can set in your ``settings.py``
         'USE_PREFETCH': True,
         'USE_JSONFIELD': True,
         'GFK_FETCH_DEPTH': 1,
+        'SHOW_TIMESTAMP': True,
     }
 
 .. note::
@@ -123,3 +124,11 @@ Number of levels of relations that ``select_related`` will perform.
 Only matters if you are not running ``prefetch_related`` (Django<=1.3).
 
 Defaults to ``0``
+
+
+SHOW_TIMESTAMP
+**************
+
+Set this to ``False`` to not include friendly timestamp in string representation of action.
+
+Defaults to ``True``

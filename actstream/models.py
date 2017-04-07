@@ -129,13 +129,22 @@ class Action(models.Model):
             'target': self.target,
             'timesince': self.timesince()
         }
+
         if self.target:
             if self.action_object:
-                return _('%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago') % ctx
-            return _('%(actor)s %(verb)s %(target)s %(timesince)s ago') % ctx
-        if self.action_object:
-            return _('%(actor)s %(verb)s %(action_object)s %(timesince)s ago') % ctx
-        return _('%(actor)s %(verb)s %(timesince)s ago') % ctx
+                action_line = '%(actor)s %(verb)s %(action_object)s on %(target)s'
+            else:
+                action_line = '%(actor)s %(verb)s %(target)s'
+        elif self.action_object:
+            action_line = '%(actor)s %(verb)s %(action_object)s'
+        else:
+            action_line = '%(actor)s %(verb)s'
+
+        # Add friendly timestamp in most cases
+        if actstream_settings.SETTINGS.get('SHOW_TIMESTAMP', True):
+            action_line += ' %(timesince)s ago'
+
+        return _(action_line) % ctx
 
     def actor_url(self):
         """
