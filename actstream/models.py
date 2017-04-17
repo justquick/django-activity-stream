@@ -123,12 +123,13 @@ class Action(models.Model):
 
     def __str__(self):
         ctx = {
-            'actor': self.actor,
-            'verb': self.verb,
-            'action_object': self.action_object,
-            'target': self.target,
-            'timesince': self.timesince()
+            'actor': self.actor.__stream__() if hasattr(self.actor, '__stream__') else self.actor,
+            'verb': self.verb.__stream__() if hasattr(self.verb, '__stream__') else self.verb,
+            'action_object': self.action_object.__stream__() if hasattr(self.action_object, '__stream__') else self.action_object,
+            'target': self.target.__stream__() if hasattr(self.target, '__stream__') else self.target,
+            'timesince': self.timesince(),
         }
+
         if self.target:
             if self.action_object:
                 return _('%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago') % ctx
