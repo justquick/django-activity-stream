@@ -28,10 +28,8 @@ def setup_generic_relations(model_class):
             'apps which have models to register in the INSTALLED_APPS setting.'
         )
 
-    related_attr_name = 'related_name'
+    related_attr_name = 'related_query_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
-    if django.VERSION[:2] >= (1, 7):
-        related_attr_name = 'related_query_name'
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
@@ -44,9 +42,6 @@ def setup_generic_relations(model_class):
         rel = generic.GenericRelation('actstream.Action', **kwargs)
         rel.contribute_to_class(model_class, attr)
         relations[field] = rel
-
-        # @@@ I'm not entirely sure why this works
-        setattr(Action, attr_value, None)
     return relations
 
 
@@ -90,11 +85,19 @@ def validate(model_class, exception_class=ImproperlyConfigured):
 
 class ActionableModelRegistry(dict):
 
-    def register(self, *model_classes_or_labels):
+    def register(self, *model_classes_or_labels, **kwargs):
+        """ add_generic_relations defaults to false and will add an optional
+        relationship to registered models. This may cause incompatiblity issues
+        and can be disabled.
+        """
+        add_generic_relations = kwargs.get('add_generic_relations', True)
         for class_or_label in model_classes_or_labels:
             model_class = validate(class_or_label)
             if model_class not in self:
-                self[model_class] = setup_generic_relations(model_class)
+                if add_generic_relations:
+                    self[model_class] = setup_generic_relations(model_class)
+                else:
+                    self[model_class] = []
 
     def unregister(self, *model_classes_or_labels):
         for class_or_label in model_classes_or_labels:
