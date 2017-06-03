@@ -11,6 +11,7 @@ from actstream.compat import get_model
 
 try:
     from django.utils import timezone
+
     now = timezone.now
 except ImportError:
     now = datetime.datetime.now
@@ -37,16 +38,20 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
         follow(request.user, group, actor_only=False)
     """
     check(obj)
+    follow_type = kwargs.pop('follow_type', '')
     instance, created = get_model('actstream', 'follow').objects.get_or_create(
-        user=user, object_id=obj.pk,
+        user=user, object_id=obj.pk, follow_type=follow_type,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
     if send_action and created:
-        action.send(user, verb=_('started following'), target=obj, **kwargs)
+        if not follow_type:
+            action.send(user, verb=_('started following'), target=obj, **kwargs)
+        else:
+            action.send(user, verb=_('started %s', follow_type), target=obj, **kwargs)
     return instance
 
 
-def unfollow(user, obj, send_action=False):
+def unfollow(user, obj, send_action=False, follow_type=None):
     """
     Removes a "follow" relationship.
 
@@ -58,15 +63,23 @@ def unfollow(user, obj, send_action=False):
         unfollow(request.user, other_user)
     """
     check(obj)
-    get_model('actstream', 'follow').objects.filter(
+    qs = get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
-    ).delete()
+    )
+
+    if follow_type:
+        qs.filter(follow_type=follow_type)
+    qs.delete()
+
     if send_action:
-        action.send(user, verb=_('stopped following'), target=obj)
+        if not follow_type:
+            action.send(user, verb=_('stopped following'), target=obj)
+        else:
+            action.send(user, verb=_('stopped %s', follow_type), target=obj)
 
 
-def is_following(user, obj):
+def is_following(user, obj, follow_type=None):
     """
     Checks if a "follow" relationship exists.
 
@@ -77,10 +90,15 @@ def is_following(user, obj):
         is_following(request.user, group)
     """
     check(obj)
-    return get_model('actstream', 'follow').objects.filter(
+    qs = get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
-    ).exists()
+    )
+
+    if follow_type:
+        qs.filter(follow_type=follow_type)
+
+    return qs.exists()
 
 
 def action_handler(verb, **kwargs):

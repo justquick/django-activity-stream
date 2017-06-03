@@ -88,11 +88,12 @@ class DataTestCase(ActivityBaseTestCase):
         if 'email' in getargspec(self.User.objects.create_superuser).args:
             self.user1 = self.User.objects.create_superuser('admin', 'admin@example.com', 'admin')
             self.user2 = self.User.objects.create_user('Two', 'two@example.com')
-            self.user3 = self.User.objects.create_user('Three', 'three@example.com',)
+            self.user3 = self.User.objects.create_user('Three', 'three@example.com', )
         else:
             self.user1 = self.User.objects.create_superuser('admin', 'admin')
             self.user2 = self.User.objects.create_user('Two')
             self.user3 = self.User.objects.create_user('Three')
+            self.user4 = self.User.objects.create_user('Four')
         # User1 joins group
         self.user1.groups.add(self.group)
         self.join_action = action.send(self.user1, verb='joined',
@@ -101,6 +102,8 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User1 follows User2
         follow(self.user1, self.user2, timestamp=self.testdate)
+        # User4 likes User2
+        follow(self.user4, self.user2, timestamp=self.testdate, follow_type='liking', send_action=False)
 
         # User2 joins group
         self.user2.groups.add(self.group)
@@ -109,6 +112,8 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User2 follows group
         follow(self.user2, self.group, timestamp=self.testdate)
+        # User4 likes group
+        follow(self.user4, self.group, timestamp=self.testdate, follow_type='liking', send_action=False)
 
         # User1 comments on group
         # Use a site object here and predict the "__unicode__ method output"

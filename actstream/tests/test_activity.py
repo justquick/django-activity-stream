@@ -39,8 +39,16 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(list(following(self.user1)), [self.user2])
         self.assertEqual(len(following(self.user2, self.User)), 0)
 
+    def test_following_with_certain_type(self):
+        self.assertEqual(list(following(self.user4, follow_type='liking')), [self.user2, self.group])
+        self.assertEqual(list(following(self.user4, follow_type='liking')), [self.user2, self.group])
+
     def test_followers(self):
-        self.assertEqual(list(followers(self.group)), [self.user2])
+        self.assertEqual(list(followers(self.group)), [self.user2, self.user4])
+
+    def test_followers_with_certain_type(self):
+        self.assertEqual(list(followers(self.group, follow_type='liking')), [self.user4])
+        self.assertEqual(list(followers(self.user2, follow_type='liking')), [self.user4])
 
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)

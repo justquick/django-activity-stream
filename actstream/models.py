@@ -8,12 +8,13 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
 
-
 try:
     from django.utils import timezone
+
     now = timezone.now
 except ImportError:
     from datetime import datetime
+
     now = datetime.now
 
 from actstream import settings as actstream_settings
@@ -40,6 +41,7 @@ class Follow(models.Model):
         "the object is the target.",
         default=True
     )
+    follow_type = models.CharField(_('follow type'), max_length=255, blank=True, default='')
     started = models.DateTimeField(default=now, db_index=True)
     objects = FollowManager()
 
@@ -119,7 +121,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     def __str__(self):
         ctx = {
@@ -179,7 +181,6 @@ model_stream = Action.objects.model_actions
 any_stream = Action.objects.any
 followers = Follow.objects.followers
 following = Follow.objects.following
-
 
 if django.VERSION[:2] < (1, 7):
     from actstream.apps import ActstreamConfig
