@@ -10,21 +10,28 @@ register = Library()
 
 
 class DisplayActivityFollowUrl(Node):
-    def __init__(self, actor, actor_only=True):
+    def __init__(self, actor, actor_only=True, follow_type=None):
         self.actor = Variable(actor)
         self.actor_only = actor_only
+        self.follow_type = follow_type
 
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         content_type = ContentType.objects.get_for_model(actor_instance).pk
-        if Follow.objects.is_following(context.get('user'), actor_instance):
-            return reverse('actstream_unfollow', kwargs={
-                'content_type_id': content_type, 'object_id': actor_instance.pk})
+
+        kwargs = {
+            'content_type_id': content_type,
+            'object_id': actor_instance.pk
+        }
+
+        if self.follow_type:
+            kwargs['follow_type'] = self.follow_type
+
+        if Follow.objects.is_following(context.get('user'), actor_instance, follow_type=self.follow_type):
+            return reverse('actstream_unfollow', kwargs=kwargs)
         if self.actor_only:
-            return reverse('actstream_follow', kwargs={
-                'content_type_id': content_type, 'object_id': actor_instance.pk})
-        return reverse('actstream_follow_all', kwargs={
-            'content_type_id': content_type, 'object_id': actor_instance.pk})
+            return reverse('actstream_follow', kwargs=kwargs)
+        return reverse('actstream_follow_all', kwargs=kwargs)
 
 
 class DisplayActivityActorUrl(Node):
@@ -117,6 +124,21 @@ def is_following(user, actor):
     return Follow.objects.is_following(user, actor)
 
 
+class IsFollowing(AsNode):
+    args_count = 3
+
+    def render_result(self, context):
+        user= self.args[0].resolve(context)
+        actor = self.args[1].resolve(context)
+        follow_type = self.args[2]
+
+        return Follow.objects.is_following(user, actor, follow_type=follow_type)
+
+
+def is_following_tag(parser, token):
+    return IsFollowing.handle_token(parser, token)
+
+
 def follow_url(parser, token):
     """
     Renders the URL of the follow view for a particular actor instance
@@ -132,10 +154,13 @@ def follow_url(parser, token):
         </a>
     """
     bits = token.split_contents()
-    if len(bits) != 2:
+
+    if len(bits) > 3:
         raise TemplateSyntaxError("Accepted format {% follow_url [instance] %}")
-    else:
+    elif len(bits) == 2:
         return DisplayActivityFollowUrl(bits[1])
+    else:
+        return DisplayActivityFollowUrl(bits[1], follow_type=bits[2])
 
 
 def follow_all_url(parser, token):
@@ -153,10 +178,12 @@ def follow_all_url(parser, token):
         </a>
     """
     bits = token.split_contents()
-    if len(bits) != 2:
+    if len(bits) > 3:
         raise TemplateSyntaxError("Accepted format {% follow_all_url [instance] %}")
-    else:
+    elif len(bits) == 2:
         return DisplayActivityFollowUrl(bits[1], actor_only=False)
+    else:
+        return DisplayActivityFollowUrl(bits[1], actor_only=False, follow_type=bits[2])
 
 
 def actor_url(parser, token):
@@ -201,6 +228,7 @@ def activity_stream(context, stream_type, *args, **kwargs):
 
 register.filter(activity_stream)
 register.filter(is_following)
+register.tag('is_following', is_following_tag)
 register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)
