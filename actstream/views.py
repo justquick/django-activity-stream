@@ -23,7 +23,7 @@ def respond(request, code):
 
 @login_required
 @csrf_exempt
-def follow_unfollow(request, content_type_id, object_id, do_follow=True, actor_only=True):
+def follow_unfollow(request, content_type_id, object_id, do_follow=True, actor_only=True, follow_type=None):
     """
     Creates or deletes the follow relationship between ``request.user`` and the
     actor defined by ``content_type_id``, ``object_id``.
@@ -32,9 +32,12 @@ def follow_unfollow(request, content_type_id, object_id, do_follow=True, actor_o
     instance = get_object_or_404(ctype.model_class(), pk=object_id)
 
     if do_follow:
-        actions.follow(request.user, instance, actor_only=actor_only)
+        if not follow_type:
+            actions.follow(request.user, instance, actor_only=actor_only)
+        else:
+            actions.follow(request.user, instance, actor_only=actor_only, follow_type=follow_type)
         return respond(request, 201)   # CREATED
-    actions.unfollow(request.user, instance)
+    actions.unfollow(request.user, instance, follow_type=follow_type)
     return respond(request, 204)   # NO CONTENT
 
 
@@ -56,7 +59,7 @@ def stream(request):
     )
 
 
-def followers(request, content_type_id, object_id):
+def followers(request, content_type_id, object_id, follow_type=None):
     """
     Creates a listing of ``User``s that follow the actor defined by
     ``content_type_id``, ``object_id``.
@@ -68,13 +71,13 @@ def followers(request, content_type_id, object_id):
         request,
         'actstream/followers.html',
         {
-            'followers': models.followers(instance),
-            'actor': instance
+            'followers': models.followers(instance, follow_type=follow_type),
+            'actor': instance,
         }
     )
 
 
-def following(request, user_id):
+def following(request, user_id, follow_type=None):
     """
     Returns a list of actors that the user identified by ``user_id``
     is following (eg who im following).
@@ -84,8 +87,8 @@ def following(request, user_id):
         request,
         'actstream/following.html',
         {
-            'following': models.following(instance),
-            'user': instance
+            'following': models.following(instance, follow_type=follow_type),
+            'user': instance,
         }
     )
 

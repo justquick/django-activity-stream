@@ -47,7 +47,7 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
         if not follow_type:
             action.send(user, verb=_('started following'), target=obj, **kwargs)
         else:
-            action.send(user, verb=_('started %s', follow_type), target=obj, **kwargs)
+            action.send(user, verb=_('started %s' % follow_type), target=obj, **kwargs)
     return instance
 
 
@@ -76,7 +76,7 @@ def unfollow(user, obj, send_action=False, follow_type=None):
         if not follow_type:
             action.send(user, verb=_('stopped following'), target=obj)
         else:
-            action.send(user, verb=_('stopped %s', follow_type), target=obj)
+            action.send(user, verb=_('stopped %s' % follow_type), target=obj)
 
 
 def is_following(user, obj, follow_type=None):
