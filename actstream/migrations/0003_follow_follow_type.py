@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('actstream', '0002_remove_action_data'),
     ]
@@ -16,5 +15,10 @@ class Migration(migrations.Migration):
             model_name='follow',
             name='follow_type',
             field=models.CharField(blank=True, default='', max_length=255, verbose_name='follow type'),
+        ),
+
+        migrations.AlterUniqueTogether(
+            name='follow',
+            unique_together=set([('user', 'content_type', 'object_id', 'follow_type')]),
         ),
     ]
