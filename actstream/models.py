@@ -46,7 +46,7 @@ class Follow(models.Model):
     objects = FollowManager()
 
     class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
+        unique_together = ('user', 'content_type', 'object_id', 'follow_type')
 
     def __str__(self):
         return '%s -> %s' % (self.user, self.follow_object)
