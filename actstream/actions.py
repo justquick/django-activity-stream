@@ -69,7 +69,7 @@ def unfollow(user, obj, send_action=False, follow_type=None):
     )
 
     if follow_type:
-        qs.filter(follow_type=follow_type)
+        qs = qs.filter(follow_type=follow_type)
     qs.delete()
 
     if send_action:
@@ -96,7 +96,7 @@ def is_following(user, obj, follow_type=None):
     )
 
     if follow_type:
-        qs.filter(follow_type=follow_type)
+        qs = qs.filter(follow_type=follow_type)
 
     return qs.exists()
 
