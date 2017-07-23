@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.6.4
+-----
+
+  - Dropped support for Django 1.4, 1.5 and 1.6
+  - Added explicit 'on_delete' arg to ForeignKey fields
+
 0.6.3
 -----
 
