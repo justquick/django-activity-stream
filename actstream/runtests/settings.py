@@ -74,6 +74,39 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
+TEMPLATE_DIRS = (
+    'templates',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+]
+
+if django.VERSION >= (1, 10):
+    TEMPLATE_CONTEXT_PROCESSORS = [
+        'django.contrib.auth.context_processors.auth',
+        'django.template.context_processors.debug',
+        'django.template.context_processors.i18n',
+        'django.template.context_processors.media',
+        'django.template.context_processors.static',
+        'django.template.context_processors.tz',
+    ]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': TEMPLATE_DIRS,
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': TEMPLATE_CONTEXT_PROCESSORS
+        },
+    },
+]
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,13 +116,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'actstream.runtests.urls'
-
-TEMPLATE_DIRS = (
-    'templates',
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -102,15 +128,6 @@ INSTALLED_APPS = (
     'actstream.runtests.testapp_nested',
     'actstream',
 )
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-)
-
 
 ACTSTREAM_SETTINGS = {
     'MANAGER': 'actstream.runtests.testapp.streams.MyActionManager',

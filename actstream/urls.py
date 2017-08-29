@@ -1,8 +1,7 @@
-import django
 try:
-    from django.conf.urls import url, patterns
+    from django.urls import url
 except ImportError:
-    from django.conf.urls.defaults import url, patterns
+    from django.conf.urls import url
 
 from actstream import feeds, views
 
@@ -21,7 +20,8 @@ urlpatterns = [
     url(r'^feed/(?P<content_type_id>[^/]+)/atom/$',
         feeds.AtomModelActivityFeed(), name='actstream_model_feed_atom'),
     url(r'^feed/(?P<content_type_id>[^/]+)/json/$',
-        feeds.ModelJSONActivityFeed.as_view(), name='actstream_model_feed_json'),
+        feeds.ModelJSONActivityFeed.as_view(),
+        name='actstream_model_feed_json'),
 
     # Object feeds
     url(r'^feed/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
@@ -29,17 +29,21 @@ urlpatterns = [
     url(r'^feed/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/atom/$',
         feeds.AtomObjectActivityFeed(), name='actstream_object_feed_atom'),
     url(r'^feed/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/json/$',
-        feeds.ObjectJSONActivityFeed.as_view(), name='actstream_object_feed_json'),
+        feeds.ObjectJSONActivityFeed.as_view(),
+        name='actstream_object_feed_json'),
 
     # Follow/Unfollow API
     url(r'^follow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
         views.follow_unfollow, name='actstream_follow'),
     url(r'^follow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        views.follow_unfollow, {'actor_only': False}, name='actstream_follow_all'),
+        views.follow_unfollow, {'actor_only': False},
+        name='actstream_follow_all'),
     url(r'^unfollow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        views.follow_unfollow, {'actor_only': False, 'do_follow': False}, name='actstream_unfollow_all'),
+        views.follow_unfollow, {'actor_only': False, 'do_follow': False},
+        name='actstream_unfollow_all'),
     url(r'^unfollow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
-        views.follow_unfollow, {'do_follow': False}, name='actstream_unfollow'),
+        views.follow_unfollow, {'do_follow': False},
+        name='actstream_unfollow'),
 
     # Follower and Actor lists
     url(r'^followers/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
@@ -55,6 +59,3 @@ urlpatterns = [
     url(r'^(?P<username>[^/]+)/$', views.user, name='actstream_user'),
     url(r'^$', views.stream, name='actstream'),
 ]
-
-if django.VERSION[:2] < (1, 9):
-    urlpatterns = patterns('', *urlpatterns)

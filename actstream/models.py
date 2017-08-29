@@ -26,13 +26,20 @@ class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
-    user = models.ForeignKey(user_model_label, db_index=True)
+    user = models.ForeignKey(
+        user_model_label, on_delete=models.CASCADE, db_index=True
+    )
 
-    content_type = models.ForeignKey(ContentType, db_index=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, db_index=True
+    )
     object_id = models.CharField(max_length=255, db_index=True)
     follow_object = generic.GenericForeignKey()
-    actor_only = models.BooleanField("Only follow actions where "
-                                     "the object is the target.", default=True)
+    actor_only = models.BooleanField(
+        "Only follow actions where "
+        "the object is the target.",
+        default=True
+    )
     started = models.DateTimeField(default=now, db_index=True)
     objects = FollowManager()
 
@@ -73,23 +80,35 @@ class Action(models.Model):
         <a href="http://oebfare.com/">brosner</a> commented on <a href="http://github.com/pinax/pinax">pinax/pinax</a> 2 hours ago
 
     """
-    actor_content_type = models.ForeignKey(ContentType, related_name='actor',
-                                           db_index=True)
+    actor_content_type = models.ForeignKey(
+        ContentType, related_name='actor',
+        on_delete=models.CASCADE, db_index=True
+    )
     actor_object_id = models.CharField(max_length=255, db_index=True)
     actor = generic.GenericForeignKey('actor_content_type', 'actor_object_id')
 
     verb = models.CharField(max_length=255, db_index=True)
     description = models.TextField(blank=True, null=True)
 
-    target_content_type = models.ForeignKey(ContentType, blank=True, null=True,
-                                            related_name='target', db_index=True)
-    target_object_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    target_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True,
+        related_name='target',
+        on_delete=models.CASCADE, db_index=True
+    )
+    target_object_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True
+    )
     target = generic.GenericForeignKey('target_content_type',
                                        'target_object_id')
 
-    action_object_content_type = models.ForeignKey(ContentType, blank=True, null=True,
-                                                   related_name='action_object', db_index=True)
-    action_object_object_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    action_object_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True,
+        related_name='action_object',
+        on_delete=models.CASCADE, db_index=True
+    )
+    action_object_object_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True
+    )
     action_object = generic.GenericForeignKey('action_object_content_type',
                                               'action_object_object_id')
 

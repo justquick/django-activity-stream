@@ -90,7 +90,7 @@ class DisplayAction(AsNode):
             'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'actstream/action.html',
         ]
-        return render_to_string(templates, context)
+        return render_to_string(templates, {'action': action_instance})
 
 
 def display_action(parser, token):

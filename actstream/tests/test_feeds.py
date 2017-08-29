@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.conf import settings
 from django.utils.feedgenerator import rfc2822_date, rfc3339_date
 
@@ -20,7 +18,6 @@ class FeedsTestCase(base.DataTestCase):
         return ['<?xml version="1.0" encoding="utf-8"?>\n',
                 'xmlns="http://www.w3.org/2005/Atom"',
                 'xml:lang="%s"' % settings.LANGUAGE_CODE,
-                '<updated>%s' % rfc3339_date(datetime.now())[:-3],
                 '<uri>http://example.com/detail/',
                 '<id>tag:example.com,2000-01-01:/detail/']
 

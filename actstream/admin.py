@@ -8,6 +8,7 @@ try:
 except ImportError:
     ModelAdmin = admin.ModelAdmin
 
+
 class ActionAdmin(ModelAdmin):
     date_hierarchy = 'timestamp'
     list_display = ('__str__', 'actor', 'verb', 'target', 'public')
