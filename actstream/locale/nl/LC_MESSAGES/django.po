@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-15 09:46-0400\n"
+"PO-Revision-Date: 2017-10-13 00:05+0200\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: Dex Bleeker <redacted@redacted.org>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: actions.py:45
+msgid "started following"
+msgstr "startte volgen van"
+
+#: actions.py:66
+msgid "stopped following"
+msgstr "stopte volgen van"
+
+#: models.py:115
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s van %(target)s %(timesince)s geleden"
+
+#: models.py:116
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(target)s %(timesince)s geleden"
+
+#: models.py:118
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s %(timesince)s geleden"
+
+#: models.py:119
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(timesince)s geleden"
+
+#: templates/actstream/action.html:13
+msgid "ago"
+msgstr "geleden"
+
+#: templates/actstream/actor.html:24
+msgid "UNFOLLOW"
+msgstr "ONTVOLG"
+
+#: templates/actstream/actor.html:25
+msgid "FOLLOW"
+msgstr "VOLG"
+
+#: templates/actstream/actor.html:32
+msgid "View my actions"
+msgstr "Geef mijn acties weer"
+
+#: templates/actstream/actor.html:38
+msgid "No actions yet"
+msgstr "Nog geen acties"
+
+#: templates/actstream/detail.html:3
+#, python-format
+msgid "On %(date)s at %(time)s"
+msgstr "Op %(date)s om %(time)s"
+
+#: templates/actstream/followers.html:2
+#, python-format
+msgid "Users following %(actor)s"
+msgstr "Gebruikers die %(actor)s volgen"
+
+#: templates/actstream/following.html:2
+#, python-format
+msgid "Actors that %(user)s follows"
+msgstr "Actors die %(user)s volgt"
+
+#: tests/test_activity.py:213
+msgid "English"
+msgstr "Engels"
