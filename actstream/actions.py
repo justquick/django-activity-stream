@@ -17,7 +17,7 @@ except ImportError:
     now = datetime.datetime.now
 
 
-def follow(user, obj, send_action=True, actor_only=True, **kwargs):
+def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
     """
     Creates a relationship allowing the object's activities to appear in the
     user's stream.
@@ -33,34 +33,39 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
     ``False`` to also include actions where this object is the action_object or
     the target.
 
+    If ``flag`` not an empty string then the relationship would marked by this flag.
+
     Example::
 
         follow(request.user, group, actor_only=False)
+        follow(request.user, group, actor_only=False, flag='liking')
     """
     check(obj)
-    follow_type = kwargs.pop('follow_type', '')
     instance, created = get_model('actstream', 'follow').objects.get_or_create(
-        user=user, object_id=obj.pk, follow_type=follow_type,
+        user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only)
     if send_action and created:
-        if not follow_type:
+        if not flag:
             action.send(user, verb=_('started following'), target=obj, **kwargs)
         else:
-            action.send(user, verb=_('started %s' % follow_type), target=obj, **kwargs)
+            action.send(user, verb=_('started %s' % flag), target=obj, **kwargs)
     return instance
 
 
-def unfollow(user, obj, send_action=False, follow_type=None):
+def unfollow(user, obj, send_action=False, flag=''):
     """
     Removes a "follow" relationship.
 
     Set ``send_action`` to ``True`` (``False is default) to also send a
     ``<user> stopped following <object>`` action signal.
 
+    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to remove.
+
     Example::
 
         unfollow(request.user, other_user)
+        unfollow(request.user, other_user, flag='watching')
     """
     check(obj)
     qs = get_model('actstream', 'follow').objects.filter(
@@ -68,26 +73,29 @@ def unfollow(user, obj, send_action=False, follow_type=None):
         content_type=ContentType.objects.get_for_model(obj)
     )
 
-    if follow_type:
-        qs = qs.filter(follow_type=follow_type)
+    if flag:
+        qs = qs.filter(flag=flag)
     qs.delete()
 
     if send_action:
-        if not follow_type:
+        if not flag:
             action.send(user, verb=_('stopped following'), target=obj)
         else:
-            action.send(user, verb=_('stopped %s' % follow_type), target=obj)
+            action.send(user, verb=_('stopped %s' % flag), target=obj)
 
 
-def is_following(user, obj, follow_type=None):
+def is_following(user, obj, flag=''):
     """
     Checks if a "follow" relationship exists.
 
     Returns True if exists, False otherwise.
 
+    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to check.
+
     Example::
 
         is_following(request.user, group)
+        is_following(request.user, group, flag='liking')
     """
     check(obj)
     qs = get_model('actstream', 'follow').objects.filter(
@@ -95,8 +103,8 @@ def is_following(user, obj, follow_type=None):
         content_type=ContentType.objects.get_for_model(obj)
     )
 
-    if follow_type:
-        qs = qs.filter(follow_type=follow_type)
+    if flag:
+        qs = qs.filter(flag=flag)
 
     return qs.exists()
 

@@ -134,18 +134,18 @@ class FollowManager(GFKManager):
     Manager for Follow model.
     """
 
-    def for_object(self, instance, follow_type=None):
+    def for_object(self, instance, flag=''):
         """
         Filter to a specific instance.
         """
         check(instance)
         content_type = ContentType.objects.get_for_model(instance).pk
         queryset = self.filter(content_type=content_type, object_id=instance.pk)
-        if follow_type:
-            queryset = queryset.filter(follow_type=follow_type)
+        if flag:
+            queryset = queryset.filter(flag=flag)
         return queryset
 
-    def is_following(self, user, instance, follow_type=None):
+    def is_following(self, user, instance, flag=''):
         """
         Check if a user is following an instance.
         """
@@ -153,11 +153,11 @@ class FollowManager(GFKManager):
             return False
         queryset = self.for_object(instance)
 
-        if follow_type:
-            queryset = queryset.filter(follow_type=follow_type)
+        if flag:
+            queryset = queryset.filter(flag=flag)
         return queryset.filter(user=user).exists()
 
-    def followers_qs(self, actor, follow_type=None):
+    def followers_qs(self, actor, flag=''):
         """
         Returns a queryset of User objects who are following the given actor (eg my followers).
         """
@@ -167,17 +167,17 @@ class FollowManager(GFKManager):
             object_id=actor.pk
         ).select_related('user')
 
-        if follow_type:
-            queryset = queryset.filter(follow_type=follow_type)
+        if flag:
+            queryset = queryset.filter(flag=flag)
         return queryset
 
-    def followers(self, actor, follow_type=None):
+    def followers(self, actor, flag=''):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
         """
-        return [follow.user for follow in self.followers_qs(actor, follow_type=follow_type)]
+        return [follow.user for follow in self.followers_qs(actor, flag=flag)]
 
-    def following_qs(self, user, *models, follow_type=None):
+    def following_qs(self, user, *models, flag=''):
         """
         Returns a queryset of actors that the given user is following (eg who im following).
         Items in the list can be of any model unless a list of restricted models are passed.
@@ -190,14 +190,14 @@ class FollowManager(GFKManager):
             ctype_filters |= Q(content_type=ContentType.objects.get_for_model(model))
         qs = qs.filter(ctype_filters)
 
-        if follow_type:
-            qs = qs.filter(follow_type=follow_type)
+        if flag:
+            qs = qs.filter(flag=flag)
         return qs.fetch_generic_relations('follow_object')
 
-    def following(self, user, *models, follow_type=None):
+    def following(self, user, *models, flag=''):
         """
         Returns a list of actors that the given user is following (eg who im following).
         Items in the list can be of any model unless a list of restricted models are passed.
         Eg following(user, User) will only return users following the given user
         """
-        return [follow.follow_object for follow in self.following_qs(user, *models, follow_type=follow_type)]
+        return [follow.follow_object for follow in self.following_qs(user, *models, flag=flag)]

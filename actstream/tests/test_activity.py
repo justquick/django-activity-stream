@@ -30,6 +30,14 @@ class ActivityTestCase(DataTestCase):
             'Two joined CoolGroup %s ago' % self.timesince,
         ])
 
+    def test_user4(self):
+        self.assertSetEqual(actor_stream(self.user4), [
+            'Four started blacklisting Three %s ago' % self.timesince,
+            'Four started liking admin %s ago' % self.timesince,
+            'Four started watching NiceGroup %s ago' % self.timesince,
+            'Four started liking NiceGroup %s ago' % self.timesince,
+        ])
+
     def test_group(self):
         self.assertSetEqual(actor_stream(self.group),
                             ['CoolGroup responded to admin: Sweet Group!... '
@@ -39,16 +47,20 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(list(following(self.user1)), [self.user2])
         self.assertEqual(len(following(self.user2, self.User)), 0)
 
-    def test_following_with_certain_type(self):
-        self.assertEqual(list(following(self.user4, follow_type='liking')), [self.user2, self.group])
-        self.assertEqual(list(following(self.user4, follow_type='liking')), [self.user2, self.group])
+    def test_following_with_flag(self):
+        self.assertEqual(list(following(self.user4, flag='liking')), [self.another_group, self.user1])
+        self.assertEqual(list(following(self.user4, flag='watching')), [self.another_group])
+        self.assertEqual(list(following(self.user4, flag='blacklisting')), [self.user3])
+        self.assertEqual(list(following(self.user4, self.User, flag='liking')), [self.user1])
 
     def test_followers(self):
-        self.assertEqual(list(followers(self.group)), [self.user2, self.user4])
+        self.assertEqual(list(followers(self.group)), [self.user2])
 
-    def test_followers_with_certain_type(self):
-        self.assertEqual(list(followers(self.group, follow_type='liking')), [self.user4])
-        self.assertEqual(list(followers(self.user2, follow_type='liking')), [self.user4])
+    def test_followers_with_flag(self):
+        self.assertEqual(list(followers(self.another_group, flag='liking')), [self.user4])
+        self.assertEqual(list(followers(self.another_group, flag='watching')), [self.user4])
+        self.assertEqual(list(followers(self.user1, flag='liking')), [self.user4])
+        self.assertEqual(list(followers(self.user3, flag='blacklisting')), [self.user4])
 
     def test_empty_follow_stream(self):
         unfollow(self.user1, self.user2)
@@ -153,13 +165,13 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(output, reverse('actstream_follow', args=(
             self.user_ct.pk, self.user1.pk)))
 
-    def test_tag_follow_url_with_certain_type(self):
-        src = '{% follow_url user liking %}'
+    def test_tag_follow_url_with_flag(self):
+        src = '{% follow_url user "liking" %}'
         output = render(src, user=self.user1)
         self.assertEqual(output, reverse('actstream_follow', kwargs={
             'content_type_id': self.user_ct.pk,
             'object_id': self.user1.pk,
-            'follow_type': 'liking'
+            'flag': 'liking'
         }))
 
     def test_tag_follow_all_url(self):
@@ -168,13 +180,13 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(output, reverse('actstream_follow_all', args=(
             self.user_ct.pk, self.user1.pk)))
 
-    def test_tag_follow_all_url_with_certain_type(self):
-        src = '{% follow_all_url user liking %}'
+    def test_tag_follow_all_url_with_flag(self):
+        src = '{% follow_all_url user "liking" %}'
         output = render(src, user=self.user1)
         self.assertEqual(output, reverse('actstream_follow_all', kwargs={
             'content_type_id': self.user_ct.pk,
             'object_id': self.user1.pk,
-            'follow_type': 'liking'
+            'flag': 'liking'
         }))
 
     def test_tag_actor_url(self):
@@ -222,17 +234,23 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(render(src, user=self.user2, group=self.group), 'yup')
         self.assertEqual(render(src, user=self.user1, group=self.group), '')
 
-    # def test_is_following_tag(self):
-    #     src = '{% is_following user group as is_following %}' \
-    #           '{% if is_following %}yup{% endif %}'
-    #     self.assertEqual(render(src, user=self.user2, group=self.group), 'yup')
-    #     self.assertEqual(render(src, user=self.user1, group=self.group), '')
-
-    def test_is_following_tag_with_certain_type(self):
-        src = '{% is_following user group liking as is_following %}' \
+    def test_is_following_tag_with_empty_flag(self):
+        src = '{% is_following user group "" as is_following %}' \
               '{% if is_following %}yup{% endif %}'
-        self.assertEqual(render(src, user=self.user4, group=self.group), 'yup')
-        self.assertEqual(render(src, user=self.user1, group=self.group), '')
+        self.assertEqual(render(src, user=self.user4, group=self.another_group), 'yup')
+        self.assertEqual(render(src, user=self.user1, group=self.another_group), '')
+
+    def test_is_following_tag_with_flag(self):
+        src = '{% is_following user group "liking" as is_following %}' \
+              '{% if is_following %}yup{% endif %}'
+        self.assertEqual(render(src, user=self.user4, group=self.another_group), 'yup')
+        self.assertEqual(render(src, user=self.user1, group=self.another_group), '')
+
+    def test_is_following_tag_with_verb_variable(self):
+        src = '{% is_following user group verb as is_following %}' \
+              '{% if is_following %}yup{% endif %}'
+        self.assertEqual(render(src, user=self.user4, group=self.another_group, verb='liking'), 'yup')
+        self.assertEqual(render(src, user=self.user1, group=self.another_group, verb='liking'), '')
 
     def test_none_returns_an_empty_queryset(self):
         qs = Action.objects.none()

@@ -41,15 +41,15 @@ class Follow(models.Model):
         "the object is the target.",
         default=True
     )
-    follow_type = models.CharField(_('follow type'), max_length=255, blank=True, default='')
+    flag = models.CharField(max_length=255, blank=True, db_index=True, default='')
     started = models.DateTimeField(default=now, db_index=True)
     objects = FollowManager()
 
     class Meta:
-        unique_together = ('user', 'content_type', 'object_id', 'follow_type')
+        unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
-        return '%s -> %s' % (self.user, self.follow_object)
+        return '%s -> %s : %s' % (self.user, self.follow_object, self.flag)
 
 
 @python_2_unicode_compatible

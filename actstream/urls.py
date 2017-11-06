@@ -33,22 +33,22 @@ urlpatterns = [
         name='actstream_object_feed_json'),
 
     # Follow/Unfollow API
-    url(r'^follow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^follow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.follow_unfollow, name='actstream_follow'),
-    url(r'^follow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^follow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.follow_unfollow, {'actor_only': False},
         name='actstream_follow_all'),
-    url(r'^unfollow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^unfollow_all/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.follow_unfollow, {'actor_only': False, 'do_follow': False},
         name='actstream_unfollow_all'),
-    url(r'^unfollow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^unfollow/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.follow_unfollow, {'do_follow': False},
         name='actstream_unfollow'),
 
     # Follower and Actor lists
-    url(r'^followers/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^followers/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.followers, name='actstream_followers'),
-    url(r'^following/(?P<user_id>[^/]+)/(?:(?P<follow_type>[^/]+)/)?$',
+    url(r'^following/(?P<user_id>[^/]+)/(?:(?P<flag>[^/]+)/)?$',
         views.following, name='actstream_following'),
     url(r'^actors/(?P<content_type_id>[^/]+)/(?P<object_id>[^/]+)/$',
         views.actor, name='actstream_actor'),

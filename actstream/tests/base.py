@@ -85,10 +85,12 @@ class DataTestCase(ActivityBaseTestCase):
         self.group_ct = ContentType.objects.get_for_model(Group)
         super(DataTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
+        self.another_group = Group.objects.create(name='NiceGroup')
         if 'email' in getargspec(self.User.objects.create_superuser).args:
             self.user1 = self.User.objects.create_superuser('admin', 'admin@example.com', 'admin')
             self.user2 = self.User.objects.create_user('Two', 'two@example.com')
-            self.user3 = self.User.objects.create_user('Three', 'three@example.com', )
+            self.user3 = self.User.objects.create_user('Three', 'three@example.com')
+            self.user4 = self.User.objects.create_user('Four', 'four@example.com')
         else:
             self.user1 = self.User.objects.create_superuser('admin', 'admin')
             self.user2 = self.User.objects.create_user('Two')
@@ -102,8 +104,6 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User1 follows User2
         follow(self.user1, self.user2, timestamp=self.testdate)
-        # User4 likes User2
-        follow(self.user4, self.user2, timestamp=self.testdate, follow_type='liking', send_action=False)
 
         # User2 joins group
         self.user2.groups.add(self.group)
@@ -112,8 +112,6 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User2 follows group
         follow(self.user2, self.group, timestamp=self.testdate)
-        # User4 likes group
-        follow(self.user4, self.group, timestamp=self.testdate, follow_type='liking', send_action=False)
 
         # User1 comments on group
         # Use a site object here and predict the "__unicode__ method output"
@@ -129,3 +127,12 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User 3 did something but doesn't following someone
         action.send(self.user3, verb='liked actstream', timestamp=self.testdate)
+
+        # User4 likes group
+        follow(self.user4, self.another_group, timestamp=self.testdate, flag='liking')
+        # User4 watches group
+        follow(self.user4, self.another_group, timestamp=self.testdate, flag='watching')
+        # User4 likes User1
+        follow(self.user4, self.user1, timestamp=self.testdate, flag='liking')
+        # User4 blacklist user3
+        follow(self.user4, self.user3, timestamp=self.testdate, flag='blacklisting')

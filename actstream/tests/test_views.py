@@ -43,24 +43,24 @@ class ViewsTest(DataTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response['Location'].endswith('/redirect/'))
 
-    def test_follow_unfollow_with_certain_type(self):
-        response = self.get('actstream_follow', self.user_ct.pk, self.user3.pk, 'liking')
+    def test_follow_unfollow_with_flag(self):
+        response = self.get('actstream_follow', self.user_ct.pk, self.user3.pk, 'watching')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.templates), 0)
         follow = {'user': self.user1, 'content_type': self.user_ct,
-                  'object_id': self.user3.pk, 'follow_type': 'liking'}
+                  'object_id': self.user3.pk, 'flag': 'watching'}
         action = {'actor_content_type': self.user_ct, 'actor_object_id': self.user1.pk,
                   'target_content_type': self.user_ct, 'target_object_id': self.user3.pk,
-                  'verb': 'started liking'}
+                  'verb': 'started watching'}
         models.Follow.objects.get(**follow)
         models.Action.objects.get(**action)
 
-        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'liking')
+        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(len(response.templates), 0)
         self.assertRaises(models.Follow.DoesNotExist, models.Follow.objects.get, **follow)
 
-        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'liking', next='/redirect/')
+        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching', next='/redirect/')
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response['Location'].endswith('/redirect/'))
 
@@ -86,18 +86,18 @@ class ViewsTest(DataTestCase):
         self.assertQSEqual(response.context['following'],
                            models.following(self.user2))
 
-    def test_followers_following_with_certain_type(self):
-        response = self.get('actstream_followers', self.user_ct.pk, self.user2.pk, 'liking')
+    def test_followers_following_with_flag(self):
+        response = self.get('actstream_followers', self.user_ct.pk, self.user2.pk, 'watching')
         self.assertTemplateUsed(response, 'actstream/followers.html')
         self.assertEqual(response.context['user'], self.user1)
         self.assertQSEqual(response.context['followers'],
-                           models.followers(self.user2, follow_type='liking'))
+                           models.followers(self.user2, flag='watching'))
 
-        response = self.get('actstream_following', self.user2.pk, 'liking')
+        response = self.get('actstream_following', self.user2.pk, 'watching')
         self.assertTemplateUsed(response, 'actstream/following.html')
         self.assertEqual(response.context['user'], self.user2)
         self.assertQSEqual(response.context['following'],
-                           models.following(self.user2, follow_type='liking'))
+                           models.following(self.user2, flag='watching'))
 
     def test_user(self):
         response = self.get('actstream_user', self.user2.username)
