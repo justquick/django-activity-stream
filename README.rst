@@ -1,12 +1,12 @@
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shield)
-
 Django Activity Stream
 ======================
+
+.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield
+   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shiel
 
 .. image:: https://badges.gitter.im/django-activity-stream/Lobby.svg
    :alt: Join the chat at https://gitter.im/django-activity-stream/Lobby
    :target: https://gitter.im/django-activity-stream/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 
 .. image:: https://img.shields.io/coveralls/justquick/django-activity-stream.svg
     :target: https://coveralls.io/r/justquick/django-activity-stream
@@ -44,6 +44,6 @@ Nomenclature of this specification is based on the Activity Streams Spec: `<http
 
 For complete documentation see `Django Activity Stream Documentation <http://django-activity-stream.rtfd.io/en/latest/>`_
 
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_large)
+.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=large
+   :alt: FOSSA Status
+   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_large
