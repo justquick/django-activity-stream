@@ -2,12 +2,15 @@ from __future__ import unicode_literals
 
 import django
 from django.db import models
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
 
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 try:
     from django.utils import timezone

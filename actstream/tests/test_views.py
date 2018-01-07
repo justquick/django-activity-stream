@@ -1,5 +1,9 @@
-from django.core.urlresolvers import reverse
 from django.utils.six.moves.urllib.parse import urlencode
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 from actstream import models
 from actstream.tests.base import DataTestCase
