@@ -41,7 +41,3 @@ For example: `justquick <https://github.com/justquick/>`_ ``(actor)`` *closed* `
 Nomenclature of this specification is based on the Activity Streams Spec: `<http://activitystrea.ms/>`_
 
 For complete documentation see `Django Activity Stream Documentation <http://django-activity-stream.rtfd.io/en/latest/>`_
-
-.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=large
-   :alt: FOSSA Status
-   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_large
