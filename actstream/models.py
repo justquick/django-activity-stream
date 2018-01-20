@@ -182,9 +182,3 @@ model_stream = Action.objects.model_actions
 any_stream = Action.objects.any
 followers = Follow.objects.followers
 following = Follow.objects.following
-
-
-if django.VERSION[:2] < (1, 7):
-    from actstream.apps import ActstreamConfig
-
-    ActstreamConfig().ready()

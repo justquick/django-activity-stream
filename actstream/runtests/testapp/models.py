@@ -54,9 +54,3 @@ if django.VERSION[:2] >= (1, 5):
         def get_full_name(self):
             return self.username
         get_short_name = get_full_name
-
-
-if django.VERSION[:2] < (1, 7):
-    from actstream.runtests.testapp.apps import TestappConfig
-
-    TestappConfig().ready()
