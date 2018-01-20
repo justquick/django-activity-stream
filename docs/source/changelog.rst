@@ -3,6 +3,14 @@
 Changelog
 =========
 
+0.6.5
+-----
+
+  - Dropped support for Django 1.7
+  - Dropped support for Python 3.3
+  - Come chat with us on Gitter! https://gitter.im/django-activity-stream/Lobby
+  - Added licence support monitoring with FOSSA: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream
+
 0.6.4
 -----
 
