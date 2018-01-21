@@ -89,14 +89,17 @@ class DataTestCase(ActivityBaseTestCase):
         self.group_ct = ContentType.objects.get_for_model(Group)
         super(DataTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
+        self.another_group = Group.objects.create(name='NiceGroup')
         if 'email' in getargspec(self.User.objects.create_superuser).args:
             self.user1 = self.User.objects.create_superuser('admin', 'admin@example.com', 'admin')
             self.user2 = self.User.objects.create_user('Two', 'two@example.com')
-            self.user3 = self.User.objects.create_user('Three', 'three@example.com',)
+            self.user3 = self.User.objects.create_user('Three', 'three@example.com')
+            self.user4 = self.User.objects.create_user('Four', 'four@example.com')
         else:
             self.user1 = self.User.objects.create_superuser('admin', 'admin')
             self.user2 = self.User.objects.create_user('Two')
             self.user3 = self.User.objects.create_user('Three')
+            self.user4 = self.User.objects.create_user('Four')
         # User1 joins group
         self.user1.groups.add(self.group)
         self.join_action = action.send(self.user1, verb='joined',
@@ -128,3 +131,12 @@ class DataTestCase(ActivityBaseTestCase):
 
         # User 3 did something but doesn't following someone
         action.send(self.user3, verb='liked actstream', timestamp=self.testdate)
+
+        # User4 likes group
+        follow(self.user4, self.another_group, timestamp=self.testdate, flag='liking')
+        # User4 watches group
+        follow(self.user4, self.another_group, timestamp=self.testdate, flag='watching')
+        # User4 likes User1
+        follow(self.user4, self.user1, timestamp=self.testdate, flag='liking')
+        # User4 blacklist user3
+        follow(self.user4, self.user3, timestamp=self.testdate, flag='blacklisting')

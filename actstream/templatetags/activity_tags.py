@@ -14,21 +14,28 @@ register = Library()
 
 
 class DisplayActivityFollowUrl(Node):
-    def __init__(self, actor, actor_only=True):
+    def __init__(self, actor, actor_only=True, flag=''):
         self.actor = Variable(actor)
         self.actor_only = actor_only
+        self.flag = flag
 
     def render(self, context):
         actor_instance = self.actor.resolve(context)
         content_type = ContentType.objects.get_for_model(actor_instance).pk
-        if Follow.objects.is_following(context.get('user'), actor_instance):
-            return reverse('actstream_unfollow', kwargs={
-                'content_type_id': content_type, 'object_id': actor_instance.pk})
+
+        kwargs = {
+            'content_type_id': content_type,
+            'object_id': actor_instance.pk
+        }
+
+        if self.flag:
+            kwargs['flag'] = self.flag
+
+        if Follow.objects.is_following(context.get('user'), actor_instance, flag=self.flag):
+            return reverse('actstream_unfollow', kwargs=kwargs)
         if self.actor_only:
-            return reverse('actstream_follow', kwargs={
-                'content_type_id': content_type, 'object_id': actor_instance.pk})
-        return reverse('actstream_follow_all', kwargs={
-            'content_type_id': content_type, 'object_id': actor_instance.pk})
+            return reverse('actstream_follow', kwargs=kwargs)
+        return reverse('actstream_follow_all', kwargs=kwargs)
 
 
 class DisplayActivityActorUrl(Node):
@@ -121,6 +128,32 @@ def is_following(user, actor):
     return Follow.objects.is_following(user, actor)
 
 
+class IsFollowing(AsNode):
+    args_count = 3
+
+    def render_result(self, context):
+        user= self.args[0].resolve(context)
+        actor = self.args[1].resolve(context)
+        flag = self.args[2].resolve(context)
+
+        return Follow.objects.is_following(user, actor, flag=flag)
+
+
+def is_following_tag(parser, token):
+    """
+    Returns true if the given user is following the actor marked by a flag, such as 'liking', 'watching' etc..
+    You can also save the returned value to a template variable by as syntax.
+    If you don't want to specify a flag, pass an empty string or use `is_following` template filter.
+
+    ::
+
+        {% is_following user group "liking" %}
+        {% is_following user group "liking" as is_liking %}
+        {% is_following user group "" as is_following %}
+    """
+    return IsFollowing.handle_token(parser, token)
+
+
 def follow_url(parser, token):
     """
     Renders the URL of the follow view for a particular actor instance
@@ -134,12 +167,25 @@ def follow_url(parser, token):
                 follow
             {% endif %}
         </a>
+
+        <a href="{% follow_url other_user 'watching' %}">
+            {% is_following user group "watching" as is_watching %}
+            {% if is_watching %}
+                stop watching
+            {% else %}
+                watch
+            {% endif %}
+        </a>
     """
     bits = token.split_contents()
-    if len(bits) != 2:
-        raise TemplateSyntaxError("Accepted format {% follow_url [instance] %}")
-    else:
+
+    if len(bits) > 3:
+        raise TemplateSyntaxError("Accepted format {% follow_url [instance] %} or {% follow_url [instance] [flag] %}")
+    elif len(bits) == 2:
         return DisplayActivityFollowUrl(bits[1])
+    else:
+        flag = bits[2][1:-1]
+        return DisplayActivityFollowUrl(bits[1], flag=flag)
 
 
 def follow_all_url(parser, token):
@@ -155,12 +201,26 @@ def follow_all_url(parser, token):
                 follow
             {% endif %}
         </a>
+
+        <a href="{% follow_all_url other_user 'watching' %}">
+            {% is_following user group "watching" as is_watching %}
+            {% if is_watching %}
+                stop watching
+            {% else %}
+                watch
+            {% endif %}
+        </a>
     """
     bits = token.split_contents()
-    if len(bits) != 2:
-        raise TemplateSyntaxError("Accepted format {% follow_all_url [instance] %}")
-    else:
+    if len(bits) > 3:
+        raise TemplateSyntaxError(
+            "Accepted format {% follow_all_url [instance] %} or {% follow_url [instance] [flag] %}"
+        )
+    elif len(bits) == 2:
         return DisplayActivityFollowUrl(bits[1], actor_only=False)
+    else:
+        flag = bits[2][1:-1]
+        return DisplayActivityFollowUrl(bits[1], actor_only=False, flag=flag)
 
 
 def actor_url(parser, token):
@@ -205,6 +265,7 @@ def activity_stream(context, stream_type, *args, **kwargs):
 
 register.filter(activity_stream)
 register.filter(is_following)
+register.tag(name='is_following', compile_function=is_following_tag)
 register.tag(display_action)
 register.tag(follow_url)
 register.tag(follow_all_url)

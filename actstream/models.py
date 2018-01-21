@@ -43,14 +43,15 @@ class Follow(models.Model):
         "the object is the target.",
         default=True
     )
+    flag = models.CharField(max_length=255, blank=True, db_index=True, default='')
     started = models.DateTimeField(default=now, db_index=True)
     objects = FollowManager()
 
     class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
+        unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
-        return '%s -> %s' % (self.user, self.follow_object)
+        return '%s -> %s : %s' % (self.user, self.follow_object, self.flag)
 
 
 @python_2_unicode_compatible
@@ -122,7 +123,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     def __str__(self):
         ctx = {
