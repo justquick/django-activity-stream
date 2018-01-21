@@ -3,12 +3,23 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
+
+try:
+    from django.utils import timezone
+    now = timezone.now
+except ImportError:
+    from datetime import datetime
+    now = datetime.now
+
 
 from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
@@ -35,14 +46,15 @@ class Follow(models.Model):
         "the object is the target.",
         default=True
     )
+    flag = models.CharField(max_length=255, blank=True, db_index=True, default='')
     started = models.DateTimeField(default=now, db_index=True)
     objects = FollowManager()
 
     class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
+        unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
-        return '%s -> %s' % (self.user, self.follow_object)
+        return '%s -> %s : %s' % (self.user, self.follow_object, self.flag)
 
 
 @python_2_unicode_compatible
@@ -118,7 +130,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     def __str__(self):
         ctx = {

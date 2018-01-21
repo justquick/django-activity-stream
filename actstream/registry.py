@@ -26,6 +26,9 @@ def setup_generic_relations(model_class):
 
     related_attr_name = 'related_query_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
+
+    if django.VERSION[:2] >= (1, 8):
+        related_attr_name = 'related_query_name'
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field

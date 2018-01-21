@@ -6,13 +6,26 @@ Changelog
 0.7.0
 -----
 
-  - Remove django less then 1.7 compatibility
+  - Remove django less then 1.8 compatibility
   - Adjusted URLs with new versions of django
   - Removed south migrations 
   - Drop pypy from test matrix
   - use render function instead of depricated render_to_response
   - upgrade package depedencies
 
+0.6.5
+-----
+
+  - Dropped support for Django 1.7
+  - Dropped support for Python 3.3
+  - Come chat with us on Gitter! https://gitter.im/django-activity-stream/Lobby
+  - Added licence support monitoring with FOSSA: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream
+
+0.6.4
+-----
+
+  - Dropped support for Django 1.4, 1.5 and 1.6
+  - Added explicit 'on_delete' arg to ForeignKey field
 
 0.6.3
 -----

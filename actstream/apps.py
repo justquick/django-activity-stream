@@ -15,12 +15,11 @@ class ActstreamConfig(AppConfig):
 
         if settings.USE_JSONFIELD:
             try:
-                from jsonfield.fields import JSONField
+                from jsonfield_compat import JSONField, register_app
             except ImportError:
                 raise ImproperlyConfigured(
-                    'You must have django-jsonfield installed '
-                    'if you wish to use a JSONField on your actions'
+                    'You must have django-jsonfield and django-jsonfield-compat '
+                    'installed if you wish to use a JSONField on your actions'
                 )
-            JSONField(
-                blank=True, null=True
-            ).contribute_to_class(action_class, 'data')
+            JSONField(blank=True, null=True).contribute_to_class(action_class, 'data')
+            register_app(self)
