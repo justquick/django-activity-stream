@@ -3,6 +3,16 @@
 Changelog
 =========
 
+0.7.0
+-----
+
+  - Remove django less then 1.8 compatibility
+  - Adjusted URLs with new versions of django
+  - Removed south migrations 
+  - Drop pypy from test matrix
+  - use render function instead of depricated render_to_response
+  - upgrade package depedencies
+
 0.6.5
 -----
 
@@ -15,7 +25,7 @@ Changelog
 -----
 
   - Dropped support for Django 1.4, 1.5 and 1.6
-  - Added explicit 'on_delete' arg to ForeignKey fields
+  - Added explicit 'on_delete' arg to ForeignKey field
 
 0.6.3
 -----

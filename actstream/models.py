@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
-import django
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
@@ -19,9 +20,11 @@ except ImportError:
     from datetime import datetime
     now = datetime.now
 
+
 from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
-from actstream.compat import user_model_label, generic
+
+now = timezone.now
 
 
 @python_2_unicode_compatible
@@ -30,14 +33,14 @@ class Follow(models.Model):
     Lets a user follow the activities of any specific actor
     """
     user = models.ForeignKey(
-        user_model_label, on_delete=models.CASCADE, db_index=True
+        User, on_delete=models.CASCADE, db_index=True
     )
 
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, db_index=True
     )
     object_id = models.CharField(max_length=255, db_index=True)
-    follow_object = generic.GenericForeignKey()
+    follow_object = GenericForeignKey()
     actor_only = models.BooleanField(
         "Only follow actions where "
         "the object is the target.",
@@ -89,7 +92,7 @@ class Action(models.Model):
         on_delete=models.CASCADE, db_index=True
     )
     actor_object_id = models.CharField(max_length=255, db_index=True)
-    actor = generic.GenericForeignKey('actor_content_type', 'actor_object_id')
+    actor = GenericForeignKey('actor_content_type', 'actor_object_id')
 
     verb = models.CharField(max_length=255, db_index=True)
     description = models.TextField(blank=True, null=True)
@@ -102,8 +105,10 @@ class Action(models.Model):
     target_object_id = models.CharField(
         max_length=255, blank=True, null=True, db_index=True
     )
-    target = generic.GenericForeignKey('target_content_type',
-                                       'target_object_id')
+    target = GenericForeignKey(
+        'target_content_type',
+        'target_object_id'
+    )
 
     action_object_content_type = models.ForeignKey(
         ContentType, blank=True, null=True,
@@ -113,8 +118,10 @@ class Action(models.Model):
     action_object_object_id = models.CharField(
         max_length=255, blank=True, null=True, db_index=True
     )
-    action_object = generic.GenericForeignKey('action_object_content_type',
-                                              'action_object_object_id')
+    action_object = GenericForeignKey(
+        'action_object_content_type',
+        'action_object_object_id'
+    )
 
     timestamp = models.DateTimeField(default=now, db_index=True)
 

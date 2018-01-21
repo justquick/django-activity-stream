@@ -1,13 +1,12 @@
-import datetime
-
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from actstream import settings
 from actstream.signals import action
 from actstream.registry import check
-from actstream.compat import get_model
 
 try:
     from django.utils import timezone
@@ -44,7 +43,8 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
     instance, created = get_model('actstream', 'follow').objects.get_or_create(
         user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
-        actor_only=actor_only)
+        actor_only=actor_only
+    )
     if send_action and created:
         if not flag:
             action.send(user, verb=_('started following'), target=obj, **kwargs)
@@ -98,6 +98,7 @@ def is_following(user, obj, flag=''):
         is_following(request.user, group, flag='liking')
     """
     check(obj)
+
     qs = get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
@@ -121,7 +122,7 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = get_model('actstream', 'action')(
+    newaction = apps.get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=text_type(verb),

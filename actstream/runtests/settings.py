@@ -4,7 +4,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import django
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -138,8 +137,7 @@ ACTSTREAM_SETTINGS = {
 }
 
 
-if django.VERSION[:2] >= (1, 5):
-    AUTH_USER_MODEL = 'testapp.MyUser'
+AUTH_USER_MODEL = 'testapp.MyUser'
 
 
 try:

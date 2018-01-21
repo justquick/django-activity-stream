@@ -1,10 +1,10 @@
 from random import choice
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import connection
 from django.utils.six import text_type
 
-from actstream.compat import get_user_model
 from actstream.signals import action
 from actstream.models import model_stream
 from actstream.tests.base import ActivityBaseTestCase

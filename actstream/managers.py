@@ -1,12 +1,12 @@
 from collections import defaultdict
 
+from django.apps import apps
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
 from actstream.registry import check
-from actstream.compat import get_model
 
 
 class ActionManager(GFKManager):
@@ -101,7 +101,7 @@ class ActionManager(GFKManager):
             object_content_type = ContentType.objects.get_for_model(obj)
             actors_by_content_type[object_content_type.id].append(obj.pk)
 
-        follow_gfks = get_model('actstream', 'follow').objects.filter(
+        follow_gfks = apps.get_model('actstream', 'follow').objects.filter(
             user=obj).values_list('content_type_id',
                                   'object_id', 'actor_only')
 

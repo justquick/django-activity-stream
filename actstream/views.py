@@ -1,13 +1,15 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.csrf import csrf_exempt
 
-from actstream import actions, models, compat
+from actstream import actions, models
 
-User = compat.get_user_model()
+USER_MODEL = get_user_model()
+username_field = lambda: getattr(get_user_model(), 'USERNAME_FIELD', 'username')
 
 
 def respond(request, code):
@@ -52,8 +54,8 @@ def stream(request):
     return render(
         request,
         'actstream/actor.html',
-        {
-            'ctype': ContentType.objects.get_for_model(User),
+        context={
+            'ctype': ContentType.objects.get_for_model(USER_MODEL),
             'actor': request.user,
             'action_list': models.user_stream(request.user)
         }
@@ -84,9 +86,8 @@ def following(request, user_id, flag):
     Returns a list of actors that the user identified by ``user_id``
     is following (eg who im following).
     """
-    instance = get_object_or_404(User, pk=user_id)
+    instance = get_object_or_404(USER_MODEL, pk=user_id)
     flag = flag or ''
-
     return render(
         request,
         'actstream/following.html',
@@ -102,14 +103,14 @@ def user(request, username):
     ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
     """
     instance = get_object_or_404(
-        User,
-        **{'is_active': True, compat.username_field(): username}
+        USER_MODEL,
+        **{'is_active': True, username_field: username}
     )
     return render(
         request,
         'actstream/actor.html',
-        {
-            'ctype': ContentType.objects.get_for_model(User),
+        context={
+            'ctype': ContentType.objects.get_for_model(USER_MODEL),
             'actor': instance, 'action_list': models.user_stream(instance)
         }
     )

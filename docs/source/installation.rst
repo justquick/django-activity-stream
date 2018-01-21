@@ -40,29 +40,14 @@ Add the activity urls to your urlconf
 
 .. code-block:: python
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         ...
         ('^activity/', include('actstream.urls')),
         ...
-    )
+    ]
 
 The activity urls are not required for basic usage but provide activity :ref:`feeds` and handle following, unfollowing and querying of followers.
 
-Migrations
-----------------
-
-As of Django 1.7 and later, the core ships with an integrated migrations framework based on `South <http://south.aeracode.org/>`_ migrations.
-
-.. note:: In django-activity-streams 0.6.0 and later the migrations have been re-initialized with the newer migrations framework and the south migrations have been deprecated.
-
-If you still wish to use the south migrations there is a way.
-Install it as you would normally and then modify your settings to use the deprecated south migration modules in actstream.
-
-.. code-block:: python
-
-    SOUTH_MIGRATION_MODULES = {
-        'actstream': 'actstream.south_migrations',
-    }
 
 Add extra data to actions
 -------------------------
@@ -71,7 +56,7 @@ If you want to use custom data on your actions, then make sure you have `django-
 
 .. code-block:: bash
 
-    $ pip install django-jsonfield
+    $ pip install jsonfield
 
 You can learn more at :ref:`custom-data`
 
