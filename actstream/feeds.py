@@ -2,7 +2,6 @@ import json
 
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.utils.feedgenerator import Atom1Feed, rfc3339_date
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.syndication.views import Feed, add_domain
@@ -12,6 +11,11 @@ from django.utils.six import text_type
 from django.utils import datetime_safe
 from django.views.generic import View
 from django.http import HttpResponse, Http404
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 from actstream.models import Action, model_stream, user_stream, any_stream
 

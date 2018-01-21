@@ -9,7 +9,11 @@ from django.utils.timesince import timesince
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 from actstream.models import Action, Follow
 from actstream.registry import register, unregister

@@ -1,7 +1,11 @@
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.loader import render_to_string
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 from actstream.models import Follow, Action
 
@@ -97,7 +101,7 @@ class DisplayAction(AsNode):
             'actstream/%s/action.html' % action_instance.verb.replace(' ', '_'),
             'actstream/action.html',
         ]
-        return render_to_string(templates, {'action': action_instance})
+        return render_to_string(templates, context.flatten())
 
 
 def display_action(parser, token):
