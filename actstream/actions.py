@@ -12,6 +12,7 @@ try:
 
     now = timezone.now
 except ImportError:
+    import datetime
     now = datetime.datetime.now
 
 
