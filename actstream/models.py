@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -33,7 +33,7 @@ class Follow(models.Model):
     Lets a user follow the activities of any specific actor
     """
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, db_index=True
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True
     )
 
     content_type = models.ForeignKey(
