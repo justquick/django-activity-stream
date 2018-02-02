@@ -2,7 +2,6 @@ from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 
 from actstream import settings
 from actstream.signals import action
@@ -13,6 +12,7 @@ try:
 
     now = timezone.now
 except ImportError:
+    import datetime
     now = datetime.datetime.now
 
 
@@ -40,7 +40,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
         follow(request.user, group, actor_only=False, flag='liking')
     """
     check(obj)
-    instance, created = get_model('actstream', 'follow').objects.get_or_create(
+    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
         user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only
@@ -68,7 +68,7 @@ def unfollow(user, obj, send_action=False, flag=''):
         unfollow(request.user, other_user, flag='watching')
     """
     check(obj)
-    qs = get_model('actstream', 'follow').objects.filter(
+    qs = apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     )
@@ -99,7 +99,7 @@ def is_following(user, obj, flag=''):
     """
     check(obj)
 
-    qs = get_model('actstream', 'follow').objects.filter(
+    qs = apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     )
