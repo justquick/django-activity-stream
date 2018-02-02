@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from actstream import actions, models
 
 USER_MODEL = get_user_model()
-username_field = lambda: getattr(get_user_model(), 'USERNAME_FIELD', 'username')
+username_field = getattr(get_user_model(), 'USERNAME_FIELD', 'username')
 
 
 def respond(request, code):
