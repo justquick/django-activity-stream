@@ -8,24 +8,15 @@ env:
   global:
     - TRAVIS=true
   matrix:
+    - TOX_ENV=py35-dj2.0-postgres
+    - TOX_ENV=py35-dj2.0-sqlite
+    - TOX_ENV=py35-dj2.0-mysql
     - TOX_ENV=py35-dj1.11-postgres
     - TOX_ENV=py27-dj1.11-postgres
     - TOX_ENV=py35-dj1.11-sqlite
     - TOX_ENV=py27-dj1.11-sqlite
     - TOX_ENV=py35-dj1.11-mysql
-    - TOX_ENV=py27-dj1.11-mysql 
-    - TOX_ENV=py35-dj1.10-sqlite
-    - TOX_ENV=py27-dj1.10-sqlite  
-    - TOX_ENV=py35-dj1.10-mysql
-    - TOX_ENV=py27-dj1.10-mysql
-    - TOX_ENV=py35-dj1.10-postgres
-    - TOX_ENV=py27-dj1.10-postgres
-    - TOX_ENV=py35-dj1.9-sqlite
-    - TOX_ENV=py27-dj1.9-sqlite  
-    - TOX_ENV=py35-dj1.9-mysql
-    - TOX_ENV=py27-dj1.9-mysql
-    - TOX_ENV=py35-dj1.9-postgres
-    - TOX_ENV=py27-dj1.9-postgres  
+    - TOX_ENV=py27-dj1.11-mysql   
     - TOX_ENV=py35-dj1.8-sqlite
     - TOX_ENV=py27-dj1.8-sqlite    
     - TOX_ENV=coverage
