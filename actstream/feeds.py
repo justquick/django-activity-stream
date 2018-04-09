@@ -251,7 +251,7 @@ class ObjectActivityMixin(object):
 class UserActivityMixin(object):
 
     def get_object(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return request.user
 
     def get_stream(self):
