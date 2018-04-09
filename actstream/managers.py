@@ -177,7 +177,7 @@ class FollowManager(GFKManager):
         """
         return [follow.user for follow in self.followers_qs(actor, flag=flag)]
 
-    def following_qs(self, user, *models, flag=''):
+    def following_qs(self, user, *models, **kwargs):
         """
         Returns a queryset of actors that the given user is following (eg who im following).
         Items in the list can be of any model unless a list of restricted models are passed.
@@ -190,14 +190,16 @@ class FollowManager(GFKManager):
             ctype_filters |= Q(content_type=ContentType.objects.get_for_model(model))
         qs = qs.filter(ctype_filters)
 
+        flag = kwargs.get('flag', '')
+
         if flag:
             qs = qs.filter(flag=flag)
         return qs.fetch_generic_relations('follow_object')
 
-    def following(self, user, *models, flag=''):
+    def following(self, user, *models, **kwargs):
         """
         Returns a list of actors that the given user is following (eg who im following).
         Items in the list can be of any model unless a list of restricted models are passed.
         Eg following(user, User) will only return users following the given user
         """
-        return [follow.follow_object for follow in self.following_qs(user, *models, flag=flag)]
+        return [follow.follow_object for follow in self.following_qs(user, *models, flag=kwargs.get('flag', ''))]
