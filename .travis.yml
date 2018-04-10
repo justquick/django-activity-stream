@@ -1,35 +1,30 @@
 language: python
 cache: pip
-
 python:
-  - "3.6"
-
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
 env:
-  global:
-    - TRAVIS=true
-  matrix:
-    - TOX_ENV=py36-dj2.0-postgres
-    - TOX_ENV=py36-dj2.0-sqlite
-    - TOX_ENV=py36-dj2.0-mysql
-    - TOX_ENV=py35-dj2.0-postgres
-    - TOX_ENV=py35-dj2.0-sqlite
-    - TOX_ENV=py35-dj2.0-mysql
-    - TOX_ENV=py35-dj1.11-postgres
-    - TOX_ENV=py27-dj1.11-postgres
-    - TOX_ENV=py35-dj1.11-sqlite
-    - TOX_ENV=py27-dj1.11-sqlite
-    - TOX_ENV=py35-dj1.11-mysql
-    - TOX_ENV=py27-dj1.11-mysql
-    - TOX_ENV=coverage
+  - DATABASE=mysql DJANGO=1.11
+  - DATABASE=postgresql DJANGO=1.11
+  - DATABASE=sqlite DJANGO=1.11
+  - DATABASE=mysql DJANGO=2.0
+  - DATABASE=postgresql DJANGO=2.0
+  - DATABASE=sqlite DJANGO=2.0
+matrix:
+  exclude:
+    - python: 2.7
+      env: DJANGO=2.0
 install:
-  - pip install tox coveralls
+  - pip install tox-travis coveralls
 services:
   - mysql
   - postgresql
+script:
+  - tox
 addons:
   postgresql: "9.5"
-script:
-  - tox -e $TOX_ENV
 notifications:
   email: false
 after_success:
