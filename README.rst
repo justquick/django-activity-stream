@@ -1,15 +1,15 @@
 Django Activity Stream
 ======================
 
-.. image:: 	https://img.shields.io/travis/justquick/django-activity-stream.svg
+.. image:: https://travis-ci.org/justquick/django-activity-stream.svg?branch=master
     :target: https://travis-ci.org/justquick/django-activity-stream
 
 .. image:: https://badges.gitter.im/django-activity-stream/Lobby.svg
    :alt: Join the chat at https://gitter.im/django-activity-stream/Lobby
    :target: https://gitter.im/django-activity-stream/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://img.shields.io/coveralls/justquick/django-activity-stream.svg
-    :target: https://coveralls.io/r/justquick/django-activity-stream
+.. image:: https://coveralls.io/repos/github/justquick/django-activity-stream/badge.svg?branch=master
+    :target: https://coveralls.io/github/justquick/django-activity-stream?branch=master
 
 .. image:: https://scrutinizer-ci.com/g/justquick/django-activity-stream/badges/quality-score.png?b=master
     :target: https://scrutinizer-ci.com/g/justquick/django-activity-stream/
