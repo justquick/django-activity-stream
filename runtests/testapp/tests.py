@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import django
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.signals import action
@@ -9,7 +8,7 @@ from actstream.models import Action, actor_stream, model_stream
 from actstream.tests.base import render, ActivityBaseTestCase
 from actstream.settings import USE_JSONFIELD
 
-from actstream.runtests.testapp.models import Abstract, Unregistered
+from testapp.models import Abstract, Unregistered
 
 
 class TestAppTests(ActivityBaseTestCase):
@@ -62,11 +61,10 @@ class TestAppTests(ActivityBaseTestCase):
         )
 
     def test_customuser(self):
-        if django.VERSION[:2] >= (1, 5):
-            from actstream.runtests.testapp.models import MyUser
+        from testapp.models import MyUser
 
-            self.assertEqual(self.User, MyUser)
-            self.assertEqual(self.user.get_full_name(), 'test')
+        self.assertEqual(self.User, MyUser)
+        self.assertEqual(self.user.get_full_name(), 'test')
 
     if USE_JSONFIELD:
         def test_jsonfield(self):

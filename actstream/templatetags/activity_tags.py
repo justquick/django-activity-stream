@@ -132,7 +132,7 @@ class IsFollowing(AsNode):
     args_count = 3
 
     def render_result(self, context):
-        user= self.args[0].resolve(context)
+        user = self.args[0].resolve(context)
         actor = self.args[1].resolve(context)
         flag = self.args[2].resolve(context)
 

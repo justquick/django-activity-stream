@@ -52,7 +52,7 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(len(following(self.user2, self.User)), 0)
 
     def test_following_with_flag(self):
-        self.assertEqual(list(following(self.user4, flag='liking')), [self.another_group, self.user1])
+        self.assertCountEqual(list(following(self.user4, flag='liking')), [self.another_group, self.user1])
         self.assertEqual(list(following(self.user4, flag='watching')), [self.another_group])
         self.assertEqual(list(following(self.user4, flag='blacklisting')), [self.user3])
         self.assertEqual(list(following(self.user4, self.User, flag='liking')), [self.user1])
