@@ -8,11 +8,12 @@ Changelog
 
   - Remove django less then 1.8 compatibility
   - Adjusted URLs with new versions of django
-  - Removed south migrations 
-  - Drop pypy from test matrix
+  - Improved tox and travis config
   - use render function instead of depricated render_to_response
   - upgrade package depedencies
-
+  - django 2.0 support
+  - SubQuery in follow query
+  
 0.6.5
 -----
 
