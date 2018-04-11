@@ -1,7 +1,5 @@
-from collections import defaultdict
-
 from django.apps import apps
-from django.db.models import Q
+from django.db.models import Subquery, Q
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.gfk import GFKManager
@@ -82,11 +80,8 @@ class ActionManager(GFKManager):
             ), **kwargs)
 
     @stream
-    def user(self, obj, **kwargs):
-        """
-        Stream of most recent actions by objects that the passed User obj is
-        following.
-        """
+    def user(self, obj, with_user_activity=False, **kwargs):
+        """Create a stream of the most recent actions by objects that the user is following."""
         q = Q()
         qs = self.public()
 
@@ -94,38 +89,38 @@ class ActionManager(GFKManager):
             return qs.none()
 
         check(obj)
-        actors_by_content_type = defaultdict(lambda: [])
-        others_by_content_type = defaultdict(lambda: [])
 
-        if kwargs.pop('with_user_activity', False):
-            object_content_type = ContentType.objects.get_for_model(obj)
-            actors_by_content_type[object_content_type.id].append(obj.pk)
+        if with_user_activity:
+            q = q | Q(
+                actor_content_type=ContentType.objects.get_for_model(obj),
+                actor_object_id=obj.pk
+            )
 
-        follow_gfks = apps.get_model('actstream', 'follow').objects.filter(
-            user=obj).values_list('content_type_id',
-                                  'object_id', 'actor_only')
+        follows = apps.get_model('actstream', 'follow').objects.filter(user=obj)
+        content_types = ContentType.objects.filter(
+            pk__in=Subquery(follows.values('content_type_id'))
+        )
 
-        for content_type_id, object_id, actor_only in follow_gfks.iterator():
-            actors_by_content_type[content_type_id].append(object_id)
-            if not actor_only:
-                others_by_content_type[content_type_id].append(object_id)
-
-        if len(actors_by_content_type) + len(others_by_content_type) == 0:
+        if not (content_types.exists() or with_user_activity):
             return qs.none()
 
-        for content_type_id, object_ids in actors_by_content_type.items():
+        for content_type in content_types:
+            object_ids = follows.filter(content_type=content_type)
             q = q | Q(
-                actor_content_type=content_type_id,
-                actor_object_id__in=object_ids,
-            )
-        for content_type_id, object_ids in others_by_content_type.items():
-            q = q | Q(
-                target_content_type=content_type_id,
-                target_object_id__in=object_ids,
+                actor_content_type=content_type,
+                actor_object_id__in=Subquery(object_ids.values('object_id'))
             ) | Q(
-                action_object_content_type=content_type_id,
-                action_object_object_id__in=object_ids,
+                target_content_type=content_type,
+                target_object_id__in=Subquery(
+                    object_ids.filter(actor_only=False).values('object_id')
+                )
+            ) | Q(
+                action_object_content_type=content_type,
+                action_object_object_id__in=Subquery(
+                    object_ids.filter(actor_only=False).values('object_id')
+                )
             )
+
         return qs.filter(q, **kwargs)
 
 
