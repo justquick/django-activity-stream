@@ -34,8 +34,6 @@ Then to add the Django Activity Stream to your project add the app ``actstream``
 
     SITE_ID = 1
 
-.. warning:: In Django versions older than 1.7, the app must be placed somewhere after all the apps that are going to be generating activities (eg ``django.contrib.auth``). The safest thing to do is to have it as the last app in ``INSTALLED_APPS``.
-
 Add the activity urls to your urlconf
 
 .. code-block:: python
@@ -82,7 +80,7 @@ Python
 Django
 ******
 
-* **Django**: 1.8, 1.9, 1.10 and 1.11
+* **Django**: 1.11 and 2.0
 
 Databases
 *********
