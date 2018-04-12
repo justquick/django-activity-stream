@@ -187,12 +187,12 @@ class AbstractAction(models.Model):
 
 class Action(AbstractAction):
     class Meta(AbstractAction.Meta):
-        swappale = 'actstream_settings.ACTSTREAM_ACTION_MODEL'
+        swappable = 'actstream_settings.ACTSTREAM_ACTION_MODEL'
 
 
 class Follow(AbstractFollow):
     class Meta(AbstractFollow.Meta):
-        swappale = 'actstream_settings.ACTSTREAM_FOLLOW_MODEL'
+        swappable = 'actstream_settings.ACTSTREAM_FOLLOW_MODEL'
 
 
 # convenient accessors
