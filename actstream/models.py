@@ -9,9 +9,9 @@ from django.utils.timesince import timesince as djtimesince
 from django.contrib.contenttypes.models import ContentType
 
 try:
-    from django.core.urlresolvers import reverse
-except ImportError:
     from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 try:
     from django.utils import timezone
@@ -176,9 +176,9 @@ class Action(models.Model):
         """
         return djtimesince(self.timestamp, now).encode('utf8').replace(b'\xc2\xa0', b' ').decode('utf8')
 
-    @models.permalink
     def get_absolute_url(self):
-        return 'actstream.views.detail', [self.pk]
+        return reverse(
+            'actstream.views.detail', [self.pk])
 
 
 # convenient accessors

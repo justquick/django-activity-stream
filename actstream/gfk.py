@@ -48,16 +48,13 @@ class GFKQuerySet(QuerySet):
 
         return qs.prefetch_related(*[g.name for g in gfk_fields])
 
-    def _clone(self, klass=None,  **kwargs):
+    def _clone(self, klass=None, **kwargs):
         if DJANGO_VERSION >= (2, 0):
             return super(GFKQuerySet, self)._clone()
 
         for name in ['subclasses', '_annotated']:
             if hasattr(self, name):
                 kwargs[name] = getattr(self, name)
-
-        if DJANGO_VERSION < (1, 9):
-            kwargs['klass'] = klass
 
         return super(GFKQuerySet, self)._clone(**kwargs)
 
