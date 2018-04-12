@@ -197,4 +197,6 @@ class FollowManager(GFKManager):
         Items in the list can be of any model unless a list of restricted models are passed.
         Eg following(user, User) will only return users following the given user
         """
-        return [follow.follow_object for follow in self.following_qs(user, *models, flag=kwargs.get('flag', ''))]
+        return [follow.follow_object for follow in self.following_qs(
+            user, *models, flag=kwargs.get('flag', '')
+        )]
