@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
 
 
@@ -16,6 +15,22 @@ def get_action_manager():
     except ImportError:
         raise ImportError(
             'Cannot import %s try fixing ACTSTREAM_SETTINGS[MANAGER]'
+            'setting.' % mod
+        )
+
+
+def get_verb_transformer():
+    """
+    Returns the class of the verb transformer to use from ACTSTREAM_SETTINGS['VERB_TRANSFORMER']
+    """
+    mod = SETTINGS.get('VERB_TRANSFORMER', 'actstream.transformers.DefaultVerbTransformer')
+    mod_path = mod.split('.')
+    try:
+        return getattr(__import__('.'.join(mod_path[:-1]), {}, {},
+                                  [mod_path[-1]]), mod_path[-1])()
+    except ImportError:
+        raise ImportError(
+            'Cannot import %s try fixing ACTSTREAM_SETTINGS[VERB_TRANSFORMER]'
             'setting.' % mod
         )
 

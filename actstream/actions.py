@@ -1,11 +1,11 @@
 from django.apps import apps
-from django.utils.translation import ugettext_lazy as _
-from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
+from django.utils.six import text_type
+from django.utils.translation import ugettext_lazy as _
 
 from actstream import settings
-from actstream.signals import action
 from actstream.registry import check
+from actstream.signals import action
 
 try:
     from django.utils import timezone
@@ -49,7 +49,8 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
         if not flag:
             action.send(user, verb=_('started following'), target=obj, **kwargs)
         else:
-            action.send(user, verb=_('started %s' % flag), target=obj, **kwargs)
+            transformer = settings.get_verb_transformer()
+            action.send(user, verb=_('started %s' % transformer.trans(flag)), target=obj, **kwargs)
     return instance
 
 
@@ -81,7 +82,8 @@ def unfollow(user, obj, send_action=False, flag=''):
         if not flag:
             action.send(user, verb=_('stopped following'), target=obj)
         else:
-            action.send(user, verb=_('stopped %s' % flag), target=obj)
+            transformer = settings.get_verb_transformer()
+            action.send(user, verb=_('stopped %s' % transformer.trans(flag)), target=obj)
 
 
 def is_following(user, obj, flag=''):

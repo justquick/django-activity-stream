@@ -21,6 +21,7 @@ from actstream.models import Action, Follow
 from actstream.registry import register, unregister
 from actstream.actions import follow
 from actstream.signals import action
+from actstream.transformers import DefaultVerbTransformer
 
 
 def render(src, **ctx):
@@ -38,6 +39,13 @@ class LTE(int):
 
     def __repr__(self):
         return "<= %s" % self.n
+
+
+class TestVerbTransformer(DefaultVerbTransformer):
+    verb_map = {
+        'block': 'blocking',
+        'quit': 'quiting',
+    }
 
 
 class ActivityBaseTestCase(TestCase):
@@ -141,3 +149,8 @@ class DataTestCase(ActivityBaseTestCase):
         follow(self.user4, self.user1, timestamp=self.testdate, flag='liking')
         # User4 blacklist user3
         follow(self.user4, self.user3, timestamp=self.testdate, flag='blacklisting')
+
+        # create a new object to don't interfere with previous tests
+        self.another_user = self.User.objects.create_user('Another')
+        self.another_comment = Site.objects.create(
+            domain="admin: Sweet Comment!...")

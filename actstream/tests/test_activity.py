@@ -1,6 +1,8 @@
 # -*- coding: utf-8  -*-
 import django
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.test import override_settings
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
@@ -56,6 +58,30 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(list(following(self.user4, flag='watching')), [self.another_group])
         self.assertEqual(list(following(self.user4, flag='blacklisting')), [self.user3])
         self.assertEqual(list(following(self.user4, self.User, flag='liking')), [self.user1])
+
+    # It seems override_settings does not work
+    @override_settings(ACTSTREAM_SETTINGS={'VERB_TRANSFORMER': 'actstream.tests.base.TestVerbTransformer'})
+    def test_follow_verb_transformation(self):
+        # User4 blocks user3
+        follow(self.user4, self.another_user, timestamp=self.testdate, flag='block')
+        # User4 quits group
+        follow(self.user4, self.another_comment, timestamp=self.testdate, flag='quit')
+
+        blocking_action = Action.objects.get(
+            actor_content_type=ContentType.objects.get_for_model(self.user4),
+            actor_object_id=self.user4.id,
+            target_content_type=ContentType.objects.get_for_model(self.another_user),
+            target_object_id=self.another_user.id
+        )
+        self.assertEqual(blocking_action.verb, 'stated blocking')
+
+        quiting_action = Action.objects.get(
+            actor_content_type=ContentType.objects.get_for_model(self.user4),
+            actor_object_id=self.user4.id,
+            target_content_type=ContentType.objects.get_for_model(self.another_comment),
+            target_object_id=self.another_comment.id
+        )
+        self.assertEqual(quiting_action.verb, 'stated quiting')
 
     def test_followers(self):
         self.assertEqual(list(followers(self.group)), [self.user2])
