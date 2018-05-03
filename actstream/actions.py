@@ -1,19 +1,12 @@
-from django.apps import apps
-from django.utils.translation import ugettext_lazy as _
-from django.utils.six import text_type
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldDoesNotExist
+from django.utils.six import text_type
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
-from actstream import settings
-from actstream.signals import action
+from actstream import get_action_model, get_follow_model, settings
 from actstream.registry import check
-
-try:
-    from django.utils import timezone
-
-    now = timezone.now
-except ImportError:
-    import datetime
-    now = datetime.datetime.now
+from actstream.signals import action
 
 
 def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
@@ -32,7 +25,8 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
     ``False`` to also include actions where this object is the action_object or
     the target.
 
-    If ``flag`` not an empty string then the relationship would marked by this flag.
+    If ``flag`` is not an empty string then the relationship would marked by
+    this flag.
 
     Example::
 
@@ -40,7 +34,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
         follow(request.user, group, actor_only=False, flag='liking')
     """
     check(obj)
-    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
+    instance, created = get_follow_model().objects.get_or_create(
         user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only
@@ -58,9 +52,9 @@ def unfollow(user, obj, send_action=False, flag=''):
     Removes a "follow" relationship.
 
     Set ``send_action`` to ``True`` (``False is default) to also send a
-    ``<user> stopped following <object>`` action signal.
-
-    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to remove.
+    ``<user> stopped following <object>`` action signal. Pass a string value to
+    ``flag`` to determine which type of "follow" relationship you want to
+    remove.
 
     Example::
 
@@ -68,13 +62,15 @@ def unfollow(user, obj, send_action=False, flag=''):
         unfollow(request.user, other_user, flag='watching')
     """
     check(obj)
-    qs = apps.get_model('actstream', 'follow').objects.filter(
+
+    qs = get_follow_model().objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     )
 
     if flag:
         qs = qs.filter(flag=flag)
+
     qs.delete()
 
     if send_action:
@@ -86,43 +82,33 @@ def unfollow(user, obj, send_action=False, flag=''):
 
 def is_following(user, obj, flag=''):
     """
-    Checks if a "follow" relationship exists.
+    Check if a "follow" relationship exists.
 
-    Returns True if exists, False otherwise.
-
-    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to check.
+    Return True if exists, False otherwise. Pass a string value to ``flag`` to
+    determine which type of "follow" relationship you want to check.
 
     Example::
 
         is_following(request.user, group)
         is_following(request.user, group, flag='liking')
     """
-    check(obj)
-
-    qs = apps.get_model('actstream', 'follow').objects.filter(
-        user=user, object_id=obj.pk,
-        content_type=ContentType.objects.get_for_model(obj)
-    )
-
-    if flag:
-        qs = qs.filter(flag=flag)
-
-    return qs.exists()
+    return get_follow_model().objects.is_following(user, obj, flag)
 
 
 def action_handler(verb, **kwargs):
     """
     Handler function to create Action instance upon action signal call.
     """
+    Action = get_action_model()
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
 
-    # We must store the unstranslated string
-    # If verb is an ugettext_lazyed string, fetch the original string
+    # We must store the untranslated string
+    # If verb is a ugettext_lazy string, fetch the original string
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = apps.get_model('actstream', 'action')(
+    newaction = Action(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=text_type(verb),
@@ -138,7 +124,18 @@ def action_handler(verb, **kwargs):
             setattr(newaction, '%s_object_id' % opt, obj.pk)
             setattr(newaction, '%s_content_type' % opt,
                     ContentType.objects.get_for_model(obj))
+
+    # Support custom Action models
+    for attribute in list(kwargs.keys()):
+        try:
+            Action._meta.get_field(attribute)
+        except FieldDoesNotExist:
+            pass
+        else:
+            setattr(newaction, attribute, kwargs.pop(attribute))
+
     if settings.USE_JSONFIELD and len(kwargs):
         newaction.data = kwargs
+
     newaction.save(force_insert=True)
     return newaction

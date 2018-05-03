@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.csrf import csrf_exempt
 
-from actstream import actions, models
+from actstream import actions, get_action_model, models
 
 USER_MODEL = get_user_model()
+Action = get_action_model()
 username_field = getattr(get_user_model(), 'USERNAME_FIELD', 'username')
 
 
@@ -124,7 +125,7 @@ def detail(request, action_id):
         request,
         'actstream/detail.html',
         {
-            'action': get_object_or_404(models.Action, pk=action_id)
+            'action': get_object_or_404(Action, pk=action_id)
         }
     )
 

@@ -1,7 +1,4 @@
-try:
-    from django.urls import url
-except ImportError:
-    from django.conf.urls import url
+from django.conf.urls import url
 
 from actstream import feeds, views
 

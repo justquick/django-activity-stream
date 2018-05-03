@@ -2,6 +2,7 @@ Justin Quick <justquick@gmail.com>
 Asif Saifuddin Auvi <auvipy@gmail.com>
 Chris Beaven <smileychris@gmail.com>
 yangxg <zmrenwu@163.com>
+Nick Sandford <nick.sandford@gmail.com>
 Ben Slavin <benjamin.slavin@gmail.com>
 Deepak Prakash <dp@deepakprakash.com>
 Frank Wickström <frank.wickstrom@anders.fi>

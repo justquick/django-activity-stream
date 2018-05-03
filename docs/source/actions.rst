@@ -1,4 +1,4 @@
-
+==================
 Generating Actions
 ==================
 
@@ -18,9 +18,13 @@ A special ``action`` signal is provided for creating the actions.
 
     post_save.connect(my_handler, sender=MyModel)
 
-There are several ways to generate actions in your code. You can do it through custom forms or by overriding predefined model methods, such as Model.save(). More on this last option can be found here: <https://docs.djangoproject.com/en/dev/topics/db/models/#overriding-predefined-model-methods>.
+There are several ways to generate actions in your code. You can do it through
+custom forms or by overriding predefined model methods, such as Model.save().
+More on this last option can be found here:
+<https://docs.djangoproject.com/en/dev/topics/db/models/#overriding-predefined-model-methods>.
 
-The logic is to simply import the action signal and send it with your actor, verb, target, and any other important arguments.
+The logic is to simply import the action signal and send it with your actor,
+verb, target, and any other important arguments.
 
 
 .. code-block:: python
@@ -44,8 +48,12 @@ The logic is to simply import the action signal and send it with your actor, ver
     action.send(request.user, verb='created comment', action_object=comment, target=group)
 
 
-Actions are stored in a single table in the database using `Django's ContentType framework <https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/>`_
-and `GenericForeignKeys <https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericForeignKey>`_ to create associations with different models in your project.
+Actions are stored in a single table in the database using
+`Django's ContentType framework <https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/>`_
+and
+`GenericForeignKeys <https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericForeignKey>`_
+to create associations with different models in your project.
 
-Actions are generated in a manner independent of how you wish to query them so they can be queried later to generate different streams based on all possible associations.
-
+Actions are generated in a manner independent of how you wish to query them so
+they can be queried later to generate different streams based on all possible
+associations.

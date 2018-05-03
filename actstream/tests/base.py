@@ -3,23 +3,19 @@ from datetime import datetime
 from inspect import getargspec
 
 from django.apps import apps
-from django.test import TestCase
-from django.template import Template, Context
-from django.utils.six import text_type
-from django.utils.timesince import timesince
-from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+from django.template import Template, Context
+from django.test import TestCase
+from django.utils.six import text_type
+from django.utils.timesince import timesince
+from django.urls import reverse
 
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
-
-from actstream.models import Action, Follow
-from actstream.registry import register, unregister
+from actstream import get_action_model, get_follow_model
 from actstream.actions import follow
+from actstream.registry import register, unregister
 from actstream.signals import action
 
 
@@ -68,8 +64,8 @@ class ActivityBaseTestCase(TestCase):
             model = apps.get_model(*model.split('.'))
             unregister(model)
             model.objects.all().delete()
-        Action.objects.all().delete()
-        Follow.objects.all().delete()
+        get_action_model().objects.all().delete()
+        get_follow_model().objects.all().delete()
         self.User.objects.all().delete()
 
     def capture(self, viewname, *args):

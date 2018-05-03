@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from actstream import models
+from actstream import get_action_model, get_follow_model
 
 # Use django-generic-admin widgets if available
 try:
@@ -25,5 +25,5 @@ class FollowAdmin(ModelAdmin):
     raw_id_fields = ('user', 'content_type')
 
 
-admin.site.register(models.Action, ActionAdmin)
-admin.site.register(models.Follow, FollowAdmin)
+admin.site.register(get_action_model(), ActionAdmin)
+admin.site.register(get_follow_model(), FollowAdmin)

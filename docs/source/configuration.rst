@@ -5,11 +5,14 @@ Configuration
 Model Registration
 ------------------
 
-In order to have your models be either an actor, target, or action object they must first be registered with actstream.
-In v0.5 and above, actstream has a registry of all actionable model classes.
-When you register them, actstream sets up certain GenericRelations that are required for generating activity streams.
+In order to have your models be either an actor, target, or action object they
+must first be registered with actstream. In v0.5 and above, actstream has a
+registry of all actionable model classes. When you register them, actstream
+sets up certain GenericRelations that are required for generating activity
+streams.
 
-For Django versions 1.7 or later, you should use `AppConfig <https://docs.djangoproject.com/en/dev/ref/applications/#configuring-applications>`_.
+Register your models with actstream in your
+`AppConfig <https://docs.djangoproject.com/en/dev/ref/applications/#configuring-applications>`_.
 
 .. code-block:: python
 
@@ -30,24 +33,17 @@ For Django versions 1.7 or later, you should use `AppConfig <https://docs.django
 Settings
 --------
 
-Update these settings in your project's ``settings.py``.
-As of v0.4.4, all settings are contained inside the ``ACTSTREAM_SETTINGS`` dictionary.
-Here is an example of what you can set in your ``settings.py``
+Update these settings in your project's ``settings.py``. All settings are
+contained inside the ``ACTSTREAM_SETTINGS`` dictionary. Here is an example of
+what you can set in your ``settings.py``:
 
 .. code-block:: python
 
     ACTSTREAM_SETTINGS = {
         'MANAGER': 'myapp.managers.MyActionManager',
         'FETCH_RELATIONS': True,
-        'USE_PREFETCH': True,
         'USE_JSONFIELD': True,
-        'GFK_FETCH_DEPTH': 1,
     }
-
-.. note::
-
-    In v0.5 and above, since only Django>=1.4 is supported all generic lookups fall back to `QuerySet.prefetch_related <https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.prefetch_related>`_
-    so the ``USE_PREFETCH`` and ``GFK_FETCH_DEPTH`` settings have been deprecated.
 
 
 Supported settings are defined below.
@@ -75,17 +71,6 @@ When ``True``, related generic foreign keys will be prefetched for stream genera
 
 Defaults to ``True``
 
-USE_PREFETCH
-************
-
-.. deprecated:: 0.5
-
-    This setting is no longer used (see note above).
-
-Set this to ``True`` to forcefully enable ``prefetch_related`` (Django>=1.4 only).
-On earlier versions, the generic foreign key prefetch fallback contained within ``actstream.gfk`` will be enabled.
-
-Defaults to whatever version you have.
 
 USE_JSONFIELD
 *************
@@ -96,14 +81,24 @@ Lets you add custom data to any of your actions, see :ref:`custom-data`
 Defaults to ``False``
 
 
-GFK_FETCH_DEPTH
-***************
+ACTSTREAM_ACTION_MODEL
+**********************
 
-.. deprecated:: 0.5
+This setting allows users to swap the default action model used throughout
+this package with one of their own. Set this setting to a
+``'app_label.model_name'`` string pointing to your own model to override the
+default action model used. Your model should inherit from the abstract
+`AbstractAction` model.
 
-    This setting is no longer used (see note above).
+Defaults to ``'actstream.Action'``.
 
-Number of levels of relations that ``select_related`` will perform.
-Only matters if you are not running ``prefetch_related`` (Django<=1.3).
+ACTSTREAM_FOLLOW_MODEL
+**********************
 
-Defaults to ``0``
+Similar to the previous setting, this setting allows users to swap the default
+follow model with one of their own. Set this setting to a
+``'app_label.model_name'`` string of your choosing to override the default
+follow model used. Your model should inherit from the abstract `AbstractFollow`
+model.
+
+Defaults to ``'actstream.Follow'``.

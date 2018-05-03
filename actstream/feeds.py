@@ -1,23 +1,22 @@
 import json
 
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.feedgenerator import Atom1Feed, rfc3339_date
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.syndication.views import Feed, add_domain
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_text
-from django.utils.six import text_type
-from django.utils import datetime_safe
-from django.views.generic import View
+from django.contrib.syndication.views import Feed, add_domain
 from django.http import HttpResponse, Http404
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils import datetime_safe
+from django.utils.encoding import force_text
+from django.utils.feedgenerator import Atom1Feed, rfc3339_date
+from django.utils.six import text_type
+from django.views.generic import View
 
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
+from actstream import get_action_model
+from actstream.models import model_stream, user_stream, any_stream
 
-from actstream.models import Action, model_stream, user_stream, any_stream
+Action = get_action_model()
 
 
 class AbstractActivityStream(object):

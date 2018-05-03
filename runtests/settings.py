@@ -96,14 +96,13 @@ INSTALLED_APPS = (
     'testapp',
     'testapp_nested',
     'actstream',
+    'custom',
 )
 
 ACTSTREAM_SETTINGS = {
     'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
-    'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
-    'GFK_FETCH_DEPTH': 0,
 }
 
 AUTH_USER_MODEL = 'testapp.MyUser'

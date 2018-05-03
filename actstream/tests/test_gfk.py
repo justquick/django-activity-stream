@@ -3,14 +3,16 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group
 
-from actstream.models import Action
+from actstream import get_action_model
 from actstream.tests.base import LTE
+
+Action = get_action_model()
+User = get_user_model()
 
 
 class GFKManagerTestCase(TestCase):
 
     def setUp(self):
-        User = get_user_model()
         self.user_ct = ContentType.objects.get_for_model(User)
         self.group_ct = ContentType.objects.get_for_model(Group)
         self.group, _ = Group.objects.get_or_create(name='CoolGroup')

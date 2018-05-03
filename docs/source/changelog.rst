@@ -6,14 +6,17 @@ Changelog
 0.7.0
 -----
 
-  - Remove django less then 1.8 compatibility
-  - Adjusted URLs with new versions of django
-  - Improved tox and travis config
-  - use render function instead of depricated render_to_response
-  - upgrade package depedencies
-  - django 2.0 support
-  - SubQuery in follow query
-  
+  - Django 2.0 support
+  - Dropped support for Django 1.8, 1.9, and 1.10
+  - Removed compatibility shims for Django < 1.11
+  - Adjusted URLs for new versions of Django
+  - Improved tox and travis configuration
+  - Used render function instead of deprecated render_to_response
+  - Upgraded package dependencies
+  - Improved performance by using subqueries in user stream query
+  - Added AbstractAction and AbstractFollow abstract models
+  - Added swappable Action and Follow models
+
 0.6.5
 -----
 

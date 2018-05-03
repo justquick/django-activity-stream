@@ -1,7 +1,9 @@
+=============================
 Following/Unfollowing Objects
 =============================
 
-Creating or deleting the link between a ``User`` and any particular object is as easy as calling a function:
+Creating or deleting the link between a ``User`` and any particular object is
+as easy as calling a function:
 
 .. code-block:: python
 
@@ -22,16 +24,17 @@ set the ``actor_only`` parameter to ``False``:
     # Follow the group wherever it appears in activity.
     follow(request.user, group, actor_only=False)
 
-You can also just make a request to the ``actstream_follow`` view while authenticated.
-The request can use either ``GET`` or ``POST``.
+You can also just make a request to the ``actstream_follow`` view while
+authenticated. The request can use either ``GET`` or ``POST``.
 
 .. code-block:: bash
 
     curl -X GET http://localhost:8000/activity/follow/<content_type_id>/<object_id>/ # Follow
     curl -X GET http://localhost:8000/activity/unfollow/<content_type_id>/<object_id>/?next=/blog/ # Unfollow and redirect
 
-If you wish to pass the ``actor_only`` parameter, the procedure is identical, only you will use ``follow_all`` and ``unfollow_all`` in your request.
-For example:
+If you wish to pass the ``actor_only`` parameter, the procedure is identical,
+only you will use ``follow_all`` and ``unfollow_all`` in your request. For
+example:
 
 .. code-block:: bash
 
@@ -39,11 +42,15 @@ For example:
     curl -X GET http://localhost:8000/activity/unfollow_all/<content_type_id>/<object_id>/?next=/blog/ # Unfollow and redirect
 
 
-Then the current logged in user will follow the actor defined by ``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to redirect to.
+Then the current logged in user will follow the actor defined by
+``content_type_id`` & ``object_id``. Optional ``next`` parameter is URL to
+redirect to.
 
-There is also a function ``actstream.actions.unfollow`` which removes the link and takes the same arguments as ``actstream.actions.follow``
+There is also a function ``actstream.actions.unfollow`` which removes the link
+and takes the same arguments as ``actstream.actions.follow``.
 
-Now to retrieve the follower/following relationships you can use the convenient accessors
+Now to retrieve the follower/following relationships you can use the convenient
+accessors:
 
 .. code-block:: python
 
@@ -52,7 +59,8 @@ Now to retrieve the follower/following relationships you can use the convenient 
     followers(request.user) # returns a list of Users who follow request.user
     following(request.user) # returns a list of actors who request.user is following
 
-To limit the actor models for the following relationship, just pass the model classes
+To limit the actor models for the following relationship, just pass the model
+classes:
 
 .. code-block:: python
 
