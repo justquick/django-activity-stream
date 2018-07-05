@@ -26,4 +26,8 @@ setup(name='django-activity-stream',
                    'Programming Language :: Python',
                    'Programming Language :: Python :: 3',
                    'Topic :: Utilities'],
+      extras_require={
+        'jsonfield': ['django-jsonfield>=1.0.1',
+                      'django-jsonfield-compat>=0.4.4'],
+      },
       )
