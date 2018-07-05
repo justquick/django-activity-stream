@@ -54,7 +54,7 @@ If you want to use custom data on your actions, then make sure you have `django-
 
 .. code-block:: bash
 
-    $ pip install jsonfield
+    $ pip install django-activity-stream[jsonfield]
 
 You can learn more at :ref:`custom-data`
 
