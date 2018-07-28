@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 
+from django.apps import apps
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import ContentType, GenericForeignKey
 from django.db import models
-from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import SimpleLazyObject
 from django.utils.timesince import timesince as djtimesince
-from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext as _
+
 
 try:
     from django.urls import reverse
@@ -28,7 +30,7 @@ now = timezone.now
 
 
 @python_2_unicode_compatible
-class Follow(models.Model):
+class AbstractFollow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
@@ -51,6 +53,7 @@ class Follow(models.Model):
     objects = FollowManager()
 
     class Meta:
+        abstract = True
         unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
@@ -58,7 +61,7 @@ class Follow(models.Model):
 
 
 @python_2_unicode_compatible
-class Action(models.Model):
+class AbstractAction(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
     target).
@@ -130,6 +133,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
+        abstract = True
         ordering = ('-timestamp',)
 
     def __str__(self):
@@ -179,6 +183,16 @@ class Action(models.Model):
     def get_absolute_url(self):
         return reverse(
             'actstream.views.detail', [self.pk])
+
+
+class Action(AbstractAction):
+    class Meta(AbstractAction.Meta):
+        swappable = 'ACTSTREAM_ACTION_MODEL'
+
+
+class Follow(AbstractFollow):
+    class Meta(AbstractFollow.Meta):
+        swappable = 'ACTSTREAM_FOLLOW_MODEL'
 
 
 # convenient accessors
