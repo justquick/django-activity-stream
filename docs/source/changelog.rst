@@ -11,7 +11,7 @@ Changelog
   - Improved tox and travis config
   - use render function instead of depricated render_to_response
   - upgrade package depedencies
-  - django 2.0 support
+  - django 2.0 and 2.1 support added
   - SubQuery in follow query
   
 0.6.5
