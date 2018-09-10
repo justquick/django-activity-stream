@@ -27,7 +27,7 @@ Sponsors
 |ImageLink|_
 
 .. |ImageLink| image:: https://i.imgur.com/ULmQEib.png
-.. _ImageLink: https://getstream.io/try-the-api/?utm_source=celery&utm_medium=banner&utm_campaign=github
+.. _ImageLink: https://getstream.io/try-the-api/?utm_source=django-activity-stream&utm_medium=banner&utm_campaign=github
 
 
 What is Django Activity Stream?
