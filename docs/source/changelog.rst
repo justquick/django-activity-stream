@@ -5,14 +5,14 @@ Changelog
 
 0.7.0
 -----
-
+  - Remove django less then 1.11 compatibiity
   - Remove django less then 1.8 compatibility
   - Adjusted URLs with new versions of django
   - Improved tox and travis config
   - use render function instead of depricated render_to_response
   - upgrade package depedencies
-  - django 2.0 and 2.1 support added
-  - SubQuery in follow query
+  - django 1.11, 2.0 and 2.1 support added
+  - Code cean ups
   
 0.6.5
 -----
