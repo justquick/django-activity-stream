@@ -20,6 +20,9 @@ Django Activity Stream
 .. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield
    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shiel
 
+.. image:: https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg
+   :target: https://houndci.com
+
 
 Sponsors
 ========
