@@ -30,6 +30,8 @@ Sponsors
 .. _ImageLink: https://getstream.io/try-the-api/?utm_source=django-activity-stream&utm_medium=banner&utm_campaign=github
 
 
+`Get supported django-activity-stream with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-django-activity-stream?utm_source=pypi-django-activity-stream&utm_medium=referral&utm_campaign=readme>`_
+
 What is Django Activity Stream?
 ===============================
 
