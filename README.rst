@@ -20,6 +20,15 @@ Django Activity Stream
 .. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield
    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shiel
 
+.. image:: https://opencollective.com/django-activity-stream/backers/badge.svg
+    :alt: Backers on Open Collective
+    :target: #backers
+
+.. image:: https://opencollective.com/django-activity-stream/sponsors/badge.svg
+    :alt: Sponsors on Open Collective
+    :target: #sponsors
+
+
 
 Sponsors
 ========
@@ -55,3 +64,40 @@ For example: `justquick <https://github.com/justquick/>`_ ``(actor)`` *closed* `
 Nomenclature of this specification is based on the Activity Streams Spec: `<http://activitystrea.ms/>`_
 
 For complete documentation see `Django Activity Stream Documentation <http://django-activity-stream.rtfd.io/en/latest/>`_
+
+Credits
+
++++++++
+
+Contributors
+
+------------
+
+This project exists thanks to all the people who contribute! 
+
+.. image:: https://opencollective.com/django-activity-stream/contributors.svg?width=890&button=false
+
+Backers
+
+-------
+
+Thank you to all our backers! `Become a backer`__.
+
+.. image:: https://opencollective.com/django-activity-stream/backers.svg?width=890
+    :target: https://opencollective.com/django-activity-stream#backers
+
+__ Backer_
+.. _Backer: https://opencollective.com/django-activity-stream#backer
+
+Sponsors
+
+--------
+
+Support us by becoming a sponsor. Your logo will show up here with a link to your website. `Become a sponsor`__.
+
+.. image:: https://opencollective.com/django-activity-stream/sponsor/0/avatar.svg
+    :target: https://opencollective.com/django-activity-stream/sponsor/0/website
+
+__ Sponsor_
+.. _Sponsor: https://opencollective.com/django-activity-stream#sponsor
+
