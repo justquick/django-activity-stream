@@ -32,6 +32,12 @@ script:
   - tox
 addons:
   postgresql: "9.5"
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
 notifications:
   email: false
 after_success:
