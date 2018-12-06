@@ -35,13 +35,7 @@ if USE_JSONFIELD:
     except ImportError as err:
         try:
             from django_mysql.models import JSONField
-            # The JSONField comes with a method to check if the mysql
-            # version supports it. We use it here to decide whether we
-            # can really use the field implementation here instead of
-            # failing later.
-            errors = JSONField()._check_mysql_version()
-            if not errors:
-                DataField = JSONField
+            DataField = JSONField
 
         except ImportError:
             raise ImproperlyConfigured(
