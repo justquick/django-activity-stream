@@ -41,3 +41,5 @@ if USE_JSONFIELD:
     DataField = JSONField
 else:
     DataField = models.TextField
+
+print('JSONField implementation is: {}'.format(DataField))
