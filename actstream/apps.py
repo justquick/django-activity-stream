@@ -13,8 +13,8 @@ class ActstreamConfig(AppConfig):
         action_class = self.get_model('action')
 
         if settings.USE_JSONFIELD:
-            from actstream.jsonfield import JSONField, register_app
-            JSONField(blank=True, null=True).contribute_to_class(
+            from actstream.jsonfield import DataField, register_app
+            DataField(blank=True, null=True).contribute_to_class(
                 action_class, 'data'
             )
             register_app(self)
