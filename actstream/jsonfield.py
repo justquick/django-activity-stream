@@ -4,7 +4,7 @@ Decide on a JSONField implementation based on available packages.
 
 There are three possible options, preferred in the following order:
   - JSONField from django-jsonfield with django-jsonfield-compat
-  - JSONField from django-mysql
+  - JSONField from django-mysql (needs MySQL 5.7+)
   - TextField from django
 
 Raises an ImportError if USE_JSONFIELD is True but none of these are
