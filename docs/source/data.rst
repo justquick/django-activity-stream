@@ -14,7 +14,8 @@ with Django, set ``USE_NATIVE_JSONFIELD = True`` in your settings file.
   Multiple implementations of the JSONField are supported, depending on which packages are installed:
 
   - The default and preferred implementation is used by installing **both** `django-jsonfield <https://bitbucket.org/schinckel/django-jsonfield/>`_ and `django-jsonfield-compat <https://github.com/kbussell/django-jsonfield-compat>`_. This is also allowing to use Django's native JSONField as described above.
-  - Alternatively you can install **only** `django-mysql <https://github.com/adamchainz/django-mysql>`_ (*requires MySQL 5.7+*) to use its JSONField. Make sure the packages above are **not installed**, as they would be preferred. This can be useful when you are using it already and want to use the same field for actstream.
+
+  - Alternatively you can install **only** `django-mysql <https://github.com/adamchainz/django-mysql>`_ (*requires MySQL 5.7+*) to use its JSONField. Make sure the packages above are **not installed**, as they would be preferred. This can be useful when you are using django-mysql already and want to use the same field for actstream.
 
 You can send the custom data as extra keyword arguments to the ``action`` signal.
 
