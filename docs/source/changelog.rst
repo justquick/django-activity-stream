@@ -12,8 +12,9 @@ Changelog
   - use render function instead of depricated render_to_response
   - upgrade package depedencies
   - django 1.11, 2.0 and 2.1 support added
-  - Code cean ups
-  
+  - Code clean ups
+  - Add optional support for django-mysql's JSONField
+
 0.6.5
 -----
 
