@@ -2,16 +2,18 @@
 
 Decide on a JSONField implementation based on available packages.
 
-There are three possible options, preferred in the following order:
+There are two possible options, preferred in the following order:
   - JSONField from django-jsonfield with django-jsonfield-compat
   - JSONField from django-mysql (needs MySQL 5.7+)
-  - TextField from django
 
 Raises an ImportError if USE_JSONFIELD is True but none of these are
-installed. Falls back to a simple TextField if USE_JSONFIELD is False.
+installed.
+
+Falls back to a simple Django TextField if USE_JSONFIELD is False,
+however that field will be removed by migration 0002 directly
+afterwards.
 
 '''
-
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 
