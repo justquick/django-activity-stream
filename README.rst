@@ -20,26 +20,6 @@ Django Activity Stream
 .. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield
    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shiel
 
-.. image:: https://opencollective.com/django-activity-stream/backers/badge.svg
-    :alt: Backers on Open Collective
-    :target: #backers
-
-.. image:: https://opencollective.com/django-activity-stream/sponsors/badge.svg
-    :alt: Sponsors on Open Collective
-    :target: #sponsors
-
-
-
-Sponsors
-========
-
-|ImageLink|_
-
-.. |ImageLink| image:: https://i.imgur.com/ULmQEib.png
-.. _ImageLink: https://getstream.io/try-the-api/?utm_source=django-activity-stream&utm_medium=banner&utm_campaign=github
-
-
-`Get supported django-activity-stream with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-django-activity-stream?utm_source=pypi-django-activity-stream&utm_medium=referral&utm_campaign=readme>`_
 
 What is Django Activity Stream?
 ===============================
@@ -65,39 +45,12 @@ Nomenclature of this specification is based on the Activity Streams Spec: `<http
 
 For complete documentation see `Django Activity Stream Documentation <http://django-activity-stream.rtfd.io/en/latest/>`_
 
-Credits
 
-+++++++
 
 Contributors
 
 ------------
 
-This project exists thanks to all the people who contribute! 
+This project exists thanks to all the people who contribute!
 
 .. image:: https://opencollective.com/django-activity-stream/contributors.svg?width=890&button=false
-
-Backers
-
--------
-
-Thank you to all our backers! `Become a backer`__.
-
-.. image:: https://opencollective.com/django-activity-stream/backers.svg?width=890
-    :target: https://opencollective.com/django-activity-stream#backers
-
-__ Backer_
-.. _Backer: https://opencollective.com/django-activity-stream#backer
-
-Sponsors
-
---------
-
-Support us by becoming a sponsor. Your logo will show up here with a link to your website. `Become a sponsor`__.
-
-.. image:: https://opencollective.com/django-activity-stream/sponsor/0/avatar.svg
-    :target: https://opencollective.com/django-activity-stream/sponsor/0/website
-
-__ Sponsor_
-.. _Sponsor: https://opencollective.com/django-activity-stream#sponsor
-
