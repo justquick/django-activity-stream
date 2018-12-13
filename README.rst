@@ -58,7 +58,7 @@ This project exists thanks to all the people who contribute!
 Sponsors	
 ========	
 |ImageLink|_	
- ..|ImageLink| image:: https://i.imgur.com/ULmQEib.png	
- .. _ImageLink: https://getstream.io/try-the-api/?utm_source=django-activity-stream&utm_medium=banner&utm_campaign=github
+  .. |ImageLink| image:: https://i.imgur.com/ULmQEib.png	
+  .. _ImageLink: https://getstream.io/try-the-api/?utm_source=django-activity-stream&utm_medium=banner&utm_campaign=github
 
  `Get supported django-activity-stream with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-django-activity-stream?utm_source=pypi-django-activity-stream&utm_medium=referral&utm_campaign=readme>`_
