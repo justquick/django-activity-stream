@@ -81,7 +81,7 @@ class ActionManager(GFKManager):
             ), **kwargs)
 
     @stream
-    def user(self, obj, with_user_activity=False, **kwargs):
+    def user(self, obj, with_user_activity=False, follow_flag=None, **kwargs):
         """Create a stream of the most recent actions by objects that the user is following."""
         q = Q()
         qs = self.public()
@@ -98,6 +98,9 @@ class ActionManager(GFKManager):
             )
 
         follows = apps.get_model('actstream', 'follow').objects.filter(user=obj)
+        if follow_flag:
+            follows = follows.filter(flag=follow_flag)
+            
         content_types = ContentType.objects.filter(
             pk__in=follows.values('content_type_id')
         )
