@@ -46,5 +46,3 @@ if USE_JSONFIELD:
                 'alternative, if you wish to use a JSONField on your '
                 'actions'
             )
-
-print('JSONField implementation is: {}'.format(DataField))
