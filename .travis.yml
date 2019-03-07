@@ -12,7 +12,6 @@ env:
   - DATABASE=sqlite DJANGO=2.0
   - DATABASE=mysql DJANGO=2.1
   - DATABASE=postgresql DJANGO=2.1
-  - DATABASE=sqlite DJANGO=2.1
 matrix:
   fast_finish: true
   include:
