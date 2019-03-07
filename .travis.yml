@@ -3,6 +3,7 @@ cache: pip
 python:
   - 3.5
   - 3.6
+  - 3.7
 env:
   - DATABASE=mysql DJANGO=1.11
   - DATABASE=postgresql DJANGO=1.11
