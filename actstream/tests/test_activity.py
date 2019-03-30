@@ -93,6 +93,11 @@ class ActivityTestCase(DataTestCase):
                             ['CoolGroup responded to admin: '
                              'Sweet Group!... %s ago' % self.timesince])
 
+    def test_stream_with_flag(self):
+        self.assertSetEqual(user_stream(self.user4, follow_flag='blacklisting'), [
+            'Three liked actstream %s ago' % self.timesince
+        ])
+
     def test_stream_stale_follows(self):
         """
         user_stream() should ignore Follow objects with stale actor
