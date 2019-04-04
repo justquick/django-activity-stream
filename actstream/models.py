@@ -27,7 +27,6 @@ from actstream.managers import FollowManager
 now = timezone.now
 
 
-@python_2_unicode_compatible
 class Follow(models.Model):
     """
     Lets a user follow the activities of any specific actor
@@ -57,7 +56,6 @@ class Follow(models.Model):
         return '%s -> %s : %s' % (self.user, self.follow_object, self.flag)
 
 
-@python_2_unicode_compatible
 class Action(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
