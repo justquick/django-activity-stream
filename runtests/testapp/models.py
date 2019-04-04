@@ -1,10 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Player(models.Model):
     state = models.IntegerField(default=0)
 
@@ -12,7 +10,6 @@ class Player(models.Model):
         return '#%d' % self.pk
 
 
-@python_2_unicode_compatible
 class Abstract(models.Model):
     name = models.CharField(max_length=255)
 
