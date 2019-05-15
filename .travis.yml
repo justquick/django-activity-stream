@@ -7,9 +7,6 @@ env:
   - DJANGO=1.11 DATABASE=mysql
   - DJANGO=1.11 DATABASE=postgresql
   - DJANGO=1.11 DATABASE=sqlite
-  - DJANGO=2.0 DATABASE=mysql
-  - DJANGO=2.0 DATABASE=postgresql
-  - DJANGO=2.0 DATABASE=sqlite
   - DJANGO=2.1 DATABASE=mysql
   - DJANGO=2.1 DATABASE=postgresql
   - DJANGO=2.2 DATABASE=mysql
