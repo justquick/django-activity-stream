@@ -24,8 +24,6 @@ except ImportError:
 from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
 
-now = timezone.now
-
 
 class Follow(models.Model):
     """
