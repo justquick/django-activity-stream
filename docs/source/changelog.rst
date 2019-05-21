@@ -3,6 +3,15 @@
 Changelog
 =========
 
+0.8.0
+-----
+  - Drop django 2.0
+  - Drop python 3.4 and 2.7
+  - Add django 2.2
+  - mysql jsonfied
+  - numerious bug fixes
+
+
 0.7.0
 -----
   - Remove django less then 1.11 compatibiity
