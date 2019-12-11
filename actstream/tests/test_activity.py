@@ -4,12 +4,7 @@ from django.contrib.auth.models import Group
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import activate, get_language
-from django.utils.six import text_type
-
-try:
-    from django.urls import reverse
-except ImportError:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from actstream.models import (Action, Follow, model_stream, user_stream,
                               actor_stream, following, followers)
@@ -114,7 +109,7 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(created.actor, self.user1)
         self.assertEqual(created.action_object, self.comment)
         self.assertEqual(created.target, self.group)
-        self.assertEqual(text_type(created),
+        self.assertEqual(str(created),
                          'admin created comment admin: Sweet Group!... on '
                          'CoolGroup %s ago' % self.timesince)
 
@@ -271,14 +266,13 @@ class ActivityTestCase(DataTestCase):
         self.assertIn(self.join_action,
                       list(user_stream(self.user1, with_user_activity=True)))
 
-    if django.VERSION[:2] > (1, 4):
-        def test_store_untranslated_string(self):
-            lang = get_language()
-            activate('fr')
-            verb = _('English')
+    def test_store_untranslated_string(self):
+        lang = get_language()
+        activate('fr')
+        verb = _('English')
 
-            self.assertEqual(verb, 'Anglais')
-            action.send(self.user1, verb=verb, action_object=self.comment,
-                        target=self.group, timestamp=self.testdate)
-            self.assertTrue(Action.objects.filter(verb='English').exists())
-            activate(lang)
+        self.assertEqual(verb, 'Anglais')
+        action.send(self.user1, verb=verb, action_object=self.comment,
+                    target=self.group, timestamp=self.testdate)
+        self.assertTrue(Action.objects.filter(verb='English').exists())
+        activate(lang)

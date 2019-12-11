@@ -5,7 +5,6 @@ from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.six import string_types
 
 
 class RegistrationError(Exception):
@@ -31,7 +30,7 @@ def setup_generic_relations(model_class):
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
-        attr_value = '%s_as_%s' % (related_attr_value, field)
+        attr_value = '{}_as_{}'.format(related_attr_value, field)
         kwargs = {
             'content_type_field': '%s_content_type' % field,
             'object_id_field': '%s_object_id' % field,
@@ -51,7 +50,7 @@ def label(model_class):
         model_name = model_class._meta.model_name
     else:
         model_name = model_class._meta.module_name
-    return '%s_%s' % (model_class._meta.app_label, model_name)
+    return '{}_{}'.format(model_class._meta.app_label, model_name)
 
 
 def is_installed(model_class):
@@ -63,7 +62,7 @@ def is_installed(model_class):
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):
-    if isinstance(model_class, string_types):
+    if isinstance(model_class, str):
         model_class = apps.get_model(*model_class.split('.'))
     if not isinstance(model_class, ModelBase):
         raise exception_class(

@@ -1,9 +1,6 @@
-from django.utils.six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
+from django.urls import reverse
 
 from actstream import models
 from actstream.tests.base import DataTestCase
@@ -15,13 +12,13 @@ class ViewsTest(DataTestCase):
         self.client.login(username='admin', password='admin')
 
     def get(self, viewname, *args, **params):
-        return self.client.get('%s?%s' % (reverse(viewname, args=args),
+        return self.client.get('{}?{}'.format(reverse(viewname, args=args),
                                           urlencode(params)))
 
     def assertQSEqual(self, qs1, qs2):
-        attrs = lambda item: dict([(key, value)
+        attrs = lambda item: {key: value
                                    for key, value in item.__dict__.items()
-                                   if not key.startswith('_')])
+                                   if not key.startswith('_')}
         self.assertEqual(len(qs1), len(qs2))
         for i, item in enumerate(qs1):
             self.assertDictEqual(attrs(item), attrs(qs2[i]))
