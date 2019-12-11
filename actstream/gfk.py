@@ -31,7 +31,7 @@ class GFKQuerySet(QuerySet):
         if not settings.FETCH_RELATIONS:
             return qs
 
-        private_fields = self.model._meta.virtual_fields
+        private_fields = self.model._meta.private_fields
 
         gfk_fields = [g for g in private_fields if isinstance(g, GenericForeignKey)]
 
