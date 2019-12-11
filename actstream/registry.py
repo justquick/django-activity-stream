@@ -5,7 +5,6 @@ from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.six import string_types
 
 
 class RegistrationError(Exception):
@@ -63,7 +62,7 @@ def is_installed(model_class):
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):
-    if isinstance(model_class, string_types):
+    if isinstance(model_class, str):
         model_class = apps.get_model(*model_class.split('.'))
     if not isinstance(model_class, ModelBase):
         raise exception_class(
