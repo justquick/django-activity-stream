@@ -45,7 +45,7 @@ class AbstractActivityStream(object):
         if date is None:
             date = action.timestamp
         date = datetime_safe.new_datetime(date).strftime('%Y-%m-%d')
-        return 'tag:%s,%s:%s' % (Site.objects.get_current().domain, date,
+        return 'tag:{},{}:{}'.format(Site.objects.get_current().domain, date,
                                  self.get_url(action, obj, False))
 
     def get_url(self, action, obj=None, domain=True):

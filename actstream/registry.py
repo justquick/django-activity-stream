@@ -30,7 +30,7 @@ def setup_generic_relations(model_class):
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
-        attr_value = '%s_as_%s' % (related_attr_value, field)
+        attr_value = '{}_as_{}'.format(related_attr_value, field)
         kwargs = {
             'content_type_field': '%s_content_type' % field,
             'object_id_field': '%s_object_id' % field,
@@ -50,7 +50,7 @@ def label(model_class):
         model_name = model_class._meta.model_name
     else:
         model_name = model_class._meta.module_name
-    return '%s_%s' % (model_class._meta.app_label, model_name)
+    return '{}_{}'.format(model_class._meta.app_label, model_name)
 
 
 def is_installed(model_class):

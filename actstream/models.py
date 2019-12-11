@@ -39,7 +39,7 @@ class Follow(models.Model):
         unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
-        return '%s -> %s : %s' % (self.user, self.follow_object, self.flag)
+        return '{} -> {} : {}'.format(self.user, self.follow_object, self.flag)
 
 
 class Action(models.Model):
