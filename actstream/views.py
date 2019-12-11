@@ -25,7 +25,7 @@ def respond(request, code):
 
 @login_required
 @csrf_exempt
-def follow_unfollow(request, content_type_id, object_id, flag, do_follow=True, actor_only=True):
+def follow_unfollow(request, content_type_id, object_id, flag=None, do_follow=True, actor_only=True):
     """
     Creates or deletes the follow relationship between ``request.user`` and the
     actor defined by ``content_type_id``, ``object_id``.
@@ -62,7 +62,7 @@ def stream(request):
     )
 
 
-def followers(request, content_type_id, object_id, flag):
+def followers(request, content_type_id, object_id, flag=None):
     """
     Creates a listing of ``User``s that follow the actor defined by
     ``content_type_id``, ``object_id``.
@@ -81,7 +81,7 @@ def followers(request, content_type_id, object_id, flag):
     )
 
 
-def following(request, user_id, flag):
+def following(request, user_id, flag=None):
     """
     Returns a list of actors that the user identified by ``user_id``
     is following (eg who im following).
