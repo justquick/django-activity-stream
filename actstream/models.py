@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -72,10 +73,10 @@ class Action(models.Model):
 
     """
     actor_content_type = models.ForeignKey(
-        ContentType, related_name='actor',
+        ContentType, related_name='actor', blank=True, null=True,
         on_delete=models.CASCADE, db_index=True
     )
-    actor_object_id = models.CharField(max_length=255, db_index=True)
+    actor_object_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     actor = GenericForeignKey('actor_content_type', 'actor_object_id')
 
     verb = models.CharField(max_length=255, db_index=True)
@@ -118,7 +119,7 @@ class Action(models.Model):
 
     def __str__(self):
         ctx = {
-            'actor': self.actor,
+            'actor': self.actor if self.actor is not None else AnonymousUser.__name__,
             'verb': self.verb,
             'action_object': self.action_object,
             'target': self.target,

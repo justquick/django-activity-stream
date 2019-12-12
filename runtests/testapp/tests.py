@@ -77,3 +77,10 @@ class TestAppTests(ActivityBaseTestCase):
             self.assertEqual(newaction.data['text'], 'foobar')
             self.assertEqual(newaction.data['tags'], ['sayings'])
             self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
+
+    def test_nullable_action(self):
+        action.send(None, verb="attempted to sign into the account without credentials.")
+        anon_action = Action.objects.filter(verb="attempted to sign into the account without credentials.")[0]
+        self.assertEqual(anon_action.actor, None)
+        self.assertEqual(anon_action.__str__(),
+                         "AnonymousUser attempted to sign into the account without credentials. 0 minutes ago")
