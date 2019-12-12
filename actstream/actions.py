@@ -108,7 +108,6 @@ def action_handler(verb, **kwargs):
     """
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
-    print(actor)
     # We must store the unstranslated string
     # If verb is an ugettext_lazyed string, fetch the original string
     if hasattr(verb, '_proxy____args'):
