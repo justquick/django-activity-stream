@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import uuid
-
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
