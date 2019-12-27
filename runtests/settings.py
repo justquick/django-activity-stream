@@ -1,13 +1,6 @@
-# Django settings for example_project project.
 import os
-import sys
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import django
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Justin Quick', 'justquick@gmail.com'),
@@ -66,56 +59,32 @@ MEDIA_ROOT = 'media'
 MEDIA_URL = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'wzf0h@r2u%m^_zgj^39-y(kd%+n+j0r7=du(q0^s@q1asdfasdfasdft%^2!p'
+SECRET_KEY = 'secret-key'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_DIRS = (
-    'templates',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = [
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-]
-
-if django.VERSION >= (1, 10):
-    TEMPLATE_CONTEXT_PROCESSORS = [
-        'django.contrib.auth.context_processors.auth',
-        'django.template.context_processors.debug',
-        'django.template.context_processors.i18n',
-        'django.template.context_processors.media',
-        'django.template.context_processors.static',
-        'django.template.context_processors.tz',
-    ]
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': TEMPLATE_CONTEXT_PROCESSORS
-        },
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'APP_DIRS': True,
+    'OPTIONS': {
+        'context_processors': [
+            'django.template.context_processors.debug',
+            'django.template.context_processors.request',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+        ]
     },
-]
+}]
 
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
-ROOT_URLCONF = 'actstream.runtests.urls'
+ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -124,27 +93,20 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admindocs',
     'django.contrib.sites',
-    'actstream.runtests.testapp',
-    'actstream.runtests.testapp_nested',
+    'django.contrib.messages',
+
     'actstream',
+
+    'testapp',
+    'testapp_nested',
 )
 
 ACTSTREAM_SETTINGS = {
-    'MANAGER': 'actstream.runtests.testapp.streams.MyActionManager',
+    'MANAGER': 'testapp.streams.MyActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
 }
 
-
-if django.VERSION[:2] >= (1, 5):
-    AUTH_USER_MODEL = 'testapp.MyUser'
-
-
-try:
-    import django.test.simple
-except ImportError:
-    pass
-else:
-    TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+AUTH_USER_MODEL = 'testapp.MyUser'

@@ -1,22 +1,14 @@
-import datetime
-
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
-from django.utils.six import text_type
+from django.utils.timezone import now
 from django.contrib.contenttypes.models import ContentType
 
 from actstream import settings
 from actstream.signals import action
 from actstream.registry import check
-from actstream.compat import get_model
-
-try:
-    from django.utils import timezone
-    now = timezone.now
-except ImportError:
-    now = datetime.datetime.now
 
 
-def follow(user, obj, send_action=True, actor_only=True, **kwargs):
+def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
     """
     Creates a relationship allowing the object's activities to appear in the
     user's stream.
@@ -32,55 +24,82 @@ def follow(user, obj, send_action=True, actor_only=True, **kwargs):
     ``False`` to also include actions where this object is the action_object or
     the target.
 
+    If ``flag`` not an empty string then the relationship would marked by this flag.
+
     Example::
 
         follow(request.user, group, actor_only=False)
+        follow(request.user, group, actor_only=False, flag='liking')
     """
     check(obj)
-    instance, created = get_model('actstream', 'follow').objects.get_or_create(
-        user=user, object_id=obj.pk,
+    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
+        user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
-        actor_only=actor_only)
+        actor_only=actor_only
+    )
     if send_action and created:
-        action.send(user, verb=_('started following'), target=obj, **kwargs)
+        if not flag:
+            action.send(user, verb=_('started following'), target=obj, **kwargs)
+        else:
+            action.send(user, verb=_('started %s' % flag), target=obj, **kwargs)
     return instance
 
 
-def unfollow(user, obj, send_action=False):
+def unfollow(user, obj, send_action=False, flag=''):
     """
     Removes a "follow" relationship.
 
     Set ``send_action`` to ``True`` (``False is default) to also send a
     ``<user> stopped following <object>`` action signal.
 
+    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to remove.
+
     Example::
 
         unfollow(request.user, other_user)
+        unfollow(request.user, other_user, flag='watching')
     """
     check(obj)
-    get_model('actstream', 'follow').objects.filter(
+    qs = apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
-    ).delete()
+    )
+
+    if flag:
+        qs = qs.filter(flag=flag)
+    qs.delete()
+
     if send_action:
-        action.send(user, verb=_('stopped following'), target=obj)
+        if not flag:
+            action.send(user, verb=_('stopped following'), target=obj)
+        else:
+            action.send(user, verb=_('stopped %s' % flag), target=obj)
 
 
-def is_following(user, obj):
+def is_following(user, obj, flag=''):
     """
     Checks if a "follow" relationship exists.
 
     Returns True if exists, False otherwise.
 
+    Pass a string value to ``flag`` to determine which type of "follow" relationship you want to check.
+
     Example::
 
         is_following(request.user, group)
+        is_following(request.user, group, flag='liking')
     """
     check(obj)
-    return get_model('actstream', 'follow').objects.filter(
+
+    qs = apps.get_model('actstream', 'follow').objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
-    ).exists()
+    )
+
+    if flag:
+        qs = qs.filter(flag=flag)
+
+    return qs.exists()
 
 
 def action_handler(verb, **kwargs):
@@ -95,10 +114,10 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = get_model('actstream', 'action')(
+    newaction = apps.get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
-        verb=text_type(verb),
+        verb=str(verb),
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())

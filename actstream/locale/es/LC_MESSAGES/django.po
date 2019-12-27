@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-21 18:49-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Rodrigo Suárez <rodrigosrz12@gmail.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: actstream/actions.py:50
+msgid "started following"
+msgstr "comenzó a seguir"
+
+#: actstream/actions.py:52
+#, python-format
+msgid "started %s"
+msgstr "comenzó %s"
+
+#: actstream/actions.py:82
+msgid "stopped following"
+msgstr "dejó de seguir"
+
+#: actstream/actions.py:84
+#, python-format
+msgid "stopped %s"
+msgstr "dejó %s"
+
+#: actstream/models.py:145
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s en %(target)s %(timesince)s atrás"
+
+#: actstream/models.py:146
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(target)s %(timesince)s atrás"
+
+#: actstream/models.py:148
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s %(timesince)s atrás"
+
+#: actstream/models.py:149
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(timesince)s atrás"
+
+#: actstream/templates/actstream/action.html:13
+msgid "ago"
+msgstr "atrás"
+
+#: actstream/templates/actstream/actor.html:24
+msgid "UNFOLLOW"
+msgstr "DEJAR DE SEGUIR"
+
+#: actstream/templates/actstream/actor.html:25
+msgid "FOLLOW"
+msgstr "SEGUIR"
+
+#: actstream/templates/actstream/actor.html:32
+msgid "View my actions"
+msgstr "Ver mas acciones"
+
+#: actstream/templates/actstream/actor.html:38
+msgid "No actions yet"
+msgstr "Aún no hay acciones"
+
+#: actstream/templates/actstream/detail.html:3
+#, python-format
+msgid "On %(date)s at %(time)s"
+msgstr "En %(date)s a %(time)s"
+
+#: actstream/templates/actstream/followers.html:2
+#, python-format
+msgid "Users following %(actor)s"
+msgstr "Usuarios siguiendo %(actor)s"
+
+#: actstream/templates/actstream/following.html:2
+#, python-format
+msgid "Actors that %(user)s follows"
+msgstr "Actores que %(user)s sigue"
+
+#: actstream/tests/test_activity.py:273
+msgid "English"
+msgstr "Inglés"

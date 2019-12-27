@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import django
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.signals import action
@@ -9,7 +8,7 @@ from actstream.models import Action, actor_stream, model_stream
 from actstream.tests.base import render, ActivityBaseTestCase
 from actstream.settings import USE_JSONFIELD
 
-from actstream.runtests.testapp.models import Abstract, Unregistered
+from testapp.models import Abstract, Unregistered
 
 
 class TestAppTests(ActivityBaseTestCase):
@@ -20,11 +19,20 @@ class TestAppTests(ActivityBaseTestCase):
 
     def test_accessor(self):
         self.assertEqual(len(Action.objects.testfoo(self.user)), 1)
-        self.assertEqual(len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))), 0)
+        self.assertEqual(
+            len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))),
+            0
+        )
 
     def test_mystream(self):
-        self.assertEqual(len(self.user.actor_actions.testbar('was created')), 1)
-        self.assertEqual(len(self.user.action_object_actions.testbar('was created')), 0)
+        self.assertEqual(
+            len(self.user.actor_actions.testbar('was created')),
+            1
+        )
+        self.assertEqual(
+            len(self.user.action_object_actions.testbar('was created')),
+            0
+        )
 
     def test_registration(self):
         instance = Unregistered.objects.create(name='fubar')
@@ -45,20 +53,26 @@ class TestAppTests(ActivityBaseTestCase):
         ''', user=self.user)
         self.assertAllIn([str(action) for action in stream], output)
 
-        self.assertEqual(self.capture('testapp_custom_feed',
-                                      'was created')['totalItems'], 1)
+        self.assertEqual(
+            self.capture(
+                'testapp_custom_feed',
+                'was created')['totalItems'],
+            1
+        )
 
     def test_customuser(self):
-        if django.VERSION[:2] >= (1, 5):
-            from actstream.runtests.testapp.models import MyUser
+        from testapp.models import MyUser
 
-            self.assertEqual(self.User, MyUser)
-            self.assertEqual(self.user.get_full_name(), 'test')
+        self.assertEqual(self.User, MyUser)
+        self.assertEqual(self.user.get_full_name(), 'test')
 
     if USE_JSONFIELD:
         def test_jsonfield(self):
-            action.send(self.user, verb='said', text='foobar', tags=['sayings'],
-                        more_data={'pk': self.user.pk})
+            action.send(
+                self.user, verb='said', text='foobar',
+                tags=['sayings'],
+                more_data={'pk': self.user.pk}
+            )
             newaction = Action.objects.filter(verb='said')[0]
             self.assertEqual(newaction.data['text'], 'foobar')
             self.assertEqual(newaction.data['tags'], ['sayings'])

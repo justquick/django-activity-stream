@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.utils.feedgenerator import rfc2822_date, rfc3339_date
+from django.utils.feedgenerator import rfc3339_date
 
 from actstream.tests import base
 
@@ -62,5 +62,7 @@ class FeedsTestCase(base.DataTestCase):
         atom = self.capture('actstream_object_feed_atom',
                             self.user_ct.pk, self.user2.pk)
         self.assertAllIn(self.atom_base + expected, atom)
-        json = self.capture('actstream_object_feed_json',
-                            self.user_ct.pk, self.user2.pk)
+        json = self.capture(
+            'actstream_object_feed_json',
+            self.user_ct.pk, self.user2.pk
+        )

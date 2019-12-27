@@ -1,14 +1,10 @@
 from inspect import isclass
-import re
 
 import django
-from django.conf import settings
+from django.apps import apps
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.six import string_types
-
-
-from actstream.compat import generic, get_model
 
 
 class RegistrationError(Exception):
@@ -19,7 +15,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = get_model('actstream', 'action')
+    Action = apps.get_model('actstream', 'action')
 
     if Action is None:
         raise RegistrationError(
@@ -28,20 +24,19 @@ def setup_generic_relations(model_class):
             'apps which have models to register in the INSTALLED_APPS setting.'
         )
 
-    related_attr_name = 'related_name'
+    related_attr_name = 'related_query_name'
     related_attr_value = 'actions_with_%s' % label(model_class)
-    if django.VERSION[:2] >= (1, 8):
-        related_attr_name = 'related_query_name'
+
     relations = {}
     for field in ('actor', 'target', 'action_object'):
         attr = '%s_actions' % field
-        attr_value = '%s_as_%s' % (related_attr_value, field)
+        attr_value = '{}_as_{}'.format(related_attr_value, field)
         kwargs = {
             'content_type_field': '%s_content_type' % field,
             'object_id_field': '%s_object_id' % field,
             related_attr_name: attr_value
         }
-        rel = generic.GenericRelation('actstream.Action', **kwargs)
+        rel = GenericRelation('actstream.Action', **kwargs)
         rel.contribute_to_class(model_class, attr)
         relations[field] = rel
 
@@ -55,7 +50,7 @@ def label(model_class):
         model_name = model_class._meta.model_name
     else:
         model_name = model_class._meta.module_name
-    return '%s_%s' % (model_class._meta.app_label, model_name)
+    return '{}_{}'.format(model_class._meta.app_label, model_name)
 
 
 def is_installed(model_class):
@@ -63,16 +58,12 @@ def is_installed(model_class):
     Returns True if a model_class is installed.
     model_class._meta.installed is only reliable in Django 1.7+
     """
-    if django.VERSION[:2] >= (1, 8):
-        return model_class._meta.installed
-    if model_class._meta.app_label in settings.INSTALLED_APPS:
-        return True
-    return re.sub(r'\.models.*$', '', model_class.__module__) in settings.INSTALLED_APPS
+    return model_class._meta.installed
 
 
 def validate(model_class, exception_class=ImproperlyConfigured):
-    if isinstance(model_class, string_types):
-        model_class = get_model(*model_class.split('.'))
+    if isinstance(model_class, str):
+        model_class = apps.get_model(*model_class.split('.'))
     if not isinstance(model_class, ModelBase):
         raise exception_class(
             'Object %r is not a Model class.' % model_class)
@@ -112,6 +103,7 @@ class ActionableModelRegistry(dict):
             raise ImproperlyConfigured(
                 'The model %s is not registered. Please use actstream.registry '
                 'to register it.' % model_class.__name__)
+
 
 registry = ActionableModelRegistry()
 register = registry.register

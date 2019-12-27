@@ -6,12 +6,7 @@ import django.db.models.deletion
 import django.utils.timezone
 from django.conf import settings
 
-from actstream.settings import USE_JSONFIELD
-
-if USE_JSONFIELD:
-    from jsonfield_compat.fields import JSONField as DataField
-else:
-    DataField = models.TextField
+from actstream.jsonfield import DataField
 
 
 class Migration(migrations.Migration):

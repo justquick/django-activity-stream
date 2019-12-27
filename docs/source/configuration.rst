@@ -9,19 +9,6 @@ In order to have your models be either an actor, target, or action object they m
 In v0.5 and above, actstream has a registry of all actionable model classes.
 When you register them, actstream sets up certain GenericRelations that are required for generating activity streams.
 
-You normally call register right after your model is defined (models.py) but you can call it anytime before you need to generate actions or activity streams.
-
-.. code-block:: python
-
-    # myapp/models.py
-    from actstream import registry
-
-    class MyModel(models.Model):
-        ...
-
-    # Django < 1.7
-    registry.register(MyModel)
-
 For Django versions 1.7 or later, you should use `AppConfig <https://docs.djangoproject.com/en/dev/ref/applications/#configuring-applications>`_.
 
 .. code-block:: python
@@ -39,9 +26,6 @@ For Django versions 1.7 or later, you should use `AppConfig <https://docs.django
     # myapp/__init__.py
     default_app_config = 'myapp.apps.MyAppConfig'
 
-.. note::
-
-    Introducing the registry change makes the ``ACTSTREAM_SETTINGS['MODELS']`` setting obsolete so please use the register functions instead.
 
 Settings
 --------
@@ -59,6 +43,10 @@ Here is an example of what you can set in your ``settings.py``
         'USE_JSONFIELD': True,
         'GFK_FETCH_DEPTH': 1,
     }
+
+.. note::
+
+    Please decide early on whether you want to ``USE_JSONFIELD`` or not, as the ``Action.data`` field will be removed during initial migrations when this option is set to ``False`` (the default).
 
 .. note::
 

@@ -1,9 +1,6 @@
-from django.utils.six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
+from django.urls import reverse
 
 from actstream import models
 from actstream.tests.base import DataTestCase
@@ -15,13 +12,13 @@ class ViewsTest(DataTestCase):
         self.client.login(username='admin', password='admin')
 
     def get(self, viewname, *args, **params):
-        return self.client.get('%s?%s' % (reverse(viewname, args=args),
+        return self.client.get('{}?{}'.format(reverse(viewname, args=args),
                                           urlencode(params)))
 
     def assertQSEqual(self, qs1, qs2):
-        attrs = lambda item: dict([(key, value)
+        attrs = lambda item: {key: value
                                    for key, value in item.__dict__.items()
-                                   if not key.startswith('_')])
+                                   if not key.startswith('_')}
         self.assertEqual(len(qs1), len(qs2))
         for i, item in enumerate(qs1):
             self.assertDictEqual(attrs(item), attrs(qs2[i]))
@@ -47,6 +44,27 @@ class ViewsTest(DataTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response['Location'].endswith('/redirect/'))
 
+    def test_follow_unfollow_with_flag(self):
+        response = self.get('actstream_follow', self.user_ct.pk, self.user3.pk, 'watching')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(response.templates), 0)
+        follow = {'user': self.user1, 'content_type': self.user_ct,
+                  'object_id': self.user3.pk, 'flag': 'watching'}
+        action = {'actor_content_type': self.user_ct, 'actor_object_id': self.user1.pk,
+                  'target_content_type': self.user_ct, 'target_object_id': self.user3.pk,
+                  'verb': 'started watching'}
+        models.Follow.objects.get(**follow)
+        models.Action.objects.get(**action)
+
+        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(len(response.templates), 0)
+        self.assertRaises(models.Follow.DoesNotExist, models.Follow.objects.get, **follow)
+
+        response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching', next='/redirect/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response['Location'].endswith('/redirect/'))
+
     def test_stream(self):
         response = self.get('actstream')
         self.assertTemplateUsed(response, 'actstream/actor.html')
@@ -68,6 +86,19 @@ class ViewsTest(DataTestCase):
         self.assertEqual(response.context['user'], self.user2)
         self.assertQSEqual(response.context['following'],
                            models.following(self.user2))
+
+    def test_followers_following_with_flag(self):
+        response = self.get('actstream_followers', self.user_ct.pk, self.user2.pk, 'watching')
+        self.assertTemplateUsed(response, 'actstream/followers.html')
+        self.assertEqual(response.context['user'], self.user1)
+        self.assertQSEqual(response.context['followers'],
+                           models.followers(self.user2, flag='watching'))
+
+        response = self.get('actstream_following', self.user2.pk, 'watching')
+        self.assertTemplateUsed(response, 'actstream/following.html')
+        self.assertEqual(response.context['user'], self.user2)
+        self.assertQSEqual(response.context['following'],
+                           models.following(self.user2, flag='watching'))
 
     def test_user(self):
         response = self.get('actstream_user', self.user2.username)

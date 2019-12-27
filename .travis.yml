@@ -1,47 +1,32 @@
 language: python
 cache: pip
-
 python:
-  - "3.5"
-
+  - 3.6
+  - 3.7
 env:
-  global:
-    - TRAVIS=true
-  matrix:
-    - TOX_ENV=py35-dj1.11-postgres
-    - TOX_ENV=py27-dj1.11-postgres
-    - TOX_ENV=py35-dj1.11-sqlite
-    - TOX_ENV=py27-dj1.11-sqlite
-    - TOX_ENV=py35-dj1.11-mysql
-    - TOX_ENV=py27-dj1.11-mysql 
-    - TOX_ENV=py35-dj1.10-sqlite
-    - TOX_ENV=py27-dj1.10-sqlite  
-    - TOX_ENV=py35-dj1.10-mysql
-    - TOX_ENV=py27-dj1.10-mysql
-    - TOX_ENV=py35-dj1.10-postgres
-    - TOX_ENV=py27-dj1.10-postgres
-    - TOX_ENV=py35-dj1.9-sqlite
-    - TOX_ENV=py27-dj1.9-sqlite  
-    - TOX_ENV=py35-dj1.9-mysql
-    - TOX_ENV=py27-dj1.9-mysql
-    - TOX_ENV=py35-dj1.9-postgres
-    - TOX_ENV=py27-dj1.9-postgres  
-    - TOX_ENV=py35-dj1.8-sqlite
-    - TOX_ENV=py27-dj1.8-sqlite    
-    - TOX_ENV=coverage
+  - DJANGO=2.2 DATABASE=mysql
+  - DJANGO=2.2 DATABASE=postgresql
+  - DJANGO=3.0 DATABASE=mysql
+  - DJANGO=3.0 DATABASE=postgresql
+matrix:
+  fast_finish: true
+
 install:
-  - pip install tox coveralls
+  - pip install tox-travis coveralls
 services:
   - mysql
-  - postgresql  
+  - postgresql
+script:
+  - tox
 addons:
   postgresql: "9.5"
-script:
-  - tox -e $TOX_ENV
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
 notifications:
   email: false
-branches:
-  only:
-    - master
 after_success:
   coveralls

@@ -1,8 +1,8 @@
-from actstream.compat_apps import AppConfig
+from django.apps import AppConfig
 
 
 class TestappConfig(AppConfig):
-    name = 'actstream.runtests.testapp'
+    name = 'testapp'
 
     def ready(self):
         from actstream.registry import register
