@@ -53,7 +53,7 @@ Generates a stream of ``Actions`` where the ``request.user`` was the ``actor``
 Action Object Streams
 ---------------------
 
-Action object streams show you what actions a particular instance was used as the ``action_objct``
+Action object streams show you what actions a particular instance was used as the ``action_object``
 
 .. code-block:: python
 
