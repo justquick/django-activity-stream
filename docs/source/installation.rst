@@ -50,7 +50,7 @@ The activity urls are not required for basic usage but provide activity :ref:`fe
 Add extra data to actions
 -------------------------
 
-If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://bitbucket.org/schinckel/django-jsonfield/>`_ installed
+If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://pypi.org/project/django-jsonfield/>`_ installed
 
 .. code-block:: bash
 
