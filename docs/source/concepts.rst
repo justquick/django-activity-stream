@@ -11,7 +11,7 @@ Introduction
 
 `<http://activitystrea.ms/specs/json/1.0/#introduction>`_
 
-In its simplest form, an activity consists of an actor, a verb, an an object, and a target. It tells the story of a person performing an action on or with an object -- "Geraldine posted a photo to her album" or "John shared a video". In most cases these components will be explicit, but they may also be implied.
+In its simplest form, an activity consists of an actor, a verb, an object, and a target. It tells the story of a person performing an action on or with an object -- "Geraldine posted a photo to her album" or "John shared a video". In most cases these components will be explicit, but they may also be implied.
 
 It is a goal of this specification to provide sufficient metadata about an activity such that a consumer of the data can present it to a user in a rich human-friendly format. This may include constructing readable sentences about the activity that occurred, visual representations of the activity, or combining similar activities for display.
 
