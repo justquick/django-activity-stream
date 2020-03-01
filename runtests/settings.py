@@ -92,9 +92,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admindocs',
     'django.contrib.sites',
+    'django.contrib.messages',
+
+    'actstream',
+
     'testapp',
     'testapp_nested',
-    'actstream',
 )
 
 ACTSTREAM_SETTINGS = {

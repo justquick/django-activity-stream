@@ -50,11 +50,11 @@ The activity urls are not required for basic usage but provide activity :ref:`fe
 Add extra data to actions
 -------------------------
 
-If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://bitbucket.org/schinckel/django-jsonfield/>`_ installed
+If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://pypi.org/project/django-jsonfield/>`_ installed
 
 .. code-block:: bash
 
-    $ pip install jsonfield
+    $ pip install django-activity-stream[jsonfield]
 
 You can learn more at :ref:`custom-data`
 
@@ -80,7 +80,7 @@ Python
 Django
 ******
 
-* **Django**: 1.11 and 2.0
+* **Django**: 1.11, 2.0 and 2.1
 
 Databases
 *********
@@ -88,9 +88,9 @@ Databases
 django-activity-stream has been tested to work with the following databases but may work on other platforms (YMMV)
 
 * **Sqlite**: 3
-* **PostgreSQL**: 9.1, 9.2 and 9.3
+* **PostgreSQL**: 9.3+
     * Python: `psycopg2 <http://initd.org/psycopg/docs/>`_
     * PyPy: `psycopg2cffi <https://github.com/chtd/psycopg2cffi>`_
-* **MySQL**: 5.5 and 5.6
+* **MySQL**: 5.5 and 5.6+
     * Python/PyPy: `MySQL-python <https://github.com/farcepest/MySQLdb1>`_
     * Python 3: `PyMySQL <https://github.com/PyMySQL/PyMySQL/>`_

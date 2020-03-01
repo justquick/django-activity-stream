@@ -46,6 +46,10 @@ Here is an example of what you can set in your ``settings.py``
 
 .. note::
 
+    Please decide early on whether you want to ``USE_JSONFIELD`` or not, as the ``Action.data`` field will be removed during initial migrations when this option is set to ``False`` (the default).
+
+.. note::
+
     In v0.5 and above, since only Django>=1.4 is supported all generic lookups fall back to `QuerySet.prefetch_related <https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.prefetch_related>`_
     so the ``USE_PREFETCH`` and ``GFK_FETCH_DEPTH`` settings have been deprecated.
 

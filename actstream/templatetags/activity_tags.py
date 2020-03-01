@@ -1,11 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.loader import render_to_string
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
+from django.urls import reverse
 
 from actstream.models import Follow, Action
 

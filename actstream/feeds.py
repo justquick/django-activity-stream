@@ -6,16 +6,11 @@ from django.utils.feedgenerator import Atom1Feed, rfc3339_date
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.syndication.views import Feed, add_domain
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_text
-from django.utils.six import text_type
+from django.utils.encoding import force_str
 from django.utils import datetime_safe
 from django.views.generic import View
 from django.http import HttpResponse, Http404
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
+from django.urls import reverse
 
 from actstream.models import Action, model_stream, user_stream, any_stream
 
@@ -50,7 +45,7 @@ class AbstractActivityStream(object):
         if date is None:
             date = action.timestamp
         date = datetime_safe.new_datetime(date).strftime('%Y-%m-%d')
-        return 'tag:%s,%s:%s' % (Site.objects.get_current().domain, date,
+        return 'tag:{},{}:{}'.format(Site.objects.get_current().domain, date,
                                  self.get_url(action, obj, False))
 
     def get_url(self, action, obj=None, domain=True):
@@ -79,7 +74,7 @@ class AbstractActivityStream(object):
             'verb': action.verb,
             'published': rfc3339_date(action.timestamp),
             'actor': self.format_actor(action),
-            'title': text_type(action),
+            'title': str(action),
         }
         if action.description:
             item['content'] = action.description
@@ -98,7 +93,7 @@ class AbstractActivityStream(object):
             'id': self.get_uri(action, obj),
             'url': self.get_url(action, obj),
             'objectType': ContentType.objects.get_for_model(obj).name,
-            'displayName': text_type(obj)
+            'displayName': str(obj)
         }
 
     def format_actor(self, action):
@@ -203,7 +198,7 @@ class ActivityStreamsBaseFeed(AbstractActivityStream, Feed):
 
     def item_description(self, action):
         if action.description:
-            return force_text(action.description)
+            return force_str(action.description)
 
     def items(self, obj):
         return self.get_stream()(obj)[:30]

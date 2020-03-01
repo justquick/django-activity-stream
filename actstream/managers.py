@@ -1,6 +1,7 @@
 from django.apps import apps
-from django.db.models import Subquery, Q
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
+
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
@@ -80,7 +81,7 @@ class ActionManager(GFKManager):
             ), **kwargs)
 
     @stream
-    def user(self, obj, with_user_activity=False, **kwargs):
+    def user(self, obj, with_user_activity=False, follow_flag=None, **kwargs):
         """Create a stream of the most recent actions by objects that the user is following."""
         q = Q()
         qs = self.public()
@@ -97,8 +98,11 @@ class ActionManager(GFKManager):
             )
 
         follows = apps.get_model('actstream', 'follow').objects.filter(user=obj)
+        if follow_flag:
+            follows = follows.filter(flag=follow_flag)
+            
         content_types = ContentType.objects.filter(
-            pk__in=Subquery(follows.values('content_type_id'))
+            pk__in=follows.values('content_type_id')
         )
 
         if not (content_types.exists() or with_user_activity):
@@ -108,17 +112,15 @@ class ActionManager(GFKManager):
             object_ids = follows.filter(content_type=content_type)
             q = q | Q(
                 actor_content_type=content_type,
-                actor_object_id__in=Subquery(object_ids.values('object_id'))
+                actor_object_id__in=object_ids.values('object_id')
             ) | Q(
                 target_content_type=content_type,
-                target_object_id__in=Subquery(
-                    object_ids.filter(actor_only=False).values('object_id')
-                )
+                target_object_id__in=object_ids.filter(
+                    actor_only=False).values('object_id')
             ) | Q(
                 action_object_content_type=content_type,
-                action_object_object_id__in=Subquery(
-                    object_ids.filter(actor_only=False).values('object_id')
-                )
+                action_object_object_id__in=object_ids.filter(
+                    actor_only=False).values('object_id')
             )
 
         return qs.filter(q, **kwargs)

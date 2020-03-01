@@ -1,19 +1,11 @@
 from django.apps import apps
-from django.contrib.contenttypes.models import ContentType
-from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
+from django.contrib.contenttypes.models import ContentType
 
 from actstream import settings
-from actstream.registry import check
 from actstream.signals import action
-
-try:
-    from django.utils import timezone
-
-    now = timezone.now
-except ImportError:
-    import datetime
-    now = datetime.datetime.now
+from actstream.registry import check
 
 
 def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
@@ -49,8 +41,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
         if not flag:
             action.send(user, verb=_('started following'), target=obj, **kwargs)
         else:
-            transformer = settings.get_verb_transformer()
-            action.send(user, verb=_('started %s' % transformer.trans(flag)), target=obj, **kwargs)
+            action.send(user, verb=_('started %s' % flag), target=obj, **kwargs)
     return instance
 
 
@@ -82,8 +73,7 @@ def unfollow(user, obj, send_action=False, flag=''):
         if not flag:
             action.send(user, verb=_('stopped following'), target=obj)
         else:
-            transformer = settings.get_verb_transformer()
-            action.send(user, verb=_('stopped %s' % transformer.trans(flag)), target=obj)
+            action.send(user, verb=_('stopped %s' % flag), target=obj)
 
 
 def is_following(user, obj, flag=''):
@@ -127,7 +117,7 @@ def action_handler(verb, **kwargs):
     newaction = apps.get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
-        verb=text_type(verb),
+        verb=str(verb),
         public=bool(kwargs.pop('public', True)),
         description=kwargs.pop('description', None),
         timestamp=kwargs.pop('timestamp', now())

@@ -1,21 +1,16 @@
 language: python
 cache: pip
 python:
-  - 2.7
-  - 3.4
-  - 3.5
   - 3.6
+  - 3.7
 env:
-  - DATABASE=mysql DJANGO=1.11
-  - DATABASE=postgresql DJANGO=1.11
-  - DATABASE=sqlite DJANGO=1.11
-  - DATABASE=mysql DJANGO=2.0
-  - DATABASE=postgresql DJANGO=2.0
-  - DATABASE=sqlite DJANGO=2.0
+  - DJANGO=2.2 DATABASE=mysql
+  - DJANGO=2.2 DATABASE=postgresql
+  - DJANGO=3.0 DATABASE=mysql
+  - DJANGO=3.0 DATABASE=postgresql
 matrix:
-  exclude:
-    - python: 2.7
-      env: DJANGO=2.0
+  fast_finish: true
+
 install:
   - pip install tox-travis coveralls
 services:
@@ -25,6 +20,12 @@ script:
   - tox
 addons:
   postgresql: "9.5"
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
 notifications:
   email: false
 after_success:
