@@ -3,6 +3,14 @@
 Changelog
 =========
 
+0.9.0
+-----
+  - Support django 3.0
+  - Drop django below 2.2
+  - Added support for setuptools
+  - Code clean ups
+
+
 0.8.0
 -----
   - Drop django 2.0
