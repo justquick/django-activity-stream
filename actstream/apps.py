@@ -12,7 +12,7 @@ class ActstreamConfig(AppConfig):
         action.connect(action_handler, dispatch_uid='actstream.models')
         action_class = self.get_model('action')
 
-        if settings.USE_JSONFIELD:
+        if settings.USE_JSONFIELD and not hasattr(action_class, 'data'):
             from actstream.jsonfield import DataField, register_app
             DataField(blank=True, null=True).contribute_to_class(
                 action_class, 'data'
