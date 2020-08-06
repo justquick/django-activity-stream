@@ -70,7 +70,7 @@ Generates a stream of ``Actions`` where the ``comment`` was generated as the ``a
 Target Streams
 --------------
 
-Action object streams show you what actions a particular instance was used as the ``target``
+Target streams show you what actions a particular instance was used as the ``target``
 
 .. code-block:: python
 
