@@ -252,6 +252,12 @@ class UserActivityMixin(object):
     def get_stream(self):
         return user_stream
 
+    def items(self, request, *args, **kwargs):
+        stream_kwargs = {}
+        if 'with_user_activity' in request.GET:
+            stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
+        return self.get_stream()(self.get_object(request, *args, **kwargs),**stream_kwargs)
+
 
 class CustomStreamMixin(object):
     name = None
