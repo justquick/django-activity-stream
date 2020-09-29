@@ -258,12 +258,16 @@ class UserActivityMixin(object):
     def get_stream(self):
         return user_stream
 
+<<<<<<< HEAD
     def get_stream_kwargs(self, request):
         stream_kwargs = {}
         if 'with_user_activity' in request.GET:
             stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
         return stream_kwargs
     
+=======
+
+>>>>>>> parent of 17e11e8... added  as query string in UserActivityFeed
 class CustomStreamMixin(object):
     name = None
 
