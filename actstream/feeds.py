@@ -24,13 +24,7 @@ class AbstractActivityStream(object):
         """
         Returns a stream method to use.
         """
-        raise NotImplementedError   
-    
-    def get_stream_kwargs(self, *args, **kwargs):
-        """
-        Returns the kwargs that the stream should be called with.
-        """
-        return {}
+        raise NotImplementedError
 
     def get_object(self, *args, **kwargs):
         """
@@ -219,7 +213,7 @@ class JSONActivityFeed(AbstractActivityStream, View):
                             content_type='application/json')
 
     def serialize(self, request, *args, **kwargs):
-        items = self.get_stream()(self.get_object(request, *args, **kwargs), **self.get_stream_kwargs(request))
+        items = self.items(request, *args, **kwargs)
         return json.dumps({
             'totalItems': len(items),
             'items': [self.format(action) for action in items]
@@ -259,6 +253,7 @@ class UserActivityMixin(object):
         return user_stream
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_stream_kwargs(self, request):
         stream_kwargs = {}
         if 'with_user_activity' in request.GET:
@@ -268,6 +263,15 @@ class UserActivityMixin(object):
 =======
 
 >>>>>>> parent of 17e11e8... added  as query string in UserActivityFeed
+=======
+    def items(self, request, *args, **kwargs):
+        stream_kwargs = {}
+        if 'with_user_activity' in request.GET:
+            stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
+        return self.get_stream()(self.get_object(request, *args, **kwargs),**stream_kwargs)
+
+
+>>>>>>> parent of 7577054... Feature of having with_user_activity=True parameter when using User Activity Feed
 class CustomStreamMixin(object):
     name = None
 
