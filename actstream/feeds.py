@@ -24,7 +24,7 @@ class AbstractActivityStream(object):
         """
         Returns a stream method to use.
         """
-        raise NotImplementedError
+        raise NotImplementedError   
 
     def get_object(self, *args, **kwargs):
         """
@@ -242,6 +242,11 @@ class ObjectActivityMixin(object):
     def get_stream(self):
         return any_stream
 
+class StreamKwargsMixin(object):
+        
+    def items(self, request, *args, **kwargs):
+        return self.get_stream()(self.get_object(request, *args, **kwargs),**self.get_stream_kwargs(request))
+    
 
 class UserActivityMixin(object):
 
@@ -252,26 +257,12 @@ class UserActivityMixin(object):
     def get_stream(self):
         return user_stream
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     def get_stream_kwargs(self, request):
         stream_kwargs = {}
         if 'with_user_activity' in request.GET:
             stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
         return stream_kwargs
-    
-=======
 
->>>>>>> parent of 17e11e8... added  as query string in UserActivityFeed
-=======
-    def items(self, request, *args, **kwargs):
-        stream_kwargs = {}
-        if 'with_user_activity' in request.GET:
-            stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
-        return self.get_stream()(self.get_object(request, *args, **kwargs),**stream_kwargs)
-
-
->>>>>>> parent of 7577054... Feature of having with_user_activity=True parameter when using User Activity Feed
 class CustomStreamMixin(object):
     name = None
 
@@ -350,7 +341,7 @@ class AtomObjectActivityFeed(ObjectActivityFeed):
     subtitle = ObjectActivityFeed.description
 
 
-class UserJSONActivityFeed(UserActivityMixin, JSONActivityFeed):
+class UserJSONActivityFeed(UserActivityMixin, StreamKwargsMixin, JSONActivityFeed):
     """
     JSON feed of Activity for a given user (where actions are those that the given user follows).
     """
