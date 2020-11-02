@@ -73,14 +73,14 @@ Make sure to pick the version of Django and django-activity-stream that supports
 Python
 ******
 
-* **Python 2**: 2.7
-* **Python 3**: 3.4, 3.5 and 3.6
-* **PyPy**: 2 and 3
+
+* **Python 3**: 3.5 to 3.8
+* **PyPy**: 3
 
 Django
 ******
 
-* **Django**: 1.11, 2.0 and 2.1
+* **Django**: 2.2+ only
 
 Databases
 *********
