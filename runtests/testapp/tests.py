@@ -4,9 +4,9 @@ from django.core.exceptions import ImproperlyConfigured
 
 from actstream.signals import action
 from actstream.registry import register, unregister
-from actstream.models import Action, actor_stream, model_stream
+from actstream.models import actor_stream, model_stream
 from actstream.tests.base import render, ActivityBaseTestCase
-from actstream.settings import USE_JSONFIELD
+from actstream.settings import USE_JSONFIELD, get_action_model
 
 from testapp.models import Abstract, Unregistered
 
@@ -18,9 +18,9 @@ class TestAppTests(ActivityBaseTestCase):
         action.send(self.user, verb='was created')
 
     def test_accessor(self):
-        self.assertEqual(len(Action.objects.testfoo(self.user)), 1)
+        self.assertEqual(len(get_action_model().objects.testfoo(self.user)), 1)
         self.assertEqual(
-            len(Action.objects.testfoo(self.user, datetime(1970, 1, 1))),
+            len(get_action_model().objects.testfoo(self.user, datetime(1970, 1, 1))),
             0
         )
 
@@ -73,7 +73,7 @@ class TestAppTests(ActivityBaseTestCase):
                 tags=['sayings'],
                 more_data={'pk': self.user.pk}
             )
-            newaction = Action.objects.filter(verb='said')[0]
+            newaction = get_action_model().objects.filter(verb='said')[0]
             self.assertEqual(newaction.data['text'], 'foobar')
             self.assertEqual(newaction.data['tags'], ['sayings'])
             self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})

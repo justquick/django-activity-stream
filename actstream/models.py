@@ -166,11 +166,11 @@ class Action(models.Model):
 
 
 # convenient accessors
-actor_stream = Action.objects.actor
-action_object_stream = Action.objects.action_object
-target_stream = Action.objects.target
-user_stream = Action.objects.user
-model_stream = Action.objects.model_actions
-any_stream = Action.objects.any
-followers = Follow.objects.followers
-following = Follow.objects.following
+actor_stream = actstream_settings.get_action_model().objects.actor
+action_object_stream = actstream_settings.get_action_model().objects.action_object
+target_stream = actstream_settings.get_action_model().objects.target
+user_stream = actstream_settings.get_action_model().objects.user
+model_stream = actstream_settings.get_action_model().objects.model_actions
+any_stream = actstream_settings.get_action_model().objects.any
+followers = actstream_settings.get_follow_model().objects.followers
+following = actstream_settings.get_follow_model().objects.following
