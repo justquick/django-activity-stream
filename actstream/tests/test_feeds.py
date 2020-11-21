@@ -29,11 +29,19 @@ class FeedsTestCase(base.DataTestCase):
             'Two started following CoolGroup %s ago' % self.timesince,
             'Two joined CoolGroup %s ago' % self.timesince,
         ]
+        expected_json = expected[2:]
+        expected_json_with_user_activity = expected_json + ['admin started following Two %s ago' % self.timesince,
+        'admin joined CoolGroup %s ago' % self.timesince,
+        'admin commented on CoolGroup %s ago' % self.timesince
+        ]
         rss = self.capture('actstream_feed')
         self.assertAllIn(self.rss_base + expected, rss)
         atom = self.capture('actstream_feed_atom')
         self.assertAllIn(self.atom_base + expected, atom)
         json = self.capture('actstream_feed_json')
+        self.assertAllIn(expected_json, json)
+        json_with_user_activity = self.capture('actstream_feed_json', query_string='with_user_activity=true') 
+        self.assertAllIn(expected_json_with_user_activity, json_with_user_activity) 
 
     def test_model_feed(self):
         expected = [

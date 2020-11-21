@@ -26,6 +26,14 @@ Shows user stream for currently logged in user.
     /activity/feed/atom/
     /activity/feed/json/
 
+If you want to include the user own activity, the optional parameter ``with_user_activity`` can be passed to the user stream as a query string parameter:
+
+.. code-block:: bash
+
+    /activity/feed/atom/?with_user_activity=true
+    /activity/feed/json/?with_user_activity=true
+ 
+
 :ref:`any-stream`
 
 .. code-block:: bash
