@@ -15,7 +15,7 @@ from django.urls import reverse
 from actstream.models import Action, model_stream, user_stream, any_stream
 
 
-class AbstractActivityStream(object):
+class AbstractActivityStream:
     """
     Abstract base class for all stream rendering.
     Supports hooks for fetching streams and formatting actions.
@@ -24,7 +24,7 @@ class AbstractActivityStream(object):
         """
         Returns a stream method to use.
         """
-        raise NotImplementedError
+        raise NotImplementedError   
 
     def get_object(self, *args, **kwargs):
         """
@@ -220,7 +220,7 @@ class JSONActivityFeed(AbstractActivityStream, View):
         }, indent=4 if 'pretty' in request.GET or 'pretty' in request.POST else None)
 
 
-class ModelActivityMixin(object):
+class ModelActivityMixin:
 
     def get_object(self, request, content_type_id):
         return get_object_or_404(ContentType, pk=content_type_id).model_class()
@@ -229,7 +229,7 @@ class ModelActivityMixin(object):
         return model_stream
 
 
-class ObjectActivityMixin(object):
+class ObjectActivityMixin:
 
     def get_object(self, request, content_type_id, object_id):
         ct = get_object_or_404(ContentType, pk=content_type_id)
@@ -242,8 +242,13 @@ class ObjectActivityMixin(object):
     def get_stream(self):
         return any_stream
 
+class StreamKwargsMixin:
+        
+    def items(self, request, *args, **kwargs):
+        return self.get_stream()(self.get_object(request, *args, **kwargs),**self.get_stream_kwargs(request))
+    
 
-class UserActivityMixin(object):
+class UserActivityMixin:
 
     def get_object(self, request):
         if request.user.is_authenticated:
@@ -252,8 +257,13 @@ class UserActivityMixin(object):
     def get_stream(self):
         return user_stream
 
+    def get_stream_kwargs(self, request):
+        stream_kwargs = {}
+        if 'with_user_activity' in request.GET:
+            stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
+        return stream_kwargs
 
-class CustomStreamMixin(object):
+class CustomStreamMixin:
     name = None
 
     def get_object(self):
@@ -331,7 +341,7 @@ class AtomObjectActivityFeed(ObjectActivityFeed):
     subtitle = ObjectActivityFeed.description
 
 
-class UserJSONActivityFeed(UserActivityMixin, JSONActivityFeed):
+class UserJSONActivityFeed(UserActivityMixin, StreamKwargsMixin, JSONActivityFeed):
     """
     JSON feed of Activity for a given user (where actions are those that the given user follows).
     """

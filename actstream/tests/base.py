@@ -51,9 +51,9 @@ class ActivityBaseTestCase(TestCase):
             l1 = map(str, l1)
         self.assertSequenceEqual(set(l1), set(l2), msg)
 
-    def assertAllIn(self, bits, string):
+    def assertAllIn(self, bits, obj):
         for bit in bits:
-            self.assertIn(bit, string)
+            self.assertIn(bit, str(obj))
 
     def assertJSON(self, string):
         return loads(string)
@@ -67,8 +67,8 @@ class ActivityBaseTestCase(TestCase):
         Follow.objects.all().delete()
         self.User.objects.all().delete()
 
-    def capture(self, viewname, *args):
-        response = self.client.get(reverse(viewname, args=args))
+    def capture(self, viewname, *args, query_string=''):
+        response = self.client.get('{}?{}'.format(reverse(viewname, args=args),query_string))
         content = response.content.decode()
         if response['Content-Type'] == 'application/json':
             return loads(content)
