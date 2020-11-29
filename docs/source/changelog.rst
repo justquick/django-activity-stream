@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Unreleased
+----------
+  - Replace travis by GitHub actions for CI
+  - BREAKING: Replace JSONField libs with django-jsonfield-backport
+
+
 0.9.0
 -----
   - Support django 3.0
