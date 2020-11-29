@@ -50,7 +50,8 @@ The activity urls are not required for basic usage but provide activity :ref:`fe
 Add extra data to actions
 -------------------------
 
-If you want to use custom data on your actions, then make sure you have `django-jsonfield <https://pypi.org/project/django-jsonfield/>`_ installed
+If you want to use custom data on your actions and are running Django < 3.1, then make sure you have
+`django-jsonfield-backport <https://pypi.org/project/django-jsonfield-backport/>`_ installed.
 
 .. code-block:: bash
 
@@ -74,7 +75,7 @@ Python
 ******
 
 
-* **Python 3**: 3.5 to 3.8
+* **Python 3**: 3.6 to 3.9
 * **PyPy**: 3
 
 Django
