@@ -36,6 +36,7 @@ Contents:
    streams
    templatetags
    feeds
+   development
    changelog
    api
 

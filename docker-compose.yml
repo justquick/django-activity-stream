@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+    django:
+        build: .
+        user: app
+        command: "runserver 0:8000"
+        volumes:
+            - ./runtests:/app:cached
+            - ./actstream:/app/actstream:cached
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            IPYTHONDIR: /app/.ipython
+            HISTFILE: /app/.bash_history
+            PYTHONDONTWRITEBYTECODE: "x"
+            PYTHONWARNINGS: default
+        restart: unless-stopped
