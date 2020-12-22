@@ -14,14 +14,18 @@ however that field will be removed by migration 0002 directly
 afterwards.
 
 '''
+from collections import namedtuple
+
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string
 
 from actstream.settings import USE_JSONFIELD
 
 
 __all__ = ('DataField', 'register_app')
 
+JSONFieldImport = namedtuple('JSONFieldImport', ['field_import', 'register_app_import'])
 
 def register_app(app):
     """Noop unless django-jsonfield-compat overwrites it."""
@@ -30,19 +34,27 @@ def register_app(app):
 
 DataField = models.TextField
 
-if USE_JSONFIELD:
-    try:
-        from jsonfield_compat import JSONField, register_app
-        DataField = JSONField
-    except ImportError as err:
-        try:
-            from django_mysql.models import JSONField
-            DataField = JSONField
+possible_imports = [
+    JSONFieldImport('django.db.models.JSONField', None),
+    JSONFieldImport('jsonfield_compat.JSONField', 'jsonfield_compat.register_app'),
+    JSONFieldImport('django_mysql.models.JSONField', None)
+]
 
+if USE_JSONFIELD:
+    for possible_import in possible_imports:
+        module, register_app_import = possible_import
+        try:
+            item = import_string(module)
+            DataField = item
+            if register_app_import:
+                register_app = import_string(register_app_import)
+            break
         except ImportError:
-            raise ImproperlyConfigured(
-                'You must either install django-jsonfield + '
-                'django-jsonfield-compat, or django-mysql as an '
-                'alternative, if you wish to use a JSONField on your '
-                'actions'
-            )
+            pass
+    
+    raise ImproperlyConfigured(
+        "You must either install django-jsonfield + "
+        "django-jsonfield-compat, or django-mysql as an "
+        "alternative, if you wish to use a JSONField on your "
+        "actions"
+    )
