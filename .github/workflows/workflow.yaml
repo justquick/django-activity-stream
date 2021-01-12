@@ -36,7 +36,7 @@ jobs:
       # postgres service
       postgres:
         # docker hub image
-        image: postgres:9.5-alpine
+        image: postgres:13-alpine
         # configure the instance
         env:
           POSTGRES_USER: postgres
@@ -54,7 +54,7 @@ jobs:
       # mysql service
       mysql:
         # docker hub image
-        image: mysql:5.7
+        image: mysql:8
         # configure the instance
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
