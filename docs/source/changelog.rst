@@ -3,10 +3,15 @@
 Changelog
 =========
 
-Unreleased
+0.10.0
 ----------
   - Replace travis by GitHub actions for CI
   - BREAKING: Replace JSONField libs with django-jsonfield-backport
+  - Make sure Action.data field is not added twice in ActstreamConfig #463
+  - Django 3.1 support
+  - Feature of having with_user_activity=True parameter when using User Activity Feed (User Stream) url
+  - Document fix
+
 
 
 0.9.0
