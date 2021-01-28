@@ -1,8 +1,8 @@
 Django Activity Stream
 ======================
 
-.. image:: https://travis-ci.org/justquick/django-activity-stream.svg?branch=master
-    :target: https://travis-ci.org/justquick/django-activity-stream
+.. image:: https://github.com/justquick/django-activity-stream/workflows/Test%20and%20deploy/badge.svg
+    :target: https://github.com/justquick/django-activity-stream/actions?query=workflow%3A%22Test+and+deploy%22
 
 .. image:: https://badges.gitter.im/django-activity-stream/Lobby.svg
    :alt: Join the chat at https://gitter.im/django-activity-stream/Lobby
