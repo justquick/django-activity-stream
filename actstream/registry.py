@@ -1,10 +1,11 @@
 from inspect import isclass
 
-import django
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.base import ModelBase
 from django.core.exceptions import ImproperlyConfigured
+
+from actstream.settings import get_action_model
 
 
 class RegistrationError(Exception):
@@ -15,7 +16,7 @@ def setup_generic_relations(model_class):
     """
     Set up GenericRelations for actionable models.
     """
-    Action = apps.get_model('actstream', 'action')
+    Action = get_action_model()
 
     if Action is None:
         raise RegistrationError(

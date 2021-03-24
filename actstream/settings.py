@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -28,11 +26,9 @@ FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
-FOLLOW_MODEL = SETTINGS.get('ACTSTREAM_FOLLOW_MODEL', 'actstream.Follow')
-ACTION_MODEL = SETTINGS.get('ACTSTREAM_ACTION_MODEL', 'actstream.Action')
 
-
-def get_swappable_model(model_lookup):
+def get_swappable_model(model):
+    model_lookup = getattr(settings, 'ACTSTREAM_%s_MODEL' % model.upper(), 'actstream.%s' % model)
     try:
         return apps.get_model(model_lookup, require_ready=False)
     except ValueError:
@@ -45,13 +41,11 @@ def get_swappable_model(model_lookup):
         )
 
 
-@lru_cache(maxsize=None)
 def get_follow_model():
     """Return the Follow model that is active."""
-    return get_swappable_model(FOLLOW_MODEL)
+    return get_swappable_model('Follow')
 
 
-@lru_cache(maxsize=None)
 def get_action_model():
     """Return the Action model that is active."""
-    return get_swappable_model(ACTION_MODEL)
+    return get_swappable_model('Action')

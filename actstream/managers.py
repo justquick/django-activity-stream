@@ -1,4 +1,3 @@
-from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
@@ -6,6 +5,7 @@ from django.db.models import Q
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
 from actstream.registry import check
+from actstream.settings import get_follow_model
 
 
 class ActionManager(GFKManager):
@@ -97,10 +97,10 @@ class ActionManager(GFKManager):
                 actor_object_id=obj.pk
             )
 
-        follows = apps.get_model('actstream', 'follow').objects.filter(user=obj)
+        follows = get_follow_model().objects.filter(user=obj)
         if follow_flag:
             follows = follows.filter(flag=follow_flag)
-            
+
         content_types = ContentType.objects.filter(
             pk__in=follows.values('content_type_id')
         )

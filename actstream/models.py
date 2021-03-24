@@ -13,7 +13,7 @@ from actstream import settings as actstream_settings
 from actstream.managers import FollowManager
 
 
-class Follow(models.Model):
+class AbstractFollow(models.Model):
     """
     Lets a user follow the activities of any specific actor
     """
@@ -36,13 +36,14 @@ class Follow(models.Model):
     objects = FollowManager()
 
     class Meta:
+        abstract = True
         unique_together = ('user', 'content_type', 'object_id', 'flag')
 
     def __str__(self):
         return '{} -> {} : {}'.format(self.user, self.follow_object, self.flag)
 
 
-class Action(models.Model):
+class AbstractAction(models.Model):
     """
     Action model describing the actor acting out a verb (on an optional
     target).
@@ -72,7 +73,7 @@ class Action(models.Model):
 
     """
     actor_content_type = models.ForeignKey(
-        ContentType, related_name='actor',
+        ContentType, related_name='%(app_label)s_actor',
         on_delete=models.CASCADE, db_index=True
     )
     actor_object_id = models.CharField(max_length=255, db_index=True)
@@ -83,7 +84,7 @@ class Action(models.Model):
 
     target_content_type = models.ForeignKey(
         ContentType, blank=True, null=True,
-        related_name='target',
+        related_name='%(app_label)s_target',
         on_delete=models.CASCADE, db_index=True
     )
     target_object_id = models.CharField(
@@ -96,7 +97,7 @@ class Action(models.Model):
 
     action_object_content_type = models.ForeignKey(
         ContentType, blank=True, null=True,
-        related_name='action_object',
+        related_name='%(app_label)s_action_object',
         on_delete=models.CASCADE, db_index=True
     )
     action_object_object_id = models.CharField(
@@ -114,6 +115,7 @@ class Action(models.Model):
     objects = actstream_settings.get_action_manager()
 
     class Meta:
+        abstract = True
         ordering = ('-timestamp',)
 
     def __str__(self):
@@ -163,6 +165,16 @@ class Action(models.Model):
     def get_absolute_url(self):
         return reverse(
             'actstream.views.detail', [self.pk])
+
+
+class Follow(AbstractFollow):
+    class Meta(AbstractFollow.Meta):
+        swappable = 'ACTSTREAM_FOLLOW_MODEL'
+
+
+class Action(AbstractAction):
+    class Meta(AbstractAction.Meta):
+        swappable = 'ACTSTREAM_ACTION_MODEL'
 
 
 # convenient accessors

@@ -1,7 +1,7 @@
-from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldDoesNotExist
 
 from actstream import settings
 from actstream.signals import action
@@ -32,7 +32,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag='', **kwargs):
         follow(request.user, group, actor_only=False, flag='liking')
     """
     check(obj)
-    instance, created = apps.get_model('actstream', 'follow').objects.get_or_create(
+    instance, created = settings.get_follow_model().objects.get_or_create(
         user=user, object_id=obj.pk, flag=flag,
         content_type=ContentType.objects.get_for_model(obj),
         actor_only=actor_only
@@ -60,7 +60,7 @@ def unfollow(user, obj, send_action=False, flag=''):
         unfollow(request.user, other_user, flag='watching')
     """
     check(obj)
-    qs = apps.get_model('actstream', 'follow').objects.filter(
+    qs = settings.get_follow_model().objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     )
@@ -91,7 +91,7 @@ def is_following(user, obj, flag=''):
     """
     check(obj)
 
-    qs = apps.get_model('actstream', 'follow').objects.filter(
+    qs = settings.get_follow_model().objects.filter(
         user=user, object_id=obj.pk,
         content_type=ContentType.objects.get_for_model(obj)
     )
@@ -114,7 +114,7 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
 
-    newaction = apps.get_model('actstream', 'action')(
+    newaction = settings.get_action_model()(
         actor_content_type=ContentType.objects.get_for_model(actor),
         actor_object_id=actor.pk,
         verb=str(verb),
@@ -130,6 +130,13 @@ def action_handler(verb, **kwargs):
             setattr(newaction, '%s_object_id' % opt, obj.pk)
             setattr(newaction, '%s_content_type' % opt,
                     ContentType.objects.get_for_model(obj))
+    for attr in list(kwargs.keys()):
+        try:
+            settings.get_action_model()._meta.get_field(attr)
+        except FieldDoesNotExist:
+            pass
+        else:
+            setattr(newaction, attr, kwargs.pop(attr))
     if settings.USE_JSONFIELD and len(kwargs):
         newaction.data = kwargs
     newaction.save(force_insert=True)

@@ -99,6 +99,7 @@ INSTALLED_APPS = (
 
     'testapp',
     'testapp_nested',
+    'custom',
 )
 
 ACTSTREAM_SETTINGS = {
