@@ -30,6 +30,6 @@ setup(name='django-activity-stream',
                    'Programming Language :: Python :: 3',
                    'Topic :: Utilities'],
       extras_require={
-        'jsonfield': ['django-jsonfield-backport>=1.0.2,<2.0'],
+          'jsonfield': ['django-jsonfield-backport>=1.0.2,<2.0'],
       },
       )
