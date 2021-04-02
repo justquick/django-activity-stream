@@ -21,13 +21,14 @@ User Streams
 User streams are the most important, like your News Feed on `github <https://github.com/>`_. Basically you follow anyone (or anything) on your site and their actions show up here.
 These streams take one argument which is a ``User`` instance which is the one doing the following (usually ``request.user``).
 
-If optional parameter ``with_user_activity`` is passed as ``True``, the stream will include user's own activity like Twitter. Default is ``False``
+If optional parameter ``with_user_activity`` is passed as ``True``, the stream will include user's own activity like Twitter. Default is ``False``.
+If the optional parameter ``since_following`` is passed as ``True``, the stream will only include the actions since the user started following that object. Default is ``False``.
 
 .. code-block:: python
 
     from actstream.models import user_stream
 
-    user_stream(request.user, with_user_activity=True)
+    user_stream(request.user, with_user_activity=True, since_following=True)
 
 Generates a stream of ``Actions`` from objects that ``request.user`` follows
 

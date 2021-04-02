@@ -266,6 +266,12 @@ class ActivityTestCase(DataTestCase):
         self.assertIn(self.join_action,
                       list(user_stream(self.user1, with_user_activity=True)))
 
+    def test_since_following(self):
+        follow(self.user1, self.group)
+        new_action = action.send(self.user2, verb='foo', target=self.group)[0][1]
+        self.assertGreater(user_stream(self.user1).count(), 1)
+        self.assertEqual(list(user_stream(self.user1, since_following=True)), [new_action])
+
     def test_store_untranslated_string(self):
         lang = get_language()
         activate('fr')
