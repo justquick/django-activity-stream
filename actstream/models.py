@@ -10,10 +10,11 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from actstream import settings as actstream_settings
+from actstream.base.models import UUIDModel
 from actstream.managers import FollowManager
 
 
-class Follow(models.Model):
+class Follow(UUIDModel):
     """
     Lets a user follow the activities of any specific actor
     """
@@ -42,7 +43,7 @@ class Follow(models.Model):
         return '{} -> {} : {}'.format(self.user, self.follow_object, self.flag)
 
 
-class Action(models.Model):
+class Action(UUIDModel):
     """
     Action model describing the actor acting out a verb (on an optional
     target).
