@@ -28,7 +28,7 @@ Changelog
   - Drop python 3.4 and 2.7
   - Add django 2.2
   - mysql jsonfied
-  - numerious bug fixes
+  - numerous bug fixes
 
 
 0.7.0
@@ -38,7 +38,7 @@ Changelog
   - Adjusted URLs with new versions of django
   - Improved tox and travis config
   - use render function instead of depricated render_to_response
-  - upgrade package depedencies
+  - upgrade package dependencies
   - django 1.11, 2.0 and 2.1 support added
   - Code clean ups
   - Add optional support for django-mysql's JSONField
