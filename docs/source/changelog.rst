@@ -3,6 +3,17 @@
 Changelog
 =========
 
+0.10.0
+----------
+  - Replace travis by GitHub actions for CI
+  - BREAKING: Replace JSONField libs with django-jsonfield-backport
+  - Make sure Action.data field is not added twice in ActstreamConfig #463
+  - Django 3.1 support
+  - Feature of having with_user_activity=True parameter when using User Activity Feed (User Stream) url
+  - Document fix
+
+
+
 0.9.0
 -----
   - Support django 3.0
@@ -17,7 +28,7 @@ Changelog
   - Drop python 3.4 and 2.7
   - Add django 2.2
   - mysql jsonfied
-  - numerious bug fixes
+  - numerous bug fixes
 
 
 0.7.0
@@ -27,7 +38,7 @@ Changelog
   - Adjusted URLs with new versions of django
   - Improved tox and travis config
   - use render function instead of depricated render_to_response
-  - upgrade package depedencies
+  - upgrade package dependencies
   - django 1.11, 2.0 and 2.1 support added
   - Code clean ups
   - Add optional support for django-mysql's JSONField

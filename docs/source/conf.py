@@ -14,9 +14,9 @@ import os
 import sys
 from datetime import datetime
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'actstream.runtests.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'runtests.settings'
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../actstream/runtests'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../runtests'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import django

@@ -6,31 +6,46 @@ ADMINS = (
     ('Justin Quick', 'justquick@gmail.com'),
 )
 
-ENGINE = os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3')
 DATABASES = {
     'default': {
-        'ENGINE': ENGINE,
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
         'OPTIONS': {
         }
     }
 }
 
-if 'postgres' in ENGINE or 'mysql' in ENGINE:
-    USER, PASSWORD = 'test', 'test'
-    if os.environ.get('TRAVIS', False):
-        if 'mysql' in ENGINE:
-            USER, PASSWORD = 'travis', ''
-        else:
-            USER, PASSWORD = 'postgres', ''
-    DATABASES['default'].update(
-        NAME='test',
-        USER=os.environ.get('DATABASE_USER', USER),
-        PASSWORD=os.environ.get('DATABASE_PASSWORD', PASSWORD),
-        HOST=os.environ.get('DATABASE_HOST', 'localhost')
-    )
-
-print(DATABASES)
+if os.environ.get('GITHUB_WORKFLOW', False):
+    DATABASE_ENGINE = os.environ.get('DATABASE_ENGINE', 'sqlite')
+    if 'mysql' in DATABASE_ENGINE:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'test',
+                'USER': 'root',
+                'PASSWORD': '',
+                'HOST': '127.0.0.1',
+                'PORT': '3306',
+            },
+        }
+    elif 'postgres' in DATABASE_ENGINE:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres',
+                'PASSWORD': 'postgres',
+                'HOST': '127.0.0.1',
+                'PORT': '5432',
+            },
+        }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            },
+        }
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

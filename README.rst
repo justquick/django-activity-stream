@@ -1,8 +1,8 @@
 Django Activity Stream
 ======================
 
-.. image:: https://travis-ci.org/justquick/django-activity-stream.svg?branch=master
-    :target: https://travis-ci.org/justquick/django-activity-stream
+.. image:: https://github.com/justquick/django-activity-stream/workflows/Test%20and%20deploy/badge.svg
+    :target: https://github.com/justquick/django-activity-stream/actions?query=workflow%3A%22Test+and+deploy%22
 
 .. image:: https://badges.gitter.im/django-activity-stream/Lobby.svg
    :alt: Join the chat at https://gitter.im/django-activity-stream/Lobby
@@ -54,8 +54,3 @@ Contributors
 This project exists thanks to all the people who contribute!
 
 .. image:: https://opencollective.com/django-activity-stream/contributors.svg?width=890&button=false
-
-Sponsors	
-========	
-
- `Get supported django-activity-stream with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-django-activity-stream?utm_source=pypi-django-activity-stream&utm_medium=referral&utm_campaign=readme>`_

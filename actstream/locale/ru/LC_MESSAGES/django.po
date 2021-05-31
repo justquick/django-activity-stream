@@ -1,0 +1,91 @@
+# This file is distributed under the same license as the PACKAGE package.
+# Surkov Denis <surkov0denis@yandex.ru>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-26 22:24+0500\n"
+"Last-Translator: Surkov Denis <surkov0denis@yandex.ru>\n"
+"Language: ru-RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: actions.py:42
+msgid "started following"
+msgstr "начал следить за"
+
+#: actions.py:44
+#, python-format
+msgid "started %s"
+msgstr "начал %s"
+
+#: actions.py:74
+msgid "stopped following"
+msgstr "перестал следить за"
+
+#: actions.py:76
+#, python-format
+msgid "stopped %s"
+msgstr "перестал %s"
+
+#: models.py:129
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s %(target)s %(timesince)s назад"
+
+#: models.py:130
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(target)s %(timesince)s назад"
+
+#: models.py:132
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s %(timesince)s назад"
+
+#: models.py:133
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(timesince)s назад"
+
+#: templates/actstream/action.html:13
+msgid "ago"
+msgstr "назад"
+
+#: templates/actstream/actor.html:24
+msgid "UNFOLLOW"
+msgstr "Отписаться"
+
+#: templates/actstream/actor.html:25
+msgid "FOLLOW"
+msgstr "Подписаться"
+
+#: templates/actstream/actor.html:32
+msgid "View my actions"
+msgstr "Посмотреть мои события"
+
+#: templates/actstream/actor.html:38
+msgid "No actions yet"
+msgstr "Еще нет событий"
+
+#: templates/actstream/detail.html:3
+#, python-format
+msgid "On %(date)s at %(time)s"
+msgstr "%(date)s в %(time)s"
+
+#: templates/actstream/followers.html:2
+#, python-format
+msgid "Users following %(actor)s"
+msgstr "Подписчики %(actor)s"
+
+#: templates/actstream/following.html:2
+#, python-format
+msgid "Actors that %(user)s follows"
+msgstr "Подписки %(user)s"
+
+#: tests/test_activity.py:272
+msgid "English"
+msgstr "Английский"

@@ -14,35 +14,29 @@ however that field will be removed by migration 0002 directly
 afterwards.
 
 '''
+import django
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 
 from actstream.settings import USE_JSONFIELD
 
 
-__all__ = ('DataField', 'register_app')
-
-
-def register_app(app):
-    """Noop unless django-jsonfield-compat overwrites it."""
-    pass
+__all__ = ('DataField', )
 
 
 DataField = models.TextField
 
 if USE_JSONFIELD:
-    try:
-        from jsonfield_compat import JSONField, register_app
+    if django.VERSION >= (3, 1):
+        from django.db.models import JSONField
         DataField = JSONField
-    except ImportError as err:
+    else:
         try:
-            from django_mysql.models import JSONField
+            from django_jsonfield_backport.models import JSONField
             DataField = JSONField
-
         except ImportError:
             raise ImproperlyConfigured(
-                'You must either install django-jsonfield + '
-                'django-jsonfield-compat, or django-mysql as an '
-                'alternative, if you wish to use a JSONField on your '
-                'actions'
+                'You must install django-jsonfield-backport, '
+                'if you wish to use a JSONField on your actions '
+                'and run Django < 3.1'
             )
