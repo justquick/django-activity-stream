@@ -162,7 +162,7 @@ class Action(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            'actstream.views.detail', [self.pk])
+            'actstream_detail', args=[self.pk])
 
 
 # convenient accessors
