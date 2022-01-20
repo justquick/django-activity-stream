@@ -1,8 +1,7 @@
 # -*- coding: utf-8  -*-
-import django
 from django.contrib.auth.models import Group
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.urls import reverse
 
