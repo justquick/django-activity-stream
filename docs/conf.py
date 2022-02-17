@@ -16,8 +16,8 @@ from datetime import datetime
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'runtests.settings'
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../runtests'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../runtests'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import django
 try:
