@@ -11,6 +11,8 @@ from actstream.signals import action
 
 class ActstreamConfig(AppConfig):
     name = 'actstream'
+    default_auto_field = 'django.db.models.AutoField'
+    verbose_name = 'Activity Streams'
 
     def ready(self):
         from actstream.actions import action_handler
