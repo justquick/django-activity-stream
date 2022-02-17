@@ -3,6 +3,10 @@ try:
 except:
     pass
 
-__version__ = '1.4.0'
+import django
+
+__version__ = '0.10.0'
 __author__ = 'Asif Saif Uddin, Justin Quick <justquick@gmail.com>'
-default_app_config = 'actstream.apps.ActstreamConfig'
+
+if django.VERSION < (3, 2):
+    default_app_config = 'actstream.apps.ActstreamConfig'
