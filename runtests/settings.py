@@ -101,7 +101,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'urls'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
