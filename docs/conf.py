@@ -114,7 +114,6 @@ html_theme_options = {
     'logo_text_align': 'center',
     'github_user': 'justquick',
     'github_repo': 'django-activity-stream',
-    'github_banner': 'img/fork.png',
     'github_button': True,
     'github_type': 'star',
     'description': 'Generate generic activity streams from the actions on your site. Users can follow any actors activities for personalized streams',
