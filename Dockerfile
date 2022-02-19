@@ -40,4 +40,4 @@ ENV DJANGO_SETTINGS_MODULE settings
 
 EXPOSE 8000
 
-ENTRYPOINT ["/app/manage.py"]
+CMD ["/app/manage.py", "runserver", "0.0.0.0:8000"]
