@@ -20,11 +20,12 @@ class AbstractActivityStream:
     Abstract base class for all stream rendering.
     Supports hooks for fetching streams and formatting actions.
     """
+
     def get_stream(self, *args, **kwargs):
         """
         Returns a stream method to use.
         """
-        raise NotImplementedError   
+        raise NotImplementedError
 
     def get_object(self, *args, **kwargs):
         """
@@ -46,7 +47,7 @@ class AbstractActivityStream:
             date = action.timestamp
         date = datetime_safe.new_datetime(date).strftime('%Y-%m-%d')
         return 'tag:{},{}:{}'.format(Site.objects.get_current().domain, date,
-                                 self.get_url(action, obj, False))
+                                     self.get_url(action, obj, False))
 
     def get_url(self, action, obj=None, domain=True):
         """
@@ -119,6 +120,7 @@ class ActivityStreamsAtomFeed(Atom1Feed):
     """
     Feed rendering class for the v1.0 Atom Activity Stream Spec
     """
+
     def root_attributes(self):
         attrs = super(ActivityStreamsAtomFeed, self).root_attributes()
         attrs['xmlns:activity'] = 'http://activitystrea.ms/spec/1.0/'
@@ -208,6 +210,7 @@ class JSONActivityFeed(AbstractActivityStream, View):
     """
     Feed that generates feeds compatible with the v1.0 JSON Activity Stream spec
     """
+
     def dispatch(self, request, *args, **kwargs):
         return HttpResponse(self.serialize(request, *args, **kwargs),
                             content_type='application/json')
@@ -242,11 +245,15 @@ class ObjectActivityMixin:
     def get_stream(self):
         return any_stream
 
+
 class StreamKwargsMixin:
-        
+
     def items(self, request, *args, **kwargs):
-        return self.get_stream()(self.get_object(request, *args, **kwargs),**self.get_stream_kwargs(request))
-    
+        return self.get_stream()(
+            self.get_object(request, *args, **kwargs),
+            **self.get_stream_kwargs(request)
+        )
+
 
 class UserActivityMixin:
 
@@ -262,6 +269,7 @@ class UserActivityMixin:
         if 'with_user_activity' in request.GET:
             stream_kwargs['with_user_activity'] = request.GET['with_user_activity'].lower() == 'true'
         return stream_kwargs
+
 
 class CustomStreamMixin:
     name = None

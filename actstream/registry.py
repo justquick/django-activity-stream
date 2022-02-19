@@ -1,6 +1,5 @@
 from inspect import isclass
 
-import django
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.base import ModelBase

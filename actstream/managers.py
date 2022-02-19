@@ -55,9 +55,9 @@ class ActionManager(GFKManager):
         check(model)
         ctype = ContentType.objects.get_for_model(model)
         return self.public(
-            (Q(target_content_type=ctype) |
-             Q(action_object_content_type=ctype) |
-             Q(actor_content_type=ctype)),
+            (Q(target_content_type=ctype)
+             | Q(action_object_content_type=ctype)
+             | Q(actor_content_type=ctype)),
             **kwargs
         )
 
@@ -100,7 +100,7 @@ class ActionManager(GFKManager):
         follows = apps.get_model('actstream', 'follow').objects.filter(user=obj)
         if follow_flag:
             follows = follows.filter(flag=follow_flag)
-            
+
         content_types = ContentType.objects.filter(
             pk__in=follows.values('content_type_id')
         )

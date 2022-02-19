@@ -68,7 +68,7 @@ class ActivityBaseTestCase(TestCase):
         self.User.objects.all().delete()
 
     def capture(self, viewname, *args, query_string=''):
-        response = self.client.get('{}?{}'.format(reverse(viewname, args=args),query_string))
+        response = self.client.get('{}?{}'.format(reverse(viewname, args=args), query_string))
         content = response.content.decode()
         if response['Content-Type'] == 'application/json':
             return loads(content)
