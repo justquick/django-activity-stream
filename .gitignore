@@ -9,3 +9,5 @@ __pycache__
 /.coverage
 .idea/
 *.egg-info
+db.sqlite3
+runtests/static/

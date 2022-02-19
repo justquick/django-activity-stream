@@ -1,4 +1,4 @@
-name: Test and deploy
+name: Tests
 
 # define when to run the action
 on:

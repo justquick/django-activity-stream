@@ -17,8 +17,6 @@ Django Activity Stream
 .. image:: https://img.shields.io/pypi/v/django-activity-stream.svg
     :target: https://pypi.python.org/pypi/django-activity-stream
 
-.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream.svg?type=shield
-   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fjustquick%2Fdjango-activity-stream?ref=badge_shiel
 
 
 What is Django Activity Stream?
