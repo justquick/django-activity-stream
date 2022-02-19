@@ -19,13 +19,18 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'runtests.settings'
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../runtests'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-import django
-try:
-    django.setup()
-except AttributeError:
-    pass
 
-import actstream
+def init():
+    import django
+    try:
+        django.setup()
+    except AttributeError:
+        pass
+    import actstream
+    return actstream
+
+
+actstream = init()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -103,25 +108,21 @@ pygments_style = 'tango'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-import alabaster
-extensions.append('alabaster')
-html_theme_path = [alabaster.get_path()]
 html_theme = 'alabaster'
-html_sidebars = {
-   '**': [
-       'about.html', 'navigation.html', 'searchbox.html', 'donate.html',
-   ]
-}
-html_static_path = ['_static']
 html_theme_options = {
     'logo': 'logo.jpg',
     'logo_text_align': 'center',
-    'description': 'Generic activity streams for Django',
     'github_user': 'justquick',
     'github_repo': 'django-activity-stream',
-    'gittip_user': 'justquick',
+    'github_banner': 'img/fork.png',
+    'github_button': True,
+    'github_type': 'star',
+    'description': 'Generate generic activity streams from the actions on your site. Users can follow any actors activities for personalized streams',
+    'page_width': '1000px',
     'analytics_id': 'UA-42089198-1'
 }
+html_static_path = ['_static']
+html_css_files = ['style.css']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'DjangoActivityStreamdoc'

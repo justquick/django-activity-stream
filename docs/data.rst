@@ -1,7 +1,10 @@
 .. _custom-data:
 
-Adding Custom Data to your Actions
-==================================
+Custom Action Data
+==================
+
+In a New Project
+----------------
 
 As of v0.4.4, django-activity-stream now supports adding custom data to any Actions you generate.
 This uses a ``data`` JSONField on every Action where you can insert and delete values at will.
@@ -40,3 +43,34 @@ Even in a template
 .. code-block:: django
 
     You are {{ action.actor }} your quest is {{ action.data.quest }} and your favorite color is {{ action.data.favorite_color }}
+
+Adding to Existing Project
+--------------------------
+
+If you start out your project with ``USE_JSONFIELD=False``, dont worry you can add it afterwards.
+
+Make sure you have the latest JSONField implementation
+
+.. code-block::
+
+    pip install django-activity-stream[jsonfield]
+
+Make sure ``USE_JSONFIELD`` is non-existent or set to False then do the initial migration
+
+.. code-block:: bash
+
+    python manage.py migrate actstream 0001
+
+Update the setting
+
+.. code-block:: python
+
+    ACTSTREAM_SETTINGS = {
+        "USE_JSONFIELD": True,
+    }
+
+Then migrate the whole app
+
+.. code-block:: bash
+
+    python manage.py migrate actstream
