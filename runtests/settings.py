@@ -1,5 +1,6 @@
 import os
 
+# Always for debugging, dont use the runtests app in production!
 DEBUG = True
 
 ADMINS = (
@@ -65,12 +66,12 @@ SITE_ID = 1
 USE_I18N = True
 
 # Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
+# Example: '/home/media/media.lawrence.com/'
 MEDIA_ROOT = 'media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
+# Examples: 'http://media.lawrence.com', 'http://example.com/media/'
 MEDIA_URL = '/media/'
 
 # Make this unique, and don't share it with anybody.
@@ -90,6 +91,7 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -100,6 +102,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'urls'
+
+if DEBUG:
+    import os  # only if you haven't already imported this
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -112,6 +120,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+
+    'django_extensions',
+    'rest_framework',
+    'generic_relations',
+    'debug_toolbar',
 
     'actstream',
 
