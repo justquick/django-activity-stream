@@ -3,8 +3,7 @@ version: "3.5"
 services:
     django:
         build: .
-        user: app
-        command: sh -c "./manage.py migrate && ./manage.py collectstatic --noinput && ./manage.py runserver 0.0.0.0:8000"
+        command: sh -c "./manage.py migrate && ./manage.py collectstatic --noinput && ./manage.py runserver_plus 0.0.0.0:8000"
         volumes:
             - ./runtests:/app:rw
             - ./actstream:/app/actstream:cached
