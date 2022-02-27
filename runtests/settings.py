@@ -157,6 +157,9 @@ ACTSTREAM_SETTINGS = {
         'ENABLE': True,
         'SERIALIZERS': {
             'auth.Group': 'testapp.drf.GroupSerializer'
+        },
+        'VIEWSETS': {
+            'auth.Group': 'testapp.drf.GroupViewSet'
         }
     }
 }

@@ -7,7 +7,11 @@ SETTINGS = getattr(settings, 'ACTSTREAM_SETTINGS', {})
 
 def import_obj(mod):
     mod_path = mod.split('.')
-    return getattr(__import__('.'.join(mod_path[:-1]), {}, {}, [mod_path[-1]]), mod_path[-1])
+    try:
+        obj = __import__('.'.join(mod_path[:-1]), {}, {}, [mod_path[-1]])
+        return getattr(obj, mod_path[-1])
+    except:
+        raise ImportError(f'Cannot import: {mod}')
 
 
 def get_action_manager():
@@ -25,17 +29,16 @@ FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
-DRF_SETTINGS = SETTINGS.get('DRF', {})
 
-DRF_DEFAULTS = {
+DRF_SETTINGS = {
     'ENABLE': False,
     'EXPAND_FIELDS': False,
     'HYPERLINK_FIELDS': True,
     'SERIALIZERS': {},
-    'VIEWSETS': {}
+    'VIEWSETS': {},
+    'PERMISSIONS': ['rest_framework.permissions.IsAuthenticated']
 }
-for name, value in DRF_DEFAULTS.items():
-    DRF_SETTINGS.setdefault(name, value)
+DRF_SETTINGS.update(SETTINGS.get('DRF', {}))
 
 USE_DRF = DRF_SETTINGS['ENABLE']
 

@@ -1,3 +1,5 @@
+from django.utils.text import slugify
+
 from rest_framework import routers
 
 from actstream.drf.views import FollowViewSet, ActionViewSet, registered_viewsets
@@ -10,4 +12,5 @@ router.register(r'follows', FollowViewSet)
 
 # register a router for each model_class in the registry
 for model_class, viewset in registered_viewsets.items():
-    router.register(str(model_class._meta.verbose_name_plural), viewset)
+    name = str(slugify(model_class._meta.verbose_name_plural))
+    router.register(name, viewset)

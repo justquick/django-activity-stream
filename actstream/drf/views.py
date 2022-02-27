@@ -5,22 +5,26 @@ from rest_framework.decorators import action
 from actstream.drf.serializers import FollowSerializer, ActionSerializer, registered_serializers, registry_factory
 from actstream.models import Action, Follow
 from actstream.registry import label
-from actstream.settings import DRF_SETTINGS
-
-DEFAULT_VIEWSET = viewsets.ReadOnlyModelViewSet
+from actstream.settings import DRF_SETTINGS, import_obj
 
 
-class ActionViewSet(DEFAULT_VIEWSET):
+class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
+    def get_permissions(self):
+        print(DRF_SETTINGS)
+        return [import_obj(permission)() for permission in DRF_SETTINGS['PERMISSIONS']]
+
+
+class ActionViewSet(DefaultModelViewSet):
     queryset = Action.objects.public().prefetch_related()
     serializer_class = ActionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['POST'])
     def send(self, request):
         pass
 
 
-class FollowViewSet(DEFAULT_VIEWSET):
+class FollowViewSet(DefaultModelViewSet):
     queryset = Follow.objects.prefetch_related()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -40,11 +44,11 @@ def viewset_factory(model_class, queryset=None):
     serializer_class = registered_serializers[model_class]
     model_label = label(model_class)
     if model_label in DRF_SETTINGS['VIEWSETS']:
-        return DRF_SETTINGS['VIEWSETS'][model_label]
-    return type(f'{model_class.__name__}ViewSet', (DEFAULT_VIEWSET,), {
+        return import_obj(DRF_SETTINGS['VIEWSETS'][model_label])
+    return type(f'{model_class.__name__}ViewSet', (DefaultModelViewSet,), {
         'queryset': queryset,
         'serializer_class': serializer_class,
-        'permission_classes': [permissions.IsAuthenticated]
+        # 'permission_classes': [permissions.IsAuthenticated]
     })
 
 
