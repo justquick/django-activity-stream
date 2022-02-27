@@ -1,9 +1,10 @@
+from inspect import getmro
 from rest_framework import serializers
 from generic_relations.relations import GenericRelatedField
 
 from actstream.models import Follow, Action
-from actstream.registry import registry
-from actstream.settings import DRF_SETTINGS
+from actstream.registry import registry, label
+from actstream.settings import DRF_SETTINGS, import_obj
 
 
 class ExpandRelatedField(serializers.RelatedField):
@@ -15,13 +16,21 @@ DEFAULT_SERIALIZER = serializers.ModelSerializer
 
 
 def serializer_factory(model_class, **meta_opts):
+    """
+    Returns a subclass of `ModelSerializer` for each model_class in the registry
+    """
     meta_opts.setdefault('fields', '__all__')
     meta_class = type('Meta', (), {'model': model_class, 'fields': '__all__'})
-    serializer_class = DRF_SETTINGS['SERIALIZERS'].get(model_class, DEFAULT_SERIALIZER)
-    return type(f'{model_class.__name__}Serializer', (serializer_class,), {'Meta': meta_class})
+    model_label = label(model_class).lower()
+    if model_label in DRF_SETTINGS['SERIALIZERS']:
+        return import_obj(DRF_SETTINGS['SERIALIZERS'][model_label])
+    return type(f'{model_class.__name__}Serializer', (DEFAULT_SERIALIZER,), {'Meta': meta_class})
 
 
 def related_field_factory(model_class, queryset=None):
+    """
+    Returns a subclass of `RelatedField` for each model_class in the registry
+    """
     if queryset is None:
         queryset = model_class.objects.all()
     related_field_class = serializers.PrimaryKeyRelatedField
@@ -36,30 +45,36 @@ def related_field_factory(model_class, queryset=None):
 
 
 def registry_factory(factory):
+    """
+    Returns a mapping of the registry's model_class applied with the factory function
+    """
     return {model_class: factory(model_class) for model_class in registry}
 
 
-def GRF():
+def get_grf():
+    """
+    Get a new `GenericRelatedField` instance for each use of the related field
+    """
     return GenericRelatedField(registry_factory(related_field_factory))
 
 
 registered_serializers = registry_factory(serializer_factory)
 
 
-class ActionSerializer(serializers.ModelSerializer):
-    actor = GRF()
-    target = GRF()
-    action_object = GRF()
+class ActionSerializer(DEFAULT_SERIALIZER):
+    actor = get_grf()
+    target = get_grf()
+    action_object = get_grf()
 
     class Meta:
         model = Action
-        fields = ['id', 'verb', 'description', 'timestamp', 'actor', 'target', 'action_object']
+        fields = 'id verb description timestamp actor target action_object'.split()
 
 
-class FollowSerializer(serializers.ModelSerializer):
-    user = GRF()
-    follow_object = GRF()
+class FollowSerializer(DEFAULT_SERIALIZER):
+    user = get_grf()
+    follow_object = get_grf()
 
     class Meta:
         model = Follow
-        fields = ['id', 'flag', 'user', 'follow_object', 'started', 'actor_only']
+        fields = 'id flag user follow_object started actor_only'.split()

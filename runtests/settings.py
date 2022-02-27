@@ -91,7 +91,6 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -111,7 +110,7 @@ if DEBUG:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
@@ -121,16 +120,29 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
-    'django_extensions',
     'rest_framework',
     'generic_relations',
-    'debug_toolbar',
 
     'actstream',
 
     'testapp',
     'testapp_nested',
-)
+]
+
+try:
+    import debug_toolbar
+except:
+    pass
+else:
+    INSTALLED_APPS.append('debug_toolbar')
+
+try:
+    import django_extensions
+except:
+    pass
+else:
+    INSTALLED_APPS.append('django_extensions')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
@@ -141,6 +153,12 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
+    'DRF': {
+        'ENABLE': True,
+        'SERIALIZERS': {
+            'auth.Group': 'testapp.drf.GroupSerializer'
+        }
+    }
 }
 
 AUTH_USER_MODEL = 'testapp.MyUser'

@@ -1,8 +1,8 @@
 Django>=4.0
 django-jsonfield-backport
-djangorestframework
 django-extensions
 ipdb
 werkzeug
 rest-framework-generic-relations
 django-debug-toolbar
+django-rest-framework

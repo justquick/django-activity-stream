@@ -24,7 +24,7 @@ def setup_generic_relations(model_class):
         )
 
     related_attr_name = 'related_query_name'
-    related_attr_value = 'actions_with_%s' % label(model_class)
+    related_attr_value = 'actions_with_%s' % label(model_class, '_')
 
     relations = {}
     for field in ('actor', 'target', 'action_object'):
@@ -44,18 +44,20 @@ def setup_generic_relations(model_class):
     return relations
 
 
-def label(model_class):
+def label(model_class, sep='.'):
+    """
+    Returns a string label for the model class. eg auth.User
+    """
     if hasattr(model_class._meta, 'model_name'):
         model_name = model_class._meta.model_name
     else:
         model_name = model_class._meta.module_name
-    return '{}_{}'.format(model_class._meta.app_label, model_name)
+    return '{}{}{}'.format(model_class._meta.app_label, sep, model_name)
 
 
 def is_installed(model_class):
     """
     Returns True if a model_class is installed.
-    model_class._meta.installed is only reliable in Django 1.7+
     """
     return model_class._meta.installed
 
