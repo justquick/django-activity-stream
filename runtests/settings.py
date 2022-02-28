@@ -120,9 +120,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
-    'rest_framework',
-    'generic_relations',
-
     'actstream',
 
     'testapp',
@@ -135,6 +132,13 @@ except:
     pass
 else:
     INSTALLED_APPS.append('debug_toolbar')
+
+try:
+    import rest_framework
+except:
+    pass
+else:
+    INSTALLED_APPS.extend(['rest_framework', 'generic_relations'])
 
 try:
     import django_extensions
