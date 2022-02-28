@@ -154,13 +154,14 @@ ACTSTREAM_SETTINGS = {
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
     'DRF': {
-        'ENABLE': True,
         'SERIALIZERS': {
-            'auth.Group': 'testapp.drf.GroupSerializer'
+            'auth.Group': 'testapp.drf.GroupSerializer',
+            'testapp.MyUser': 'testapp.drf.MyUserSerializer'
         },
         'VIEWSETS': {
             'auth.Group': 'testapp.drf.GroupViewSet'
-        }
+        },
+        'PERMISSIONS': []
     }
 }
 

@@ -17,10 +17,13 @@ class DRFTestCase(DataTestCase):
 
         super().setUp()
         self.client = APIClient()
-        # self.client.login(username='admin', password='admin')
+        self.auth_client = APIClient()
+        self.auth_client.login(username='admin', password='admin')
 
     def get(self, *args, **kwargs):
-        return self.client.get(*args, **kwargs).data
+        auth = kwargs.pop('auth', False)
+        client = self.auth_client if auth else self.client
+        return client.get(*args, **kwargs).data
 
     def test_actstream(self):
         actions = self.get('/api/actions/')
@@ -64,3 +67,8 @@ class DRFTestCase(DataTestCase):
         resp = self.client.head('/api/groups/foo/')
         self.assertEqual(resp.status_code, 420)
         self.assertEqual(resp.data, ['chill'])
+
+    def test_me(self):
+        actions = self.get('/api/actions/me/', auth=True)
+        self.assertEqual(len(actions), 3)
+        self.assertEqual(actions[0]['verb'], 'joined')
