@@ -29,6 +29,7 @@ FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
+USE_DRF = 'DRF' in SETTINGS
 
 DRF_SETTINGS = {
     'ENABLE': False,
@@ -38,11 +39,11 @@ DRF_SETTINGS = {
     'VIEWSETS': {},
     'PERMISSIONS': ['rest_framework.permissions.IsAuthenticated']
 }
-DRF_SETTINGS.update(SETTINGS.get('DRF', {}))
 
-USE_DRF = DRF_SETTINGS['ENABLE']
+if USE_DRF:
+    DRF_SETTINGS.update(SETTINGS.get('DRF', {}))
 
-for item in ('SERIALIZERS', 'VIEWSETS'):
-    DRF_SETTINGS[item] = {
-        label.lower(): obj for label, obj in DRF_SETTINGS[item].items()
-    }
+    for item in ('SERIALIZERS', 'VIEWSETS'):
+        DRF_SETTINGS[item] = {
+            label.lower(): obj for label, obj in DRF_SETTINGS[item].items()
+        }
