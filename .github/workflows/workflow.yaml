@@ -106,9 +106,9 @@ jobs:
       - name: Install django-jsonfield-backport
         if: matrix.django == 2.2
         run: pip install "django-jsonfield-backport>=1.0.2,<2.0"
-      - name: Install Django ReST framework
-        run: pip install django-rest-framework
-        
+      - name: Install Django ReST framework libraries
+        run: pip install django-rest-framework rest-framework-generic-relations
+
       # install our package
       - name: Install package
         run: pip install -e .
