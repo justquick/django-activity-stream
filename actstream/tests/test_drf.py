@@ -5,6 +5,7 @@ from django.contrib.sites.models import Site
 
 from actstream.tests.base import DataTestCase
 from actstream.settings import USE_DRF
+from actstream.models import Action
 
 from testapp.models import MyUser, Player
 from testapp_nested.models.my_model import NestedModel
@@ -72,3 +73,29 @@ class DRFTestCase(DataTestCase):
         actions = self.get('/api/actions/me/', auth=True)
         self.assertEqual(len(actions), 3)
         self.assertEqual(actions[0]['verb'], 'joined')
+
+    def test_model(self):
+        actions = self.get(f'/api/actions/model/{self.group_ct.id}/', auth=True)
+        self.assertEqual(len(actions), 7)
+        self.assertEqual(actions[0]['verb'], 'joined')
+
+    def test_object(self):
+        url = f'/api/actions/object/{self.group_ct.id}/{self.group.id}/'
+        actions = self.get(url, auth=True)
+        self.assertEqual(len(actions), 5)
+        self.assertEqual(actions[0]['verb'], 'responded to')
+
+    def test_action_send(self):
+        body = {
+            'verb': 'mentioned',
+            'description': 'talked about a group',
+            'target_content_type_id': self.group_ct.id,
+            'target_object_id': self.group.id
+        }
+        post = self.auth_client.post('/api/actions/send/', body)
+        self.assertEqual(post.status_code, 201)
+        action = Action.objects.first()
+        self.assertEqual(action.description, body['description'])
+        self.assertEqual(action.verb, body['verb'])
+        self.assertEqual(action.actor, self.user1)
+        self.assertEqual(action.target, self.group)

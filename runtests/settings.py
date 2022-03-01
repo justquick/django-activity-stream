@@ -165,7 +165,9 @@ ACTSTREAM_SETTINGS = {
         'VIEWSETS': {
             'auth.Group': 'testapp.drf.GroupViewSet'
         },
-        'PERMISSIONS': []
+        'PERMISSIONS': {
+
+        }
     }
 }
 

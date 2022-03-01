@@ -1,4 +1,3 @@
-from inspect import getmro
 from rest_framework import serializers
 from generic_relations.relations import GenericRelatedField
 
