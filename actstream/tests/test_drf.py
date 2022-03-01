@@ -2,10 +2,11 @@ from unittest import skipUnless
 
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
+from django.contrib.contenttypes.models import ContentType
 
 from actstream.tests.base import DataTestCase
 from actstream.settings import USE_DRF
-from actstream.models import Action
+from actstream.models import Action, Follow
 
 from testapp.models import MyUser, Player
 from testapp_nested.models.my_model import NestedModel
@@ -99,3 +100,14 @@ class DRFTestCase(DataTestCase):
         self.assertEqual(action.verb, body['verb'])
         self.assertEqual(action.actor, self.user1)
         self.assertEqual(action.target, self.group)
+
+    def test_follow(self):
+        body = {
+            'content_type_id': ContentType.objects.get_for_model(self.comment).id,
+            'object_id': self.comment.id
+        }
+        post = self.auth_client.post('/api/follows/follow/', body)
+        self.assertEqual(post.status_code, 201)
+        follow = Follow.objects.order_by('-id').first()
+        self.assertEqual(follow.follow_object, self.comment)
+        self.assertEqual(follow.user, self.user1)

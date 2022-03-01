@@ -12,6 +12,7 @@ from actstream.models import Action, Follow, actor_stream, model_stream, any_str
 from actstream.registry import label
 from actstream.settings import DRF_SETTINGS, import_obj
 from actstream.signals import action as action_signal
+from actstream.actions import follow as follow_action
 
 
 class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,7 +44,14 @@ class ActionViewSet(DefaultModelViewSet):
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
     def send(self, request):
+        """
+        Sends the action signal on POST
+        Must have a verb and optional target/action_object with content_type_id/object_id pairs
+        Actor is set as current logged in user
+        """
         data = request.data.dict()
+        if 'verb' not in data:
+            return Response(status=400)
 
         for name in ('target', 'action_object'):
             if f'{name}_content_type_id' in data and f'{name}_object_id' in data:
@@ -54,6 +62,9 @@ class ActionViewSet(DefaultModelViewSet):
         return Response(status=201)
 
     def get_stream(self, stream):
+        """
+        Helper for paginating streams and serializing responses
+        """
         page = self.paginate_queryset(stream)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -63,15 +74,26 @@ class ActionViewSet(DefaultModelViewSet):
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], name='My Actions')
     def me(self, request):
+        """
+        Returns the actor_stream for the current user
+        """
         return self.get_stream(actor_stream(request.user))
 
     @action(detail=False, url_path='model/(?P<content_type_id>[^/.]+)', name='Model activity stream')
     def model(self, request, content_type_id):
+        """
+        Returns all actions for a given content type.
+        See model_stream
+        """
         content_type = get_object_or_404(ContentType, id=content_type_id)
         return self.get_stream(model_stream(content_type.model_class()))
 
     @action(detail=False, url_path='object/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Object activity stream')
     def object(self, request, content_type_id, object_id):
+        """
+        Returns all actions for a given object.
+        See any_stream
+        """
         content_type = get_object_or_404(ContentType, id=content_type_id)
         obj = content_type.get_object_for_this_type(pk=object_id)
         return self.get_stream(any_stream(obj))
@@ -83,10 +105,19 @@ class FollowViewSet(DefaultModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     ordering_fields = ordering = ['-started']
 
-    @action(detail=False, methods=['POST'])
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
     def follow(self, request):
-        # TODO: implement follow action
-        pass
+        """
+        Creates the follow relationship.
+        The current user is set as user and the target is passed with content_type_id/object_id pair
+        """
+        data = request.data.dict()
+        if 'content_type_id' not in data:
+            return Response(status=400)
+        ctype = get_object_or_404(ContentType, id=data.pop('content_type_id'))
+        obj = ctype.get_object_for_this_type(pk=data.pop('object_id'))
+        follow_action(request.user, obj, **data)
+        return Response(status=201)
 
 
 def viewset_factory(model_class, queryset=None):
