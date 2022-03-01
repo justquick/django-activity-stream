@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import re_path, include, path
 
 from actstream import feeds, views
 from actstream.settings import USE_DRF
@@ -6,9 +6,9 @@ from actstream.settings import USE_DRF
 urlpatterns = []
 
 if USE_DRF:
-    from actstream.drf.urls import urlpatterns
+    from actstream.drf.urls import router
     urlpatterns += [
-        re_path('api/', include(urlpatterns)),
+        path('api/', include(router.urls)),
     ]
 
 urlpatterns += [
