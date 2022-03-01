@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.tests.base import DataTestCase
-from actstream.settings import USE_DRF
+from actstream.settings import USE_DRF, DRF_SETTINGS
 from actstream.models import Action, Follow
 
 from testapp.models import MyUser, Player
@@ -33,11 +33,20 @@ class DRFTestCase(DataTestCase):
         follows = self.get('/api/follows/')
         self.assertEqual(len(follows), 6)
 
-    def test_hyperlink(self):
+    @skipUnless(DRF_SETTINGS['HYPERLINK_FIELDS'], 'Related hyperlinks disabled')
+    def test_hyperlink_fields(self):
         actions = self.get('/api/actions/')
         action = self.get(f'/api/actions/{actions[0]["id"]}/')
         self.assertEqual(action['timestamp'], '2000-01-01T00:00:00')
         self.assertStartsWith(action['actor'], 'http')
+
+    @skipUnless(DRF_SETTINGS['EXPAND_FIELDS'], 'Related expanded fields disabled')
+    def test_expand_fields(self):
+        actions = self.get('/api/actions/')
+        action = self.get(f'/api/actions/{actions[0]["id"]}/')
+        self.assertEqual(action['timestamp'], '2000-01-01T00:00:00')
+        self.assertIsInstance(action['target'], dict)
+        self.assertEqual(action['target']['username'], 'Three')
 
     def test_urls(self):
         from actstream.drf.urls import router

@@ -33,8 +33,8 @@ USE_DRF = 'DRF' in SETTINGS
 
 DRF_SETTINGS = {
     'ENABLE': False,
-    'EXPAND_FIELDS': False,
-    'HYPERLINK_FIELDS': True,
+    'EXPAND_FIELDS': True,
+    'HYPERLINK_FIELDS': False,
     'SERIALIZERS': {},
     'VIEWSETS': {},
     'PERMISSIONS': ['rest_framework.permissions.IsAuthenticated']
