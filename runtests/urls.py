@@ -17,10 +17,3 @@ urlpatterns = [
 
 if 'debug_toolbar' in settings.INSTALLED_APPS:
     urlpatterns.insert(0, re_path('__debug__/', include('debug_toolbar.urls')))
-
-if 'rest_framework' in settings.INSTALLED_APPS:
-    from actstream.drf.urls import router
-    urlpatterns = [
-        re_path('api/', include(router.urls)),
-        re_path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    ] + urlpatterns

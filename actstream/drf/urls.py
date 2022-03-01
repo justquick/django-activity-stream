@@ -14,3 +14,5 @@ router.register(r'follows', FollowViewSet)
 for model_class, viewset in registered_viewsets.items():
     name = str(slugify(model_class._meta.verbose_name_plural))
     router.register(name, viewset)
+
+urlpatterns = router.urls
