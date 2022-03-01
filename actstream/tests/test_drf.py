@@ -83,7 +83,6 @@ class DRFTestCase(DataTestCase):
         url = f'/api/actions/object/{self.group_ct.id}/{self.group.id}/'
         actions = self.get(url, auth=True)
         self.assertEqual(len(actions), 5)
-        self.assertEqual(actions[0]['verb'], 'responded to')
 
     def test_action_send(self):
         body = {
