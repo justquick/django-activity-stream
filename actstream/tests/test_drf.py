@@ -34,6 +34,7 @@ class DRFTestCase(DataTestCase):
 
     def test_hyperlink(self):
         action = self.get('/api/actions/1/')
+        print('DEBUG',action)
         self.assertEqual(action['timestamp'], '2000-01-01T00:00:00')
         self.assertStartsWith(action['actor'], 'http')
 

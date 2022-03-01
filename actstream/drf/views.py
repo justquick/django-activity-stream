@@ -39,6 +39,7 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
 class ActionViewSet(DefaultModelViewSet):
     queryset = Action.objects.public().prefetch_related()
     serializer_class = ActionSerializer
+    ordering_fields = ordering = ['-timestamp']
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
     def send(self, request):
@@ -80,7 +81,7 @@ class FollowViewSet(DefaultModelViewSet):
     queryset = Follow.objects.prefetch_related()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
-    ordering_fields = ordering = ['started']
+    ordering_fields = ordering = ['-started']
 
     @action(detail=False, methods=['POST'])
     def follow(self, request):
