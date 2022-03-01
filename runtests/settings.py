@@ -1,5 +1,5 @@
 import os
-
+from actstream import __version__
 # Always for debugging, dont use the runtests app in production!
 DEBUG = True
 
@@ -120,6 +120,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
+
     'actstream',
 
     'testapp',
@@ -139,6 +140,7 @@ except:
     pass
 else:
     INSTALLED_APPS.extend(['rest_framework', 'generic_relations'])
+
 
 try:
     import django_extensions
@@ -172,3 +174,23 @@ ACTSTREAM_SETTINGS = {
 }
 
 AUTH_USER_MODEL = 'testapp.MyUser'
+
+
+REST_FRAMEWORK = {
+}
+
+try:
+    import drf_spectacular
+except:
+    pass
+else:
+    INSTALLED_APPS.extend(['drf_spectacular'])
+    REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS'] = 'drf_spectacular.openapi.AutoSchema'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Django Activity Streams API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': __version__,
+    'EXTERNAL_DOCS': {'url': '', 'description': ''},
+    'CONTACT': {'name': '', 'email': ''},
+}
