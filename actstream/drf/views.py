@@ -85,6 +85,7 @@ class FollowViewSet(DefaultModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def follow(self, request):
+        # TODO: implement follow action
         pass
 
 
