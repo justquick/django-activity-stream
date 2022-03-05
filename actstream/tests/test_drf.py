@@ -72,7 +72,7 @@ class DRFTestCase(DataTestCase):
 
     def test_model_fields(self):
         sites = self.get('/api/sites/')
-        self.assertSetEqual(sites[0].keys(), ['domain'])
+        self.assertSetEqual(sites[0].keys(), ['id', 'domain'])
 
     def test_serializers(self):
         from actstream.drf.serializers import registered_serializers as serializers

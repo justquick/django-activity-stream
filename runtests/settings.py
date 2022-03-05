@@ -176,7 +176,7 @@ ACTSTREAM_SETTINGS = {
             'testapp.MyUser': ['rest_framework.permissions.IsAdminUser']
         },
         'MODEL_FIELDS': {
-            'sites.Site': ['domain']
+            'sites.Site': ['id', 'domain']
         }
     }
 }
