@@ -53,16 +53,22 @@ class DRFTestCase(DataTestCase):
 
         registerd = [url[0] for url in router.registry]
         names = ['actions', 'follows', 'groups', 'sites',
-                 'players', 'my-users', 'nested-models']
-        self.assertSetEqual(registerd, names)
+                 'players', 'nested-models']
+        self.assertSetEqual(registerd, names + ['my-users'])
         endpoints = self.get('/api/')
         self.assertSetEqual(registerd, endpoints.keys())
-        for url in registerd:
+        for url in names:
             objs = self.get(f'/api/{url}/')
             self.assertIsInstance(objs, list)
             if len(objs):
                 obj = self.get(f'/api/{url}/{objs[0]["id"]}/')
                 assert objs[0] == obj
+
+    def test_permissions(self):
+        users = self.get('/api/my-users/')
+        assert str(users['detail']) == 'Authentication credentials were not provided.'
+        users = self.get('/api/my-users/', auth=True)
+        assert len(users) == 4
 
     def test_serializers(self):
         from actstream.drf.serializers import registered_serializers as serializers

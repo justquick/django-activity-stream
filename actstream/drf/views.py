@@ -16,7 +16,6 @@ from actstream.actions import follow as follow_action
 
 
 class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
-    _permission_cache = {}
 
     def get_permissions(self):
         if isinstance(DRF_SETTINGS['PERMISSIONS'], (tuple, list)):
@@ -24,15 +23,12 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
         if isinstance(DRF_SETTINGS['PERMISSIONS'], dict):
             lookup = {key.lower(): value for key, value in DRF_SETTINGS['PERMISSIONS'].items()}
             model_label = label(self.get_serializer().Meta.model).lower()
-            if model_label in self._permission_cache:
-                return self._permission_cache[model_label]
             if model_label in lookup:
                 permissions = lookup[model_label]
                 if isinstance(permissions, str):
                     permissions = [import_obj(permissions)()]
                 else:
                     permissions = [import_obj(permission)() for permission in permissions]
-                self._permission_cache[model_label] = permissions
                 return permissions
         return []
 

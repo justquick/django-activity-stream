@@ -40,7 +40,7 @@ def related_field_factory(model_class, queryset=None):
     elif DRF_SETTINGS['EXPAND_FIELDS']:
         related_field_class = ExpandRelatedField
     field = type(f'{model_class.__name__}RelatedField', (related_field_class,), {})
-    return field(**kwargs)  # , )
+    return field(**kwargs)
 
 
 def registry_factory(factory):

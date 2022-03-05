@@ -173,7 +173,7 @@ ACTSTREAM_SETTINGS = {
             'auth.Group': 'testapp.drf.GroupViewSet'
         },
         'PERMISSIONS': {
-
+            'testapp.MyUser': ['rest_framework.permissions.IsAdminUser']
         }
     }
 }
