@@ -1,5 +1,15 @@
 import os
 
+try:
+    import debug_toolbar as DEBUG_TOOLBAR
+except:
+    DEBUG_TOOLBAR = None
+
+try:
+    import rest_framework as DRF
+except:
+    DRF = None
+
 # Always for debugging, dont use the runtests app in production!
 DEBUG = True
 
@@ -49,7 +59,7 @@ if os.environ.get('GITHUB_WORKFLOW', False):
         }
 
 # Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# http://en.wikipedia. org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
@@ -91,7 +101,6 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -103,15 +112,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'urls'
 
-if DEBUG:
-    import os  # only if you haven't already imported this
-    import socket  # only if you haven't already imported this
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
@@ -121,16 +125,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
-    'django_extensions',
-    'rest_framework',
-    'generic_relations',
-    'debug_toolbar',
 
     'actstream',
 
     'testapp',
     'testapp_nested',
-)
+]
+if DRF:
+    INSTALLED_APPS.extend(['rest_framework', 'generic_relations'])
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
@@ -141,6 +143,30 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
+    'DRF_SETTINGS': {
+        'EXPAND_FIELDS': True,
+        'MODEL_FIELDS': {
+            'testapp.myuser': {
+                'exclude': ['password']
+            }
+        }
+    }
 }
 
 AUTH_USER_MODEL = 'testapp.MyUser'
+
+
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS.extend(('debug_toolbar', 'django_extensions'))
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    import os  # only if you haven't already imported this
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}

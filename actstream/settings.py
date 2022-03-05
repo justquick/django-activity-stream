@@ -25,13 +25,14 @@ FETCH_RELATIONS = SETTINGS.get('FETCH_RELATIONS', True)
 
 USE_JSONFIELD = SETTINGS.get('USE_JSONFIELD', False)
 
-DRF_SETTINGS = SETTINGS.get('DRF', {})
+DRF_SETTINGS = SETTINGS.get('DRF_SETTINGS', {})
 
 DRF_DEFAULTS = {
     'EXPAND_FIELDS': False,
-    'HYPERLINK_FIELDS': True,
+    'HYPERLINK_FIELDS': False,
     'SERIALIZERS': {},
-    'VIEWSETS': {}
+    'VIEWSETS': {},
+    'MODEL_FIELDS': {}
 }
 for name, value in DRF_DEFAULTS.items():
     DRF_SETTINGS.setdefault(name, value)

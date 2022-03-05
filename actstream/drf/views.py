@@ -24,7 +24,8 @@ def viewset_factory(model_class, queryset=None):
     if queryset is None:
         queryset = model_class.objects.prefetch_related()
     serializer_class = registered_serializers[model_class]
-    viewset_class = DRF_SETTINGS['VIEWSETS'].get(model_class, DEFAULT_VIEWSET)
+    model_label = f'{model_class._meta.app_label}.{model_class._meta.model_name}'
+    viewset_class = DRF_SETTINGS['VIEWSETS'].get(model_label, DEFAULT_VIEWSET)
     return type(f'{model_class.__name__}ViewSet', (viewset_class,), {
         'queryset': queryset,
         'serializer_class': serializer_class,

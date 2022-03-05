@@ -1,9 +1,8 @@
 import os
 from django.contrib import admin
+from django.conf import settings
 from django.views.static import serve
 from django.urls import include, re_path
-
-from actstream.drf.urls import router
 
 
 urlpatterns = [
@@ -12,9 +11,16 @@ urlpatterns = [
             {'document_root': os.path.join(os.path.dirname(__file__), 'media')}),
     re_path(r'auth/', include('django.contrib.auth.urls')),
     re_path(r'testapp/', include('testapp.urls')),
-    re_path('api/', include(router.urls)),
-    re_path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    re_path('__debug__/', include('debug_toolbar.urls')),
-    re_path(r'', include('actstream.urls')),
 
+    re_path(r'streams/', include('actstream.urls')),
 ]
+
+if settings.DRF:
+    from actstream.drf.urls import router
+    urlpatterns += [
+        re_path('api/', include(router.urls)),
+        re_path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    ]
+
+if settings.DEBUG_TOOLBAR:
+    urlpatterns.append(re_path('__debug__/', include('debug_toolbar.urls')))

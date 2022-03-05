@@ -3,7 +3,7 @@ from generic_relations.relations import GenericRelatedField
 
 from actstream.models import Follow, Action
 from actstream.registry import registry
-from actstream.settings import DRF_SETTINGS
+from actstream.settings import DRF_SETTINGS, import_obj
 
 
 class ExpandRelatedField(serializers.RelatedField):
@@ -15,9 +15,13 @@ DEFAULT_SERIALIZER = serializers.ModelSerializer
 
 
 def serializer_factory(model_class, **meta_opts):
-    meta_opts.setdefault('fields', '__all__')
-    meta_class = type('Meta', (), {'model': model_class, 'fields': '__all__'})
-    serializer_class = DRF_SETTINGS['SERIALIZERS'].get(model_class, DEFAULT_SERIALIZER)
+    model_label = f'{model_class._meta.app_label}.{model_class._meta.model_name}'
+    model_attrs = DRF_SETTINGS['MODEL_FIELDS'].get(model_label, {'fields': '__all__'})
+    model_attrs['model'] = model_class
+    meta_class = type('Meta', (), model_attrs)
+    serializer_class = DEFAULT_SERIALIZER
+    if model_label in DRF_SETTINGS['SERIALIZERS']:
+        serializer_class = import_obj(DRF_SETTINGS['SERIALIZERS'][model_label])
     return type(f'{model_class.__name__}Serializer', (serializer_class,), {'Meta': meta_class})
 
 
