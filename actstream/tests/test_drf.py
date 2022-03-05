@@ -29,24 +29,24 @@ class DRFTestCase(DataTestCase):
 
     def test_actstream(self):
         actions = self.get('/api/actions/')
-        self.assertEqual(len(actions), 11)
+        assert len(actions) == 11
         follows = self.get('/api/follows/')
-        self.assertEqual(len(follows), 6)
+        assert len(follows) == 6
 
     @skipUnless(DRF_SETTINGS['HYPERLINK_FIELDS'], 'Related hyperlinks disabled')
     def test_hyperlink_fields(self):
         actions = self.get('/api/actions/')
         action = self.get(f'/api/actions/{actions[0]["id"]}/')
-        self.assertEqual(action['timestamp'], '2000-01-01T00:00:00')
-        self.assertStartsWith(action['actor'], 'http')
+        assert action['timestamp'] == '2000-01-01T00:00:00'
+        assert action['actor'].startswith('http')
 
     @skipUnless(DRF_SETTINGS['EXPAND_FIELDS'], 'Related expanded fields disabled')
     def test_expand_fields(self):
         actions = self.get('/api/actions/')
         action = self.get(f'/api/actions/{actions[0]["id"]}/')
-        self.assertEqual(action['timestamp'], '2000-01-01T00:00:00')
+        assert action['timestamp'] == '2000-01-01T00:00:00'
         self.assertIsInstance(action['target'], dict)
-        self.assertEqual(action['target']['username'], 'Three')
+        assert action['target']['username'] == 'Three'
 
     def test_urls(self):
         from actstream.drf.urls import router
@@ -62,7 +62,7 @@ class DRFTestCase(DataTestCase):
             self.assertIsInstance(objs, list)
             if len(objs):
                 obj = self.get(f'/api/{url}/{objs[0]["id"]}/')
-                self.assertEqual(objs[0], obj)
+                assert objs[0] == obj
 
     def test_serializers(self):
         from actstream.drf.serializers import registered_serializers as serializers
@@ -72,28 +72,28 @@ class DRFTestCase(DataTestCase):
         self.assertSetEqual(serializers.keys(), models, domap=False)
 
         groups = self.get('/api/groups/')
-        self.assertEqual(len(groups), 2)
+        assert len(groups) == 2
         self.assertSetEqual(GroupSerializer.Meta.fields, groups[0].keys())
 
     def test_viewset(self):
         resp = self.client.head('/api/groups/foo/')
-        self.assertEqual(resp.status_code, 420)
-        self.assertEqual(resp.data, ['chill'])
+        assert resp.status_code == 420
+        assert resp.data == ['chill']
 
     def test_me(self):
         actions = self.get('/api/actions/me/', auth=True)
-        self.assertEqual(len(actions), 3)
-        self.assertEqual(actions[0]['verb'], 'joined')
+        assert len(actions) == 3
+        assert actions[0]['verb'] == 'joined'
 
     def test_model(self):
         actions = self.get(f'/api/actions/model/{self.group_ct.id}/', auth=True)
-        self.assertEqual(len(actions), 7)
-        self.assertEqual(actions[0]['verb'], 'joined')
+        assert len(actions) == 7
+        assert actions[0]['verb'] == 'joined'
 
     def test_object(self):
         url = f'/api/actions/object/{self.group_ct.id}/{self.group.id}/'
         actions = self.get(url, auth=True)
-        self.assertEqual(len(actions), 5)
+        assert len(actions) == 5
 
     def test_action_send(self):
         body = {
@@ -103,12 +103,12 @@ class DRFTestCase(DataTestCase):
             'target_object_id': self.group.id
         }
         post = self.auth_client.post('/api/actions/send/', body)
-        self.assertEqual(post.status_code, 201)
+        assert post.status_code == 201
         action = Action.objects.first()
-        self.assertEqual(action.description, body['description'])
-        self.assertEqual(action.verb, body['verb'])
-        self.assertEqual(action.actor, self.user1)
-        self.assertEqual(action.target, self.group)
+        assert action.description == body['description']
+        assert action.verb == body['verb']
+        assert action.actor == self.user1
+        assert action.target == self.group
 
     def test_follow(self):
         body = {
@@ -116,7 +116,7 @@ class DRFTestCase(DataTestCase):
             'object_id': self.comment.id
         }
         post = self.auth_client.post('/api/follows/follow/', body)
-        self.assertEqual(post.status_code, 201)
+        assert post.status_code == 201
         follow = Follow.objects.order_by('-id').first()
-        self.assertEqual(follow.follow_object, self.comment)
-        self.assertEqual(follow.user, self.user1)
+        assert follow.follow_object == self.comment
+        assert follow.user == self.user1
