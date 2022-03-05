@@ -1,5 +1,15 @@
 import os
-from actstream import __version__
+
+try:
+    import debug_toolbar as DEBUG_TOOLBAR
+except:
+    DEBUG_TOOLBAR = None
+
+try:
+    import rest_framework as DRF
+except:
+    DRF = None
+
 # Always for debugging, dont use the runtests app in production!
 DEBUG = True
 
@@ -49,7 +59,7 @@ if os.environ.get('GITHUB_WORKFLOW', False):
         }
 
 # Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# http://en.wikipedia. org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
@@ -102,11 +112,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'urls'
 
-if DEBUG:
-    import os  # only if you haven't already imported this
-    import socket  # only if you haven't already imported this
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -133,6 +138,7 @@ except:
     pass
 else:
     INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 try:
     import rest_framework
@@ -176,6 +182,15 @@ ACTSTREAM_SETTINGS = {
 AUTH_USER_MODEL = 'testapp.MyUser'
 
 
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS.extend(('debug_toolbar', 'django_extensions'))
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    import os  # only if you haven't already imported this
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
+
+
 REST_FRAMEWORK = {
 }
 
@@ -190,7 +205,7 @@ else:
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Django Activity Streams API',
     'DESCRIPTION': 'Your project description',
-    'VERSION': __version__,
+    'VERSION': '0.0.0',
     'EXTERNAL_DOCS': {'url': '', 'description': ''},
     'CONTACT': {'name': '', 'email': ''},
 }
