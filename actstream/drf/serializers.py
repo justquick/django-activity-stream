@@ -36,7 +36,7 @@ def related_field_factory(model_class, queryset=None):
     kwargs = {'queryset': queryset}
     if DRF_SETTINGS['HYPERLINK_FIELDS']:
         related_field_class = serializers.HyperlinkedRelatedField
-        kwargs['view_name'] = f'{model_class.__name__.lower()}-detail'
+        kwargs['view_name'] = f'{label(model_class)}-detail'
     elif DRF_SETTINGS['EXPAND_FIELDS']:
         related_field_class = ExpandRelatedField
     field = type(f'{model_class.__name__}RelatedField', (related_field_class,), {})
