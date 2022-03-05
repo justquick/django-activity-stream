@@ -14,15 +14,15 @@ class ExpandRelatedField(serializers.RelatedField):
 DEFAULT_SERIALIZER = serializers.ModelSerializer
 
 
-def serializer_factory(model_class, **meta_opts):
+def serializer_factory(model_class):
     """
     Returns a subclass of `ModelSerializer` for each model_class in the registry
     """
-    meta_opts.setdefault('fields', '__all__')
-    meta_class = type('Meta', (), {'model': model_class, 'fields': '__all__'})
     model_label = label(model_class).lower()
     if model_label in DRF_SETTINGS['SERIALIZERS']:
         return import_obj(DRF_SETTINGS['SERIALIZERS'][model_label])
+    model_fields = DRF_SETTINGS['MODEL_FIELDS'].get(model_label, '__all__')
+    meta_class = type('Meta', (), {'model': model_class, 'fields': model_fields})
     return type(f'{model_class.__name__}Serializer', (DEFAULT_SERIALIZER,), {'Meta': meta_class})
 
 

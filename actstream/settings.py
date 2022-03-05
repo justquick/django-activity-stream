@@ -43,7 +43,7 @@ DRF_SETTINGS = {
 if USE_DRF:
     DRF_SETTINGS.update(SETTINGS.get('DRF', {}))
 
-    for item in ('SERIALIZERS', 'VIEWSETS'):
+    for item in ('SERIALIZERS', 'VIEWSETS', 'MODEL_FIELDS'):
         DRF_SETTINGS[item] = {
             label.lower(): obj for label, obj in DRF_SETTINGS[item].items()
         }

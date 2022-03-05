@@ -70,6 +70,10 @@ class DRFTestCase(DataTestCase):
         users = self.get('/api/my-users/', auth=True)
         assert len(users) == 4
 
+    def test_model_fields(self):
+        sites = self.get('/api/sites/')
+        self.assertSetEqual(sites[0].keys(), ['domain'])
+
     def test_serializers(self):
         from actstream.drf.serializers import registered_serializers as serializers
         from testapp.drf import GroupSerializer
