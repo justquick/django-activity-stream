@@ -31,5 +31,6 @@ setup(name='django-activity-stream',
                    'Topic :: Utilities'],
       extras_require={
           'jsonfield': ['django-jsonfield-backport>=1.0.2,<2.0'],
+          'drf': ['django-rest-framework', 'rest-framework-generic-relations'],
       },
       )

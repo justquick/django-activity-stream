@@ -5,7 +5,7 @@ except:
 
 import django
 
-__version__ = '0.10.0'
+__version__ = '1.4.0'
 __author__ = 'Asif Saif Uddin, Justin Quick <justquick@gmail.com>'
 
 if django.VERSION < (3, 2):

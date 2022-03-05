@@ -46,6 +46,9 @@ class ActivityBaseTestCase(TestCase):
         for model in self.actstream_models:
             register(model)
 
+    def assertStartsWith(self, value, start):
+        self.assert_(value.startswith(start))
+
     def assertSetEqual(self, l1, l2, msg=None, domap=True):
         if domap:
             l1 = map(str, l1)

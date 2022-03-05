@@ -131,8 +131,30 @@ INSTALLED_APPS = [
     'testapp',
     'testapp_nested',
 ]
-if DRF:
+
+try:
+    import debug_toolbar
+except:
+    pass
+else:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+
+try:
+    import rest_framework
+except:
+    pass
+else:
     INSTALLED_APPS.extend(['rest_framework', 'generic_relations'])
+
+
+try:
+    import django_extensions
+except:
+    pass
+else:
+    INSTALLED_APPS.append('django_extensions')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
@@ -143,12 +165,16 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 0,
-    'DRF_SETTINGS': {
-        'EXPAND_FIELDS': True,
-        'MODEL_FIELDS': {
-            'testapp.myuser': {
-                'exclude': ['password']
-            }
+    'DRF': {
+        'SERIALIZERS': {
+            'auth.Group': 'testapp.drf.GroupSerializer',
+            'testapp.MyUser': 'testapp.drf.MyUserSerializer'
+        },
+        'VIEWSETS': {
+            'auth.Group': 'testapp.drf.GroupViewSet'
+        },
+        'PERMISSIONS': {
+
         }
     }
 }
@@ -164,9 +190,22 @@ if DEBUG_TOOLBAR:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
 
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+}
+
+try:
+    import drf_spectacular
+except:
+    pass
+else:
+    INSTALLED_APPS.extend(['drf_spectacular'])
+    REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS'] = 'drf_spectacular.openapi.AutoSchema'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Django Activity Streams API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '0.0.0',
+    'EXTERNAL_DOCS': {'url': '', 'description': ''},
+    'CONTACT': {'name': '', 'email': ''},
 }
