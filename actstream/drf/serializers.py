@@ -54,7 +54,7 @@ def get_grf():
     """
     Get a new `GenericRelatedField` instance for each use of the related field
     """
-    return GenericRelatedField(registry_factory(related_field_factory))
+    return GenericRelatedField(registry_factory(related_field_factory), read_only=True)
 
 
 registered_serializers = registry_factory(serializer_factory)
@@ -67,7 +67,7 @@ class ActionSerializer(DEFAULT_SERIALIZER):
 
     class Meta:
         model = Action
-        fields = 'id verb description timestamp actor target action_object'.split()
+        fields = 'id verb public description timestamp actor target action_object'.split()
 
 
 class FollowSerializer(DEFAULT_SERIALIZER):
