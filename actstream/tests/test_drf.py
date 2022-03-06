@@ -37,14 +37,14 @@ class DRFTestCase(DataTestCase):
     def test_hyperlink_fields(self):
         actions = self.get('/api/actions/')
         action = self.get(f'/api/actions/{actions[0]["id"]}/')
-        assert action['timestamp'] == '2000-01-01T00:00:00'
+        assert action['timestamp'].startswith('2000-01-01T00:00:00')
         assert action['actor'].startswith('http')
 
     @skipUnless(DRF_SETTINGS['EXPAND_FIELDS'], 'Related expanded fields disabled')
     def test_expand_fields(self):
         actions = self.get('/api/actions/')
         action = self.get(f'/api/actions/{actions[0]["id"]}/')
-        assert action['timestamp'] == '2000-01-01T00:00:00'
+        assert action['timestamp'].startswith('2000-01-01T00:00:00')
         self.assertIsInstance(action['target'], dict)
         assert action['target']['username'] == 'Three'
 

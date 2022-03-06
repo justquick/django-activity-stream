@@ -64,6 +64,7 @@ if os.environ.get('GITHUB_WORKFLOW', False):
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'America/New_York'
+USE_TZ = False
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
