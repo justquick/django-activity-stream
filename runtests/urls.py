@@ -16,13 +16,16 @@ urlpatterns = [
 
 if settings.DRF:
     from actstream.drf.urls import router
-    from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+    if 'drf_spectacular' in settings.INSTALLED_APPS:
+        from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+        urlpatterns += [
+            # YOUR PATTERNS
+            path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+            # Optional UI:
+            path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+            path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+        ]
     urlpatterns += [
-        # YOUR PATTERNS
-        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-        # Optional UI:
-        path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-        path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
         path('api/', include(router.urls)),
         path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     ]

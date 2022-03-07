@@ -142,11 +142,7 @@ else:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
-try:
-    import rest_framework
-except:
-    pass
-else:
+if DRF:
     INSTALLED_APPS.extend(['rest_framework', 'generic_relations'])
 
 
