@@ -1,18 +1,27 @@
+import json
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import APIException
 
-
-from actstream.drf.serializers import FollowSerializer, ActionSerializer, registered_serializers, registry_factory
-from actstream import models  # import Action, Follow, actor_stream, model_stream, any_stream
+from actstream.drf import serializers
+from actstream import models
 from actstream.registry import label
 from actstream.settings import DRF_SETTINGS, import_obj
 from actstream.signals import action as action_signal
 from actstream.actions import follow as follow_action
+
+
+class ModelNotRegistered(APIException):
+    status_code = 400
+    default_detail = 'Model requested was not registered. Use actstream.registry.register to add it'
+    default_code = 'model_not_registered'
 
 
 class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -35,7 +44,7 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ActionViewSet(DefaultModelViewSet):
     queryset = models.Action.objects.public().order_by('-timestamp', '-id').prefetch_related()
-    serializer_class = ActionSerializer
+    serializer_class = serializers.ActionSerializer
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
     def send(self, request):
@@ -136,7 +145,7 @@ class ActionViewSet(DefaultModelViewSet):
 
 class FollowViewSet(DefaultModelViewSet):
     queryset = models.Follow.objects.order_by('-started', '-id').prefetch_related()
-    serializer_class = FollowSerializer
+    serializer_class = serializers.FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
@@ -153,6 +162,40 @@ class FollowViewSet(DefaultModelViewSet):
         follow_action(request.user, obj, **data)
         return Response(status=201)
 
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated],
+            url_path='is_following/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='True if user is following object')
+    def is_following(self, request,  content_type_id, object_id):
+        """
+        Returns a JSON response whether the current user is following the object from content_type_id/object_id pair
+        """
+        ctype = get_object_or_404(ContentType, id=content_type_id)
+        instance = ctype.get_object_for_this_type(pk=object_id)
+        following = models.Follow.objects.is_following(request.user, instance)
+        data = {'is_following': following}
+        return Response(json.dumps(data))
+
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated],
+            url_path='following', name='List of instances I follow')
+    def following(self, request):
+        """
+        Returns a JSON response whether the current user is following the object from content_type_id/object_id pair
+        """
+        qs = models.Follow.objects.following_qs(request.user)
+        return Response(serializers.FollowingSerializer(qs, many=True).data)
+
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated],
+            url_path='followers', name='List of followers for current user')
+    def followers(self, request):
+        """
+        Returns a JSON response whether the current user is following the object from content_type_id/object_id pair
+        """
+        user_model = get_user_model()
+        if user_model not in serializers.registered_serializers:
+            raise ModelNotRegistered(f'Auth user "{user_model.__name__}" not registered with actstream')
+        serializer = serializers.registered_serializers[user_model]
+        followers = models.Follow.objects.followers(request.user)
+        return Response(serializer(followers, many=True).data)
+
 
 def viewset_factory(model_class, queryset=None):
     """
@@ -160,7 +203,7 @@ def viewset_factory(model_class, queryset=None):
     """
     if queryset is None:
         queryset = model_class.objects.prefetch_related()
-    serializer_class = registered_serializers[model_class]
+    serializer_class = serializers.registered_serializers[model_class]
     model_label = label(model_class)
     if model_label in DRF_SETTINGS['VIEWSETS']:
         return import_obj(DRF_SETTINGS['VIEWSETS'][model_label])
@@ -170,4 +213,4 @@ def viewset_factory(model_class, queryset=None):
     })
 
 
-registered_viewsets = registry_factory(viewset_factory)
+registered_viewsets = serializers.registry_factory(viewset_factory)

@@ -1,4 +1,5 @@
 from unittest import skipUnless
+from json import loads
 
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
@@ -161,3 +162,24 @@ class DRFFollowTestCase(BaseDRFTestCase):
         assert follow.user == self.user1
         assert follow.user == self.user1
         assert follow.user == self.user1
+
+    def test_is_following(self):
+        url = reverse('follow-is-following', args=[self.site_ct.id, self.comment.id])
+        resp = self.auth_client.get(url)
+        data = loads(resp.data)
+        assert not data['is_following']
+
+        url = reverse('follow-is-following', args=[self.user_ct.id, self.user2.id])
+        resp = self.auth_client.get(url)
+        data = loads(resp.data)
+        assert data['is_following']
+
+    def test_followers(self):
+        followers = self.auth_client.get(reverse('follow-followers')).data
+        assert len(followers) == 1
+        assert followers[0]['username'] == 'Four'
+
+    def test_following(self):
+        following = self.auth_client.get(reverse('follow-following')).data
+        assert len(following) == 1
+        assert following[0]['following']['username'] == 'Two'

@@ -77,3 +77,11 @@ class FollowSerializer(DEFAULT_SERIALIZER):
     class Meta:
         model = Follow
         fields = 'id flag user follow_object started actor_only'.split()
+
+
+class FollowingSerializer(DEFAULT_SERIALIZER):
+    following = get_grf()
+
+    class Meta:
+        model = Follow
+        fields = ['following']

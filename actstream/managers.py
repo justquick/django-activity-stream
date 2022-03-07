@@ -3,7 +3,7 @@ from typing import Type
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, Model
-
+from django.contrib.auth import get_user_model
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
@@ -174,7 +174,8 @@ class FollowManager(GFKManager):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
         """
-        return [follow.user for follow in self.followers_qs(actor, flag=flag)]
+        user_ids = self.followers_qs(actor, flag=flag).values_list('user', flat=True)
+        return get_user_model().objects.filter(id__in=user_ids)
 
     def following_qs(self, user, *models, **kwargs):
         """
