@@ -182,4 +182,4 @@ class DRFFollowTestCase(BaseDRFTestCase):
     def test_following(self):
         following = self.auth_client.get(reverse('follow-following')).data
         assert len(following) == 1
-        assert following[0]['following']['username'] == 'Two'
+        assert following[0]['follow_object']['username'] == 'Two'

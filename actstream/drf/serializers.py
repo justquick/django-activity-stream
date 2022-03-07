@@ -80,8 +80,8 @@ class FollowSerializer(DEFAULT_SERIALIZER):
 
 
 class FollowingSerializer(DEFAULT_SERIALIZER):
-    following = get_grf()
+    follow_object = get_grf()
 
     class Meta:
         model = Follow
-        fields = ['following']
+        fields = ['follow_object']
