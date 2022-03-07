@@ -1,6 +1,6 @@
 from actstream import __version__
-import os
-
+from os import getenv
+from pprint import pprint
 try:
     import debug_toolbar as DEBUG_TOOLBAR
 except:
@@ -27,38 +27,39 @@ DATABASES = {
     }
 }
 
-if os.environ.get('GITHUB_WORKFLOW', False):
-    DATABASE_ENGINE = os.environ.get('DATABASE_ENGINE', 'sqlite')
+if getenv('GITHUB_WORKFLOW', False):
+    DATABASE_ENGINE = getenv('DATABASE_ENGINE', 'sqlite')
     if 'mysql' in DATABASE_ENGINE:
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'test',
-                'USER': 'root',
-                'PASSWORD': '',
-                'HOST': '127.0.0.1',
-                'PORT': '3306',
+                'NAME': getenv('MYSQL_NAME', 'test'),
+                'USER': getenv('MYSQL_USER', 'root'),
+                'PASSWORD': getenv('MYSQL_PASSWORD', ''),
+                'HOST': getenv('MYSQL_HOST', '127.0.0.1'),
+                'PORT': getenv('MYSQL_PORT', '3306'),
             },
         }
     elif 'postgres' in DATABASE_ENGINE:
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'postgres',
-                'USER': 'postgres',
-                'PASSWORD': 'postgres',
-                'HOST': '127.0.0.1',
-                'PORT': '5432',
+                'NAME': getenv('POSTGRES_NAME', 'postgres'),
+                'USER': getenv('POSTGRES_USER', 'postgres'),
+                'PASSWORD': getenv('POSTGRES_PASSWORD', 'postgres'),
+                'HOST': getenv('POSTGRES_HOST', '127.0.0.1'),
+                'PORT': getenv('POSTGRES_PORT', '5432'),
             },
         }
     elif 'file' in DATABASE_ENGINE:
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': 'db.sqlite3',
+                'NAME': getenv('SQLITE_NAME', 'db.sqlite3'),
             },
         }
-
+    print('Running with DATABASE engine', DATABASE_ENGINE)
+    pprint(DATABASES)
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia. org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
