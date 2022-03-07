@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 
 from actstream.drf.serializers import FollowSerializer, ActionSerializer, registered_serializers, registry_factory
-from actstream.models import Action, Follow, actor_stream, model_stream, any_stream
+from actstream import models  # import Action, Follow, actor_stream, model_stream, any_stream
 from actstream.registry import label
 from actstream.settings import DRF_SETTINGS, import_obj
 from actstream.signals import action as action_signal
@@ -34,7 +34,7 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ActionViewSet(DefaultModelViewSet):
-    queryset = Action.objects.public().order_by('-timestamp', '-id').prefetch_related()
+    queryset = models.Action.objects.public().order_by('-timestamp', '-id').prefetch_related()
     serializer_class = ActionSerializer
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
@@ -67,35 +67,75 @@ class ActionViewSet(DefaultModelViewSet):
         serializer = self.get_serializer(stream, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, permission_classes=[permissions.IsAuthenticated], name='My Actions')
-    def me(self, request):
+    def get_detail_stream(self, stream, content_type_id, object_id):
         """
-        Returns the actor_stream for the current user
-        """
-        return self.get_stream(actor_stream(request.user))
-
-    @action(detail=False, url_path='model/(?P<content_type_id>[^/.]+)', name='Model activity stream')
-    def model(self, request, content_type_id):
-        """
-        Returns all actions for a given content type.
-        See model_stream
-        """
-        content_type = get_object_or_404(ContentType, id=content_type_id)
-        return self.get_stream(model_stream(content_type.model_class()))
-
-    @action(detail=False, url_path='object/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Object activity stream')
-    def object(self, request, content_type_id, object_id):
-        """
-        Returns all actions for a given object.
-        See any_stream
+        Helper for returning a stream that takes a content type/object id to lookup an instance
         """
         content_type = get_object_or_404(ContentType, id=content_type_id)
         obj = content_type.get_object_for_this_type(pk=object_id)
-        return self.get_stream(any_stream(obj))
+        return self.get_stream(stream(obj))
+
+    @action(detail=False, url_path='streams/my-actions', permission_classes=[permissions.IsAuthenticated], name='My Actions')
+    def my_actions(self, request):
+        """
+        Returns all actions where the current user is the actor
+        See models.actor_stream
+        """
+        return self.get_stream(models.actor_stream(request.user))
+
+    @action(detail=False, url_path='streams/following',  permission_classes=[permissions.IsAuthenticated], name='Actions by followed users')
+    def following(self, request):
+        """
+        Returns all actions for users that the current user follows
+        See models.user_stream
+        """
+        kwargs = request.query_params.dict()
+        return self.get_stream(models.user_stream(request.user, **kwargs))
+
+    @action(detail=False, url_path='streams/model/(?P<content_type_id>[^/.]+)', name='Model activity stream')
+    def model_stream(self, request, content_type_id):
+        """
+        Returns all actions for a given content type.
+        See models.model_stream
+        """
+        content_type = get_object_or_404(ContentType, id=content_type_id)
+        return self.get_stream(models.model_stream(content_type.model_class()))
+
+    @action(detail=False, url_path='streams/actor/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Actor activity stream')
+    def actor_stream(self, request, content_type_id, object_id):
+        """
+        Returns all actions for a given object where the object is the actor
+        See models.actor_stream
+        """
+        return self.get_detail_stream(models.actor_stream, content_type_id, object_id)
+
+    @action(detail=False, url_path='streams/target/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Target activity stream')
+    def target_stream(self, request, content_type_id, object_id):
+        """
+        Returns all actions for a given object where the object is the target
+        See models.target_stream
+        """
+        return self.get_detail_stream(models.target_stream, content_type_id, object_id)
+
+    @action(detail=False, url_path='streams/action_object/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Action object activity stream')
+    def action_object_stream(self, request, content_type_id, object_id):
+        """
+        Returns all actions for a given object where the object is the action object
+        See models.action_object_stream
+        """
+        return self.get_detail_stream(models.action_object_stream, content_type_id, object_id)
+
+    @action(detail=False, url_path='streams/any/(?P<content_type_id>[^/.]+)/(?P<object_id>[^/.]+)', name='Any activity stream')
+    def any_stream(self, request, content_type_id, object_id):
+        """
+        Returns all actions for a given object where the object is any actor/target/action_object
+        See models.any_stream
+        """
+        return self.get_detail_stream(models.any_stream, content_type_id, object_id)
 
 
 class FollowViewSet(DefaultModelViewSet):
-    queryset = Follow.objects.order_by('-started', '-id').prefetch_related()
+    queryset = models.Follow.objects.order_by('-started', '-id').prefetch_related()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -86,6 +86,7 @@ class DataTestCase(ActivityBaseTestCase):
         self.timesince = timesince(self.testdate).encode('utf8').replace(
             b'\xc2\xa0', b' ').decode()
         self.group_ct = ContentType.objects.get_for_model(Group)
+        self.site_ct = ContentType.objects.get_for_model(Site)
         super(DataTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.another_group = Group.objects.create(name='NiceGroup')
