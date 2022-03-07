@@ -1,17 +1,13 @@
 from unittest import skipUnless
 from json import loads
 
-from django.contrib.auth.models import Group
-from django.contrib.sites.models import Site
+
 from django.urls import reverse
 
 from actstream.tests.base import DataTestCase
 from actstream.settings import USE_DRF, DRF_SETTINGS
 from actstream.models import Action, Follow
 from actstream import signals
-
-from testapp.models import MyUser, Player
-from testapp_nested.models.my_model import NestedModel
 
 
 class BaseDRFTestCase(DataTestCase):
@@ -24,14 +20,27 @@ class BaseDRFTestCase(DataTestCase):
         self.auth_client = APIClient()
         self.auth_client.login(username=self.user1.username, password='admin')
 
-
-@skipUnless(USE_DRF, 'Django rest framework disabled')
-class DRFActionTestCase(BaseDRFTestCase):
-
     def get(self, *args, **kwargs):
         auth = kwargs.pop('auth', False)
         client = self.auth_client if auth else self.client
         return client.get(*args, **kwargs).data
+
+    def _check_urls(self, *urls):
+        from actstream.drf.urls import router
+
+        registerd = [url[0] for url in router.registry]
+        root = reverse('api-root')
+        for url in urls:
+            assert url in registerd
+            objs = self.get(f'{root}{url}/', auth=True)
+            assert isinstance(objs, list)
+            if len(objs):
+                obj = self.get(f'{root}{url}/{objs[0]["id"]}/', auth=True)
+                assert objs[0] == obj
+
+
+@skipUnless(USE_DRF, 'Django rest framework disabled')
+class DRFActionTestCase(BaseDRFTestCase):
 
     def test_actstream(self):
         actions = self.get(reverse('action-list'))
@@ -55,21 +64,7 @@ class DRFActionTestCase(BaseDRFTestCase):
         assert action['target']['username'] == 'Three'
 
     def test_urls(self):
-        from actstream.drf.urls import router
-
-        registerd = [url[0] for url in router.registry]
-        names = ['actions', 'follows', 'groups', 'sites',
-                 'players', 'nested-models']
-        self.assertSetEqual(registerd, names + ['my-users'])
-        root = reverse('api-root')
-        endpoints = self.get(root)
-        self.assertSetEqual(registerd, endpoints.keys())
-        for url in names:
-            objs = self.get(f'{root}{url}/')
-            self.assertIsInstance(objs, list)
-            if len(objs):
-                obj = self.get(f'{root}{url}/{objs[0]["id"]}/')
-                assert objs[0] == obj
+        self._check_urls('actions', 'follows')
 
     def test_permissions(self):
         users = self.get(reverse('myuser-list'))
@@ -80,17 +75,6 @@ class DRFActionTestCase(BaseDRFTestCase):
     def test_model_fields(self):
         sites = self.get(reverse('site-list'))
         self.assertSetEqual(sites[0].keys(), ['id', 'domain'])
-
-    def test_serializers(self):
-        from actstream.drf.serializers import registered_serializers as serializers
-        from testapp.drf import GroupSerializer
-
-        models = (Group, MyUser, Player, Site, NestedModel)
-        self.assertSetEqual(serializers.keys(), models, domap=False)
-
-        groups = self.get(reverse('group-list'))
-        assert len(groups) == 2
-        self.assertSetEqual(GroupSerializer.Meta.fields, groups[0].keys())
 
     def test_viewset(self):
         resp = self.client.head(reverse('group-foo'))

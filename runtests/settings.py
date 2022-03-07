@@ -128,7 +128,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
-
     'actstream',
 
     'testapp',
