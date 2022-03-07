@@ -1,3 +1,4 @@
+from actstream import __version__
 import os
 
 try:
@@ -196,10 +197,12 @@ else:
     INSTALLED_APPS.extend(['drf_spectacular'])
     REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS'] = 'drf_spectacular.openapi.AutoSchema'
 
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Django Activity Streams API',
-    'DESCRIPTION': 'Your project description',
-    'VERSION': '0.0.0',
+    'DESCRIPTION': 'Generate generic activity streams from the actions on your '
+    'site. Users can follow any actors\' activities for personalized streams.',
+    'VERSION': __version__,
     'EXTERNAL_DOCS': {'url': '', 'description': ''},
     'CONTACT': {'name': '', 'email': ''},
 }

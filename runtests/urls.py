@@ -1,7 +1,7 @@
 import os
 from django.contrib import admin
 from django.views.static import serve
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.conf import settings
 
 
@@ -16,9 +16,15 @@ urlpatterns = [
 
 if settings.DRF:
     from actstream.drf.urls import router
+    from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
     urlpatterns += [
-        re_path('api/', include(router.urls)),
-        re_path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+        # YOUR PATTERNS
+        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+        # Optional UI:
+        path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+        path('api/', include(router.urls)),
+        path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     ]
 
 
