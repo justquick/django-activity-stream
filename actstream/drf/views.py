@@ -53,7 +53,9 @@ class ActionViewSet(DefaultModelViewSet):
         Must have a verb and optional target/action_object with content_type_id/object_id pairs
         Actor is set as current logged in user
         """
-        data = request.data.dict()
+        data = request.data
+        if hasattr(data, 'dict'):
+            data = data.dict()
         if 'verb' not in data:
             return Response(status=400)
 
