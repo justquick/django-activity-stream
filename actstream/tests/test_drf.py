@@ -108,7 +108,7 @@ class DRFActionTestCase(BaseDRFTestCase):
         assert actions[0]['verb'] == 'joined'
 
     def test_target(self):
-        actions = self.get(reverse('action-target-stream', args=[self.group_ct.id, self.comment.id]), auth=True)
+        actions = self.get(reverse('action-target-stream', args=[self.group_ct.id, self.another_group.id]), auth=True)
         assert len(actions) == 2
         assert actions[0]['target']['name'] == actions[1]['target']['name'] == 'NiceGroup'
 
