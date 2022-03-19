@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, NotFound
 
 from actstream.drf import serializers
 from actstream import models
@@ -16,6 +16,13 @@ from actstream.registry import label
 from actstream.settings import DRF_SETTINGS, import_obj
 from actstream.signals import action as action_signal
 from actstream.actions import follow as follow_action
+
+
+def get_or_not_found(klass, detail=None, **kwargs):
+    try:
+        return klass.objects.get(**kwargs)
+    except klass.DoesNotExist:
+        raise NotFound(detail, 404)
 
 
 class ModelNotRegistered(APIException):
@@ -31,14 +38,16 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
             return [import_obj(permission)() for permission in DRF_SETTINGS['PERMISSIONS']]
         if isinstance(DRF_SETTINGS['PERMISSIONS'], dict):
             lookup = {key.lower(): value for key, value in DRF_SETTINGS['PERMISSIONS'].items()}
-            model_label = label(self.get_serializer().Meta.model).lower()
-            if model_label in lookup:
-                permissions = lookup[model_label]
-                if isinstance(permissions, str):
-                    permissions = [import_obj(permissions)()]
-                else:
-                    permissions = [import_obj(permission)() for permission in permissions]
-                return permissions
+            serializer = self.get_serializer()
+            if hasattr(serializer, 'Meta') and hasattr(serializer.Meta, 'model'):
+                model_label = label(serializer.Meta.model).lower()
+                if model_label in lookup:
+                    permissions = lookup[model_label]
+                    if isinstance(permissions, str):
+                        permissions = [import_obj(permissions)()]
+                    else:
+                        permissions = [import_obj(permission)() for permission in permissions]
+                    return permissions
         return []
 
 
@@ -46,7 +55,7 @@ class ActionViewSet(DefaultModelViewSet):
     queryset = models.Action.objects.public().order_by('-timestamp', '-id').prefetch_related()
     serializer_class = serializers.ActionSerializer
 
-    @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'])
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'], serializer_class=serializers.SendActionSerializer)
     def send(self, request):
         """
         Sends the action signal on POST
@@ -61,8 +70,12 @@ class ActionViewSet(DefaultModelViewSet):
 
         for name in ('target', 'action_object'):
             if f'{name}_content_type_id' in data and f'{name}_object_id' in data:
-                ctype = get_object_or_404(ContentType, id=data.pop(f'{name}_content_type_id'))
-                data[name] = ctype.get_object_for_this_type(pk=data.pop(f'{name}_object_id'))
+                ctype = get_or_not_found(
+                    ContentType, f'ContentType for {name} query does not exist', pk=data.pop(f'{name}_content_type_id'))
+                data[name] = get_or_not_found(ctype.model_class(), f'Object for {name} query does not exist', pk=data.pop(f'{name}_object_id'))
+
+        # dont let users define timestamp
+        data.pop('timestamp', None)
 
         action_signal.send(sender=request.user, **data)
         return Response(status=201)

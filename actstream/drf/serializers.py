@@ -7,6 +7,9 @@ from actstream.settings import DRF_SETTINGS, import_obj
 
 
 class ExpandRelatedField(serializers.RelatedField):
+    """
+    Expands related fields to use other Serializer. Similar to the AS1 JSON spec
+    """
     def to_representation(self, value):
         return registered_serializers[value.__class__](value).data
 
@@ -61,6 +64,9 @@ registered_serializers = registry_factory(serializer_factory)
 
 
 class ActionSerializer(DEFAULT_SERIALIZER):
+    """
+    Serializer for actstream.Action models in the activity feeds
+    """
     actor = get_grf()
     target = get_grf()
     action_object = get_grf()
@@ -70,7 +76,23 @@ class ActionSerializer(DEFAULT_SERIALIZER):
         fields = 'id verb public description timestamp actor target action_object'.split()
 
 
+class SendActionSerializer(serializers.Serializer):
+    """
+    Serializer used when POSTing a new action to DRF
+    """
+    verb = serializers.CharField(required=True, help_text='Action verb')
+    target_content_type_id = serializers.CharField()
+    target_object_id = serializers.CharField()
+    action_object_content_type_id = serializers.CharField()
+    action_object_object_id = serializers.CharField()
+    description = serializers.CharField()
+    public = serializers.BooleanField()
+
+
 class FollowSerializer(DEFAULT_SERIALIZER):
+    """
+    Serializer for actstream.Follow models in the activity feeds
+    """
     user = get_grf()
     follow_object = get_grf()
 
@@ -80,6 +102,9 @@ class FollowSerializer(DEFAULT_SERIALIZER):
 
 
 class FollowingSerializer(DEFAULT_SERIALIZER):
+    """
+    Serializer for actstream.Follow models in the "following" activity feeds
+    """
     follow_object = get_grf()
 
     class Meta:

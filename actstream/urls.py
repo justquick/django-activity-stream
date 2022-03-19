@@ -7,8 +7,10 @@ urlpatterns = []
 
 if USE_DRF:
     from actstream.drf.urls import router
+    from testapp.views import SchemaExtender
+
     urlpatterns += [
-        path('api/', include(router.urls)),
+        path('api/', include(SchemaExtender(router).urls)),
     ]
 
 urlpatterns += [
