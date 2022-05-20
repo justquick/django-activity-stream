@@ -3,13 +3,14 @@ try:
 except:
     pass
 
-import django
-
-__version__ = '1.4.0'
-__author__ = 'Asif Saif Uddin, Justin Quick <justquick@gmail.com>'
-
-if django.VERSION >= (3, 2):
-    # The declaration is only needed for older Django versions
+try:
+    import django
+except:
     pass
 else:
-    default_app_config = 'actstream.apps.ActstreamConfig'
+    if django.VERSION < (3, 2):
+        default_app_config = 'actstream.apps.ActstreamConfig'
+
+
+__version__ = '1.4.1'
+__author__ = 'Asif Saif Uddin, Justin Quick <justquick@gmail.com>'
