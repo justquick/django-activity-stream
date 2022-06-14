@@ -1,4 +1,4 @@
-Django>=4.0
+Django>=3.2
 django-jsonfield-backport
 django-extensions
 ipdb
