@@ -3,6 +3,15 @@
 Changelog
 =========
 
+1.4.0
+------
+
+  - Django 4 support
+  - Russian translations
+  - Bugfix on Action.get_absolute_url
+  - Set AutoField as default for app config
+  - Changing minor version tracking to match Django version
+
 0.10.0
 ----------
   - Replace travis by GitHub actions for CI
@@ -11,8 +20,6 @@ Changelog
   - Django 3.1 support
   - Feature of having with_user_activity=True parameter when using User Activity Feed (User Stream) url
   - Document fix
-
-
 
 0.9.0
 -----

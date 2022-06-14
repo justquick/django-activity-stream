@@ -52,6 +52,7 @@ class GFKManagerTestCase(TestCase):
         _actions = get_action_model().objects.filter(actor_content_type=self.user_ct,
                                                      actor_object_id=self.user1.id)
 
+
         def actions(): return _actions._clone()
         num_content_types = len(set(actions().values_list(
             'target_content_type_id', flat=True)))
@@ -87,7 +88,10 @@ class GFKManagerTestCase(TestCase):
                          action_actor_targets_fetch_generic_all)
 
         # fetch only 1 generic relation, but access both gfks
-        def generic(): return actions().fetch_generic_relations('target')
+
+        def generic():
+            return actions().fetch_generic_relations('target')
+
         self.assertNumQueries(LTE(n + num_content_types + 2), lambda: [
             (a.actor, a.target) for a in generic()])
         action_actor_targets_fetch_generic_target = [

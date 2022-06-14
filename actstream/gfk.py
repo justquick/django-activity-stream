@@ -1,6 +1,5 @@
 from django.db.models import Manager
 from django.db.models.query import QuerySet, EmptyQuerySet
-from django import VERSION as DJANGO_VERSION
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from actstream import settings
@@ -11,6 +10,7 @@ class GFKManager(Manager):
     A manager that returns a GFKQuerySet instead of a regular QuerySet.
 
     """
+
     def get_query_set(self):
         return GFKQuerySet(self.model)
     get_queryset = get_query_set
@@ -25,6 +25,7 @@ class GFKQuerySet(QuerySet):
     all generic related items.  Similar to select_related(), but for
     generic foreign keys. This wraps QuerySet.prefetch_related.
     """
+
     def fetch_generic_relations(self, *args):
         qs = self._clone()
 

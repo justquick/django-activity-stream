@@ -1,55 +1,60 @@
 Justin Quick <justquick@gmail.com>
 Asif Saifuddin Auvi <auvipy@gmail.com>
 Chris Beaven <smileychris@gmail.com>
+ehsabd <ehsabd@outlook.com>
 yangxg <zmrenwu@163.com>
 Ben Slavin <benjamin.slavin@gmail.com>
 Deepak Prakash <dp@deepakprakash.com>
 Frank Wickström <frank.wickstrom@anders.fi>
+Nick Sandford <nick@sandford.id.au>
 Manuel Aristarán <jazzido@jazzido.com>
 Alexey Boriskin <sun.void@gmail.com>
-jordan <jordan@192.168.1.5>
-Piet Delport <piet@byteorbit.com>
-Michael Jones <m.pricejones@gmail.com>
 Jason Culverhouse <jason@mischievous.org>
+Michael Jones <m.pricejones@gmail.com>
+Piet Delport <piet@byteorbit.com>
 Wade Williams <wade@wadewilliams.com>
-Nolan Brubaker <nolan@nbrubaker.com>
+jordan <jordan@192.168.1.5>
 Bruno Amaral <mail@brunoamaral.eu>
 Christoph Heer <Christoph.Heer@gmail.com>
-Trever Shick <trevershick@gmail.com>
+Jens Nistler <opensource@jensnistler.de>
 Josh Ourisman <josh@joshourisman.com>
-Natan Yellin <aantny@gmail.com>
-Benjamin Kampmann <ben.kampmann@googlemail.com>
-Steve Ivy <steve@wallrazer.com>
-Walter Scheper <scheper@unc.edu>
-neelesh <neelesh@gmail.com>
-Herman Schaaf <herman@herman-Latitude-E6500.(none)>
-artscoop <artscoop93.info@gmail.com>
+Nolan Brubaker <nolan@nbrubaker.com>
+Trever Shick <trevershick@gmail.com>
 Artem Khurshudov <art1783@gmail.com>
-cmwaura <cmmwaura@ucdavis.edu>
-Matt Katz <gitorious@morelightmorelight.com>
-jbsag <joshjb1991@gmail.com>
-Ryan Allen <ryan@ryangallen.com>
+Benjamin Kampmann <ben.kampmann@googlemail.com>
 Chris <chris@piemonster.me>
-Paul Collins <paul.collins.iii@gmail.com>
-Patrick Altman <paltman@gmail.com>
-Dmitriy Narkevich <github@dimier.org>
+Christoph Bülter <cb109@users.noreply.github.com>
 David Gouldin <david@gould.in>
-Tiago Henriques <trinosauro@gmail.com>
+Dmitriy Narkevich <github@dimier.org>
+Herman Schaaf <herman@herman-Latitude-E6500.(none)>
 Jocelyn Delalande <jdelalande@oasiswork.fr>
-joaoxsouls <joaoxsouls@gmail.com>
-jpic <jamespic@gmail.com>
-laginha <diogo.laginha.machado@gmail.com>
+Matt Katz <gitorious@morelightmorelight.com>
+Natan Yellin <aantny@gmail.com>
+Patrick Altman <paltman@gmail.com>
+Paul Collins <paul.collins.iii@gmail.com>
+Ryan Allen <ryan@ryangallen.com>
+Steve Ivy <steve@wallrazer.com>
+Tiago Henriques <trinosauro@gmail.com>
+Walter Scheper <scheper@unc.edu>
+artscoop <artscoop93.info@gmail.com>
+cmwaura <cmmwaura@ucdavis.edu>
+hugokernel <hugo@digitalspirit.org>
+jbsag <joshjb1991@gmail.com>
 moritz <moritz.fickenscher@fau.de>
-Pedro Alcocer <pealco@gmail.com>
+neelesh <neelesh@gmail.com>
+Aaron Williamson <aaron@copiesofcopies.org>
 Alejandro Seguí <alesegdia@gmail.com>
 Anwesha Das <anwesha@das.community>
 Aziz M. Bookwala <aziz.mansur@gmail.com>
 Ben Lopatin <ben.lopatin@wellfireinteractive.com>
 Bob Cribbs <bcribbs@zehnergroup.com>
 Bojan Mihelac <bmihelac@mihelac.org>
+Brian Slater <36425025+slater-brian-john@users.noreply.github.com>
 Can Burak Cilingir <can@canb.net>
+Christoph Buelter <christoph.buelter@myshopradio.de>
 David Burke <dmbst32@gmail.com>
 Denis <denis_davidyuk@hotmail.com>
+Denis Surkov <surkov0denis@yandex.ru>
 Dex Bleeker <dex@bleeker.nl>
 Donald Stufft <donald.stufft@gmail.com>
 Elf M. Sternberg <elf.sternberg@gmail.com>
@@ -58,24 +63,43 @@ Frank Wickström <frank@bambuser.com>
 Gilberto Magalhães <g.magalhaes@consultoriasigma.com.br>
 Hameed Gifford <giff.h92@gmail.com>
 Hanu Prateek Kunduru <hanuprateek@users.noreply.github.com>
+James <12661555+jmsmkn@users.noreply.github.com>
 Jannon Frank <jannon.frank@tellagami.com>
 Jeff Gordon <jgordon005@gmail.com>
 Jj <jjdelc@gmail.com>
 JocelynDelalande <JocelynDelalande@users.noreply.github.com>
 Keith Bussell <kbussell@gmail.com>
+Kris Ciccarello <kmctown@users.noreply.github.com>
 Luis <luis@wikirealty.com>
+Marc Fargas <telenieko@telenieko.com>
 Michael Bertolacci <m.bertolacci@gmail.com>
-Aaron Williamson <aaron@copiesofcopies.org>
+Missuor4ever <sayseesea@vip.qq.com>
+Muhammed Kaplan <gokdeniz91@gmail.com>
+Nick Parsons <nparsons08@gmail.com>
+Patrick Sier <pjsier@users.noreply.github.com>
+Paul Nicolet <nicoletpaul@orange.fr>
+Pedro Alcocer <pealco@gmail.com>
 Pedro Burón <pedro@witoi.com>
 Peter Walker <peterw@suprafax.net>
 Rob Terhaar <rob@atlanticdynamic.com>
+Rodrigo Suárez <rodrigosrz12@gmail.com>
 Sandip Agrawal <s@sandipagrawal.com>
 Santiago Piccinini <spiccinini@codigosur.org>
 Tamas Leposa <lt@lab85.com>
 The Gitter Badger <badger@gitter.im>
+Tim Gates <tim.gates@iress.com>
 Tom Clancy <tclancy@gmail.com>
 Tony Narlock <tony@git-pull.com>
+Victor Munene <victor@regulusweb.com>
 Vineet <naikvin@gmail.com>
 Xavier L <xavier.l@magnax.ca>
 Zbigniew Siciarz <antyqjon@gmail.com>
+anka-sirota <176934+anka-sirota@users.noreply.github.com>
 fossabot <badges@fossa.io>
+jess <jessachandler@gmail.com>
+joaoxsouls <joaoxsouls@gmail.com>
+jpic <jamespic@gmail.com>
+laginha <diogo.laginha.machado@gmail.com>
+odeson24 <odeson24@gmail.com>
+riazanovslv <30866558+riazanovslv@users.noreply.github.com>
+uy-rrodriguez <5296200+uy-rrodriguez@users.noreply.github.com>

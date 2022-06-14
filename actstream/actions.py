@@ -1,4 +1,6 @@
-from django.utils.translation import ugettext_lazy as _
+
+from django.apps import apps
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist

@@ -250,7 +250,11 @@ class ObjectActivityMixin:
 class StreamKwargsMixin:
 
     def items(self, request, *args, **kwargs):
-        return self.get_stream()(self.get_object(request, *args, **kwargs), **self.get_stream_kwargs(request))
+        return self.get_stream()(
+            self.get_object(request, *args, **kwargs),
+            **self.get_stream_kwargs(request)
+        )
+
 
 
 class UserActivityMixin:

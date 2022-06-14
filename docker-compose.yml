@@ -4,14 +4,15 @@ services:
     django:
         build: .
         user: app
-        command: "runserver 0:8000"
+        command: sh -c "./manage.py migrate && ./manage.py collectstatic --noinput && ./manage.py runserver 0.0.0.0:8000"
         volumes:
-            - ./runtests:/app:cached
+            - ./runtests:/app:rw
             - ./actstream:/app/actstream:cached
-            - /var/run/docker.sock:/var/run/docker.sock
         environment:
-            IPYTHONDIR: /app/.ipython
-            HISTFILE: /app/.bash_history
-            PYTHONDONTWRITEBYTECODE: "x"
-            PYTHONWARNINGS: default
+            DATABASE_ENGINE: file
+            GITHUB_WORKFLOW: ok
+            DJANGO_SETTINGS_MODULE: settings
+            PYTHONPATH: /app
         restart: unless-stopped
+        ports:
+          - 8000:8000

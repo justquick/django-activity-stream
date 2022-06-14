@@ -1,5 +1,5 @@
-Developing on django-activity-stream
-====================================
+Development
+===========
 
 To simplify the development workflow, the project provides a docker container that can run the tests.
 

@@ -1,4 +1,2 @@
-Django>=1.11
-Sphinx
-git+https://github.com/justquick/alabaster.git#egg=alabaster
-django-jsonfield-backport>=1.0.2
+Django>=2.2
+Sphinx>=4.4.0

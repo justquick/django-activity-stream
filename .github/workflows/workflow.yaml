@@ -1,9 +1,23 @@
-name: Test and deploy
+name: Tests
+
+# define when to run the action
 
 # define when to run the action
 on:
-  - push
-  - pull_request
+  push:
+    branches: [ 'master']
+    paths:
+        - '**.py'
+        - '**.txt'
+        - '**.yaml'
+        - '**.toml'
+  pull_request:
+    branches: [ 'master']
+    paths:
+        - '**.py'
+        - '**.txt'
+        - '**.toml'
+        - '**.yaml'
 
 env:
   GITHUB_WORKFLOW: true
@@ -11,21 +25,18 @@ env:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     # test matrix
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.6
-          - 3.7
           - 3.8
           - 3.9
         django:
-          - 2.2
-          - 3.0
-          - 3.1
+          - 3.2
+          - 4.0
         database:
           - sqlite
           - mysql
@@ -70,11 +81,11 @@ jobs:
 
     steps:
       # check out revision to test
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # install python
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -85,24 +96,20 @@ jobs:
       # install environment specific dependencies
       - name: Install coverage
         run: pip install coverage>=5.3
-      - name: Install Django 2.2
-        if: matrix.django == 2.2
-        run: pip install "Django>=2.2,<3.0"
-      - name: Install Django 3.0
-        if: matrix.django == 3.0
-        run: pip install "Django>=3.0,<3.1"
-      - name: Install Django 3.1
-        if: matrix.django == 3.1
-        run: pip install "Django>=3.1,<3.2"
+
+      - name: Install Django 3.2
+        if: matrix.django == 3.2
+        run: pip install "Django>=3.2,<4.0"
+      - name: Install Django 4.0
+        if: matrix.django == 4.0
+        run: pip install "Django>=4.0,<4.1"
       - name: Install MySQL libs
         if: matrix.database == 'mysql'
         run: pip install mysqlclient>=2.0.1 django-mysql>=3.9.0
       - name: Install postgres libs
         if: matrix.database == 'postgres'
-        run: pip install psycopg2>=2.8.6
-      - name: Install django-jsonfield-backport
-        if: matrix.django == 2.2 || matrix.django == 3.0
-        run: pip install "django-jsonfield-backport>=1.0.2,<2.0"
+        run: pip install psycopg2-binary>=2.8.6
+
 
       # install our package
       - name: Install package
