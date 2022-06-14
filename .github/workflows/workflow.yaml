@@ -1,10 +1,19 @@
 name: Tests
 
 # define when to run the action
+
+# define when to run the action
 on:
-  - push
-  - pull_request
-      paths:
+  push:
+    branches: [ 'master']
+    paths:
+        - '**.py'
+        - '**.txt'
+        - '**.yaml'
+        - '**.toml'
+  pull_request:
+    branches: [ 'master']
+    paths:
         - '**.py'
         - '**.txt'
         - '**.toml'
@@ -92,8 +101,8 @@ jobs:
         if: matrix.django == 3.2
         run: pip install "Django>=3.2,<4.0"
       - name: Install Django 4.0
-         if: matrix.django == 4.0
-         run: pip install "Django>=4.0,<4.1"
+        if: matrix.django == 4.0
+        run: pip install "Django>=4.0,<4.1"
       - name: Install MySQL libs
         if: matrix.database == 'mysql'
         run: pip install mysqlclient>=2.0.1 django-mysql>=3.9.0
