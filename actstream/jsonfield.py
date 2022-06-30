@@ -3,11 +3,11 @@
 Decide on a JSONField implementation based on available packages.
 
 These are the options:
-  - With recent Django > 3.1 use Django's builtin JSONField.
+  - With recent Django >= 3.1 use Django's builtin JSONField.
   - For Django versions < 3.1 we need django-jsonfield-backport
       and will use its JSONField instead.
 
-Raises an ImportError if USE_JSONFIELD is True but none of the above 
+Raises an ImportError if USE_JSONFIELD is True, but none of the above 
 apply.
 
 Falls back to a simple Django TextField if USE_JSONFIELD is False,
