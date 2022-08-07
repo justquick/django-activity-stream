@@ -1,18 +1,17 @@
 name: Tests
 
-# define when to run the action
-
-# define when to run the action
 on:
   push:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
         - '**.yaml'
         - '**.toml'
   pull_request:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
@@ -110,7 +109,6 @@ jobs:
         if: matrix.database == 'postgres'
         run: pip install psycopg2-binary>=2.8.6
 
-
       # install our package
       - name: Install package
         run: pip install -e .
@@ -120,6 +118,13 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
+          COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
+
+      - name: Store coverage file
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: .coverage.${{ matrix.python_version }}
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
