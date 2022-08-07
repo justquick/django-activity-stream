@@ -122,6 +122,7 @@ html_theme_options = {
 }
 html_static_path = ['_static']
 html_css_files = ['style.css']
+html_extra_path = ['redoc']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'DjangoActivityStreamdoc'

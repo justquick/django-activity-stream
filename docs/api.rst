@@ -1,6 +1,12 @@
 API
 ===
 
+Actions
+-------
+
+.. automodule:: actstream.actions
+    :members: follow, unfollow, is_following, action_handler
+
 Action Manager
 --------------
 
@@ -18,6 +24,19 @@ Views
 
 .. automodule:: actstream.views
     :members: respond, follow_unfollow, stream, followers, following, user, detail, actor, model
+
+
+ReST API
+--------
+
+.. autoclass:: actstream.drf.views.ActionViewSet
+    :members:
+
+.. autoclass:: actstream.drf.views.FollowViewSet
+    :members:
+
+.. autoclass:: actstream.drf.serializers.ActionSerializer
+    :members:
 
 Feeds
 -----
@@ -43,11 +62,6 @@ Compatible with `JSON Activity Streams 1.0 <http://activitystrea.ms/specs/json/1
 .. autoclass:: actstream.feeds.AtomModelActivityFeed
 .. autoclass:: actstream.feeds.AtomObjectActivityFeed
 
-Actions
--------
-
-.. automodule:: actstream.actions
-    :members: follow, unfollow, is_following, action_handler
 
 Decorators
 ----------
