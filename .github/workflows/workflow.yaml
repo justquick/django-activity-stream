@@ -1,18 +1,17 @@
 name: Tests
 
-# define when to run the action
-
-# define when to run the action
 on:
   push:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
         - '**.yaml'
         - '**.toml'
   pull_request:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
@@ -123,3 +122,36 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
+          COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
+
+      - name: Store coverage file
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: .coverage.${{ matrix.python_version }}
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        id: download
+        with:
+          name: 'coverage'
+
+      - name: Coverage comment
+        id: coverage_comment
+        uses: ewjoachim/python-coverage-comment-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_COVERAGE_FILES: true
+
+      - name: Store Pull Request comment to be posted
+        uses: actions/upload-artifact@v2
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
