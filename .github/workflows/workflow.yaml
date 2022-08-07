@@ -122,10 +122,3 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
-          COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
-
-      - name: Store coverage file
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: .coverage.${{ matrix.python_version }}

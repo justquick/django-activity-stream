@@ -1,8 +1,8 @@
 Django Activity Stream Documentation
 ====================================
 
-.. image:: https://github.com/justquick/django-activity-stream/workflows/Test%20and%20deploy/badge.svg
-    :target: https://github.com/justquick/django-activity-stream/actions?query=workflow%3A%22Test+and+deploy%22
+.. image:: https://github.com/justquick/django-activity-stream/actions/workflows/workflow.yaml/badge.svg
+    :target: https://github.com/justquick/django-activity-stream/actions/workflows/workflow.yaml
 
 .. image:: https://badges.gitter.im/django-activity-stream/Lobby.svg
    :alt: Join the chat at https://gitter.im/django-activity-stream/Lobby
