@@ -120,3 +120,8 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
