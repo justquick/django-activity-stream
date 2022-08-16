@@ -55,7 +55,7 @@ def label(model_class):
 def is_installed(model_class):
     """
     Returns True if a model_class is installed.
-    model_class._meta.installed is only reliable in Django 1.7+
+    model_class._meta.app_config is only reliable in Django 1.7+
     """
     return model_class._meta.app_config is not None
 
