@@ -20,7 +20,7 @@ or get it from source
 Basic app configuration
 -----------------------
 
-Then to add the Django Activity Stream to your project add the app ``actstream``  and ``django.contib.sites`` to your ``INSTALLED_APPS`` and urlconf. In addition to, add the setting ``SITE_ID = 1`` below the installed apps.
+Then to add the Django Activity Stream to your project add the app ``actstream``  and ``django.contrib.sites`` to your ``INSTALLED_APPS`` and urlconf. In addition to, add the setting ``SITE_ID = 1`` below the installed apps.
 
 
 .. code-block:: python
