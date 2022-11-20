@@ -6,4 +6,3 @@ werkzeug
 rest-framework-generic-relations
 django-debug-toolbar
 django-rest-framework
-drf-spectacular
