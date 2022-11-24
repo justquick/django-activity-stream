@@ -46,20 +46,6 @@ Add the activity urls to your urlconf
 
 The activity urls are not required for basic usage but provide activity :ref:`feeds` and handle following, unfollowing and querying of followers.
 
-
-Add extra data to actions
--------------------------
-
-If you want to use custom data on your actions and are running Django < 3.1, then make sure you have
-`django-jsonfield-backport <https://pypi.org/project/django-jsonfield-backport/>`_ installed.
-
-.. code-block:: bash
-
-    $ pip install django-activity-stream[jsonfield]
-
-You can learn more at :ref:`custom-data`
-
-
 Supported Environments
 ----------------------
 
@@ -74,14 +60,13 @@ Make sure to pick the version of Django and django-activity-stream that supports
 Python
 ******
 
-
 * **Python 3**: 3.6 to 3.9
 * **PyPy**: 3
 
 Django
 ******
 
-* **Django**: 2.2+ only
+* **Django**: 3.2+ only
 
 Databases
 *********
