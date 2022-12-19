@@ -11,13 +11,6 @@ This uses a ``data`` JSONField on every Action where you can insert and delete v
 This behavior is disabled by default but just set ``ACTSTREAM_SETTINGS['USE_JSONFIELD'] = True`` in your
 settings.py to enable it.
 
-.. note::
-
-  If you're running Django < 3.1 you must install django-jsonfield-backport or the extra ``jsonfield`` of this package.
-  "django_jsonfield_backport" gets dynamically added to the INSTALLED_APPS of your Django application if not yet done manually.
-
-  Please make sure to remove both the django-jsonfield-backport package and the ``django_jsonfield_backport`` INSTALLED_APPS entry (if manually added) after upgrading to Django >= 3.1
-
 You can send the custom data as extra keyword arguments to the ``action`` signal.
 
 .. code-block:: python
@@ -48,12 +41,6 @@ Adding to Existing Project
 --------------------------
 
 If you start out your project with ``USE_JSONFIELD=False``, dont worry you can add it afterwards.
-
-Make sure you have the latest JSONField implementation
-
-.. code-block::
-
-    pip install django-activity-stream[jsonfield]
 
 Make sure ``USE_JSONFIELD`` is non-existent or set to False then do the initial migration
 

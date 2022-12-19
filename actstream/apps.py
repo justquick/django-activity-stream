@@ -25,14 +25,3 @@ class ActstreamConfig(AppConfig):
                 DataField(blank=True, null=True).contribute_to_class(
                     action_class, 'data'
                 )
-
-            # dynamically load django_jsonfield_backport to INSTALLED_APPS
-            if django.VERSION < (3, 1) and 'django_jsonfield_backport' not in settings.INSTALLED_APPS:
-                settings.INSTALLED_APPS += ('django_jsonfield_backport', )
-                # reset loaded apps
-                apps.app_configs = OrderedDict()
-                # reset initialization status
-                apps.apps_ready = apps.models_ready = apps.loading = apps.ready = False
-                apps.clear_cache()
-                # re-initialize all apps
-                apps.populate(settings.INSTALLED_APPS)
