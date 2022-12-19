@@ -42,6 +42,7 @@ Here is an example of what you can set in your ``settings.py``
         'USE_PREFETCH': True,
         'USE_JSONFIELD': True,
         'GFK_FETCH_DEPTH': 1,
+        'DRF': {'ENABLE': True}
     }
 
 .. note::
@@ -98,6 +99,13 @@ Set this setting to ``True`` to enable the ``Action.data`` JSONField for all act
 Lets you add custom data to any of your actions, see :ref:`custom-data`
 
 Defaults to ``False``
+
+
+DRF
+***
+
+Enable this group of settings to use the django-rest-framework integration. 
+Fore more information about the available settings see :ref:`drf`
 
 
 GFK_FETCH_DEPTH

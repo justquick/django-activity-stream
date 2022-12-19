@@ -36,6 +36,7 @@ DRF_SETTINGS = {
     'EXPAND_FIELDS': True,
     'HYPERLINK_FIELDS': False,
     'SERIALIZERS': {},
+    'MODEL_FIELDS': {},
     'VIEWSETS': {},
     'PERMISSIONS': ['rest_framework.permissions.IsAuthenticated']
 }

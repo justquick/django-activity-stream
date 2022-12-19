@@ -3,6 +3,11 @@
 Changelog
 =========
 
+1.5.0
+-----
+
+  - Added django-rest-framework support
+
 1.4.0
 ------
 
