@@ -3,11 +3,11 @@
 Changelog
 =========
 
-Unreleased
+1.4.2
 ----------
 
-- BREAKING: Drop support for EOL versions of Django (< 3.2)
-- Remove JSONField compatibility, extras and autoloading
+  - Django 4.1 support, dropping support for EOL versions of Django - 3.2 and older
+  - Remove JSONField compatibility, extras and autoloading
 
 1.4.0
 ------
