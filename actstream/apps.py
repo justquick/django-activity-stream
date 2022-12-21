@@ -4,6 +4,7 @@ import django
 from django.apps import apps
 from django.apps import AppConfig
 from django.conf import settings
+from django.db.models.signals import pre_delete
 
 from actstream import settings as actstream_settings
 from actstream.signals import action
@@ -25,3 +26,6 @@ class ActstreamConfig(AppConfig):
                 DataField(blank=True, null=True).contribute_to_class(
                     action_class, 'data'
                 )
+
+        from actstream.follows import delete_orphaned_follows
+        pre_delete.connect(delete_orphaned_follows)
