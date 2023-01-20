@@ -12,7 +12,8 @@ from django.views.generic import View
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
-from actstream.models import Action, model_stream, user_stream, any_stream
+from actstream.models import model_stream, user_stream, any_stream
+from actstream.settings import get_action_model
 
 
 class AbstractActivityStream:
@@ -255,6 +256,7 @@ class StreamKwargsMixin:
         )
 
 
+
 class UserActivityMixin:
 
     def get_object(self, request):
@@ -278,7 +280,7 @@ class CustomStreamMixin:
         return
 
     def get_stream(self):
-        return getattr(Action.objects, self.name)
+        return getattr(get_action_model().objects, self.name)
 
     def items(self, *args, **kwargs):
         return self.get_stream()(*args[1:], **kwargs)

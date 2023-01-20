@@ -117,6 +117,7 @@ INSTALLED_APPS = (
 
     'testapp',
     'testapp_nested',
+    'custom',
 )
 
 STATIC_URL = '/static/'
