@@ -3,7 +3,7 @@
 Changelog
 =========
 
-1.5.0
+2.0.0
 -----
 
   - Added django-rest-framework support

@@ -51,6 +51,7 @@ Contents:
    data
    follow
    streams
+   drf
    templatetags
    feeds
    development
