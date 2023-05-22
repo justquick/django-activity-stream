@@ -125,7 +125,7 @@ jobs:
           # COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
 
       - name: Store coverage file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage
           path: .coverage #.${{ matrix.python_version }}
