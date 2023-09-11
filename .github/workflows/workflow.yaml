@@ -80,7 +80,7 @@ jobs:
 
     steps:
       # check out revision to test
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # install python
       - name: Set up Python ${{ matrix.python-version }}
