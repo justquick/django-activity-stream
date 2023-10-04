@@ -6,7 +6,9 @@ Changelog
 2.0.0
 -----
 
-  - Added django-rest-framework support
+  - Added django-rest-framework API support
+  - Follows: delete object-orphaned Follows, based on Django pre_delete signal.
+  - Fix deprecated warning
 
 1.4.2
 ----------
