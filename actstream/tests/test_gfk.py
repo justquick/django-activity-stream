@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group
 
-from actstream.models import Action
+from actstream.settings import get_action_model
 from actstream.tests.base import LTE
 
 
@@ -18,28 +18,28 @@ class GFKManagerTestCase(TestCase):
         self.user2, _ = User.objects.get_or_create(username='Two')
         self.user3, _ = User.objects.get_or_create(username='Three')
         self.user4, _ = User.objects.get_or_create(username='Four')
-        Action.objects.get_or_create(
+        get_action_model().objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
             verb='followed',
             target_content_type=self.user_ct,
             target_object_id=self.user2.id
         )
-        Action.objects.get_or_create(
+        get_action_model().objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
             verb='followed',
             target_content_type=self.user_ct,
             target_object_id=self.user3.id
         )
-        Action.objects.get_or_create(
+        get_action_model().objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
             verb='followed',
             target_content_type=self.user_ct,
             target_object_id=self.user4.id
         )
-        Action.objects.get_or_create(
+        get_action_model().objects.get_or_create(
             actor_content_type=self.user_ct,
             actor_object_id=self.user1.id,
             verb='joined',
@@ -49,8 +49,9 @@ class GFKManagerTestCase(TestCase):
 
     def test_fetch_generic_relations(self):
         # baseline without fetch_generic_relations
-        _actions = Action.objects.filter(actor_content_type=self.user_ct,
-                                         actor_object_id=self.user1.id)
+        _actions = get_action_model().objects.filter(actor_content_type=self.user_ct,
+                                                     actor_object_id=self.user1.id)
+
 
         def actions(): return _actions._clone()
         num_content_types = len(set(actions().values_list(
@@ -87,8 +88,10 @@ class GFKManagerTestCase(TestCase):
                          action_actor_targets_fetch_generic_all)
 
         # fetch only 1 generic relation, but access both gfks
+
         def generic():
             return actions().fetch_generic_relations('target')
+
         self.assertNumQueries(LTE(n + num_content_types + 2), lambda: [
             (a.actor, a.target) for a in generic()])
         action_actor_targets_fetch_generic_target = [

@@ -132,6 +132,7 @@ INSTALLED_APPS = [
 
     'testapp',
     'testapp_nested',
+    'custom'
 ]
 
 try:
