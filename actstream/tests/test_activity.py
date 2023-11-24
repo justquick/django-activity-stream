@@ -145,7 +145,6 @@ class ActivityTestCase(DataTestCase):
     def test_y_no_orphaned_follows(self):
         follows = get_follow_model().objects.count()
         self.user2.delete()
-        self.assertEqual(follows - 1, get_follow_model().objects.count())
         # 2 Follow objects are deleted:
         # * "User2 follows group" because of the on_delete=models.CASCADE
         # * "User1 follows User2" because of the pre_delete signal
