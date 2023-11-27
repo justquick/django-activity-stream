@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from generic_relations.relations import GenericRelatedField
 
-from actstream.models import Follow, Action
+from actstream import settings as actstream_settings
 from actstream.registry import registry, label
 from actstream.settings import DRF_SETTINGS, import_obj
 
@@ -72,7 +72,7 @@ class ActionSerializer(DEFAULT_SERIALIZER):
     action_object = get_grf()
 
     class Meta:
-        model = Action
+        model = actstream_settings.get_action_model()
         fields = 'id verb public description timestamp actor target action_object'.split()
 
 
@@ -97,7 +97,7 @@ class FollowSerializer(DEFAULT_SERIALIZER):
     follow_object = get_grf()
 
     class Meta:
-        model = Follow
+        model = actstream_settings.get_follow_model()
         fields = 'id flag user follow_object started actor_only'.split()
 
 
@@ -108,5 +108,5 @@ class FollowingSerializer(DEFAULT_SERIALIZER):
     follow_object = get_grf()
 
     class Meta:
-        model = Follow
+        model = actstream_settings.get_follow_model()
         fields = ['follow_object']
