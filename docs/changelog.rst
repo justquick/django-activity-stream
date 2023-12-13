@@ -3,6 +3,11 @@
 Changelog
 =========
 
+2.0.1
+-----
+
+  - Custom Action and Follow models support
+
 2.0.0
 -----
 

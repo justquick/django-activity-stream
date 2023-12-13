@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 
 from django.urls import reverse
 
+from actstream.settings import get_action_model, get_follow_model
 from actstream import models
 from actstream.tests.base import DataTestCase
 
@@ -34,13 +35,13 @@ class ViewsTest(DataTestCase):
         action = {'actor_content_type': self.user_ct, 'actor_object_id': self.user1.pk,
                   'target_content_type': self.user_ct, 'target_object_id': self.user3.pk,
                   'verb': 'started following'}
-        models.Follow.objects.get(**follow)
-        models.Action.objects.get(**action)
+        get_follow_model().objects.get(**follow)
+        get_action_model().objects.get(**action)
 
         response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk)
         self.assertEqual(response.status_code, 204)
         self.assertEqual(len(response.templates), 0)
-        self.assertRaises(models.Follow.DoesNotExist, models.Follow.objects.get, **follow)
+        self.assertRaises(get_follow_model().DoesNotExist, get_follow_model().objects.get, **follow)
 
         response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, next='/redirect/')
         self.assertEqual(response.status_code, 302)
@@ -55,13 +56,13 @@ class ViewsTest(DataTestCase):
         action = {'actor_content_type': self.user_ct, 'actor_object_id': self.user1.pk,
                   'target_content_type': self.user_ct, 'target_object_id': self.user3.pk,
                   'verb': 'started watching'}
-        models.Follow.objects.get(**follow)
-        models.Action.objects.get(**action)
+        get_follow_model().objects.get(**follow)
+        get_action_model().objects.get(**action)
 
         response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(len(response.templates), 0)
-        self.assertRaises(models.Follow.DoesNotExist, models.Follow.objects.get, **follow)
+        self.assertRaises(get_follow_model().DoesNotExist, get_follow_model().objects.get, **follow)
 
         response = self.get('actstream_unfollow', self.user_ct.pk, self.user3.pk, 'watching', next='/redirect/')
         self.assertEqual(response.status_code, 302)

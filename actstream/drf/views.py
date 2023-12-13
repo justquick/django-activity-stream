@@ -13,7 +13,7 @@ from rest_framework.exceptions import APIException, NotFound
 from actstream.drf import serializers
 from actstream import models
 from actstream.registry import label
-from actstream.settings import DRF_SETTINGS, import_obj
+from actstream.settings import DRF_SETTINGS, import_obj, get_action_model, get_follow_model
 from actstream.signals import action as action_signal
 from actstream.actions import follow as follow_action
 
@@ -52,7 +52,7 @@ class DefaultModelViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ActionViewSet(DefaultModelViewSet):
-    queryset = models.Action.objects.public().order_by('-timestamp', '-id').prefetch_related()
+    queryset = get_action_model().objects.public().order_by('-timestamp', '-id').prefetch_related()
     serializer_class = serializers.ActionSerializer
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated], methods=['POST'], serializer_class=serializers.SendActionSerializer)
@@ -159,7 +159,7 @@ class ActionViewSet(DefaultModelViewSet):
 
 
 class FollowViewSet(DefaultModelViewSet):
-    queryset = models.Follow.objects.order_by('-started', '-id').prefetch_related()
+    queryset = get_follow_model().objects.order_by('-started', '-id').prefetch_related()
     serializer_class = serializers.FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -185,7 +185,7 @@ class FollowViewSet(DefaultModelViewSet):
         """
         ctype = get_object_or_404(ContentType, id=content_type_id)
         instance = ctype.get_object_for_this_type(pk=object_id)
-        following = models.Follow.objects.is_following(request.user, instance)
+        following = get_follow_model().objects.is_following(request.user, instance)
         data = {'is_following': following}
         return Response(json.dumps(data))
 
@@ -195,7 +195,7 @@ class FollowViewSet(DefaultModelViewSet):
         """
         Returns a JSON response whether the current user is following the object from content_type_id/object_id pair
         """
-        qs = models.Follow.objects.following_qs(request.user)
+        qs = get_follow_model().objects.following_qs(request.user)
         return Response(serializers.FollowingSerializer(qs, many=True).data)
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated],
@@ -208,7 +208,7 @@ class FollowViewSet(DefaultModelViewSet):
         if user_model not in serializers.registered_serializers:
             raise ModelNotRegistered(f'Auth user "{user_model.__name__}" not registered with actstream')
         serializer = serializers.registered_serializers[user_model]
-        followers = models.Follow.objects.followers(request.user)
+        followers = get_follow_model().objects.followers(request.user)
         return Response(serializer(followers, many=True).data)
 
 

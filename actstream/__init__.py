@@ -12,5 +12,5 @@ else:
         default_app_config = 'actstream.apps.ActstreamConfig'
 
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 __author__ = 'Asif Saif Uddin, Justin Quick <justquick@gmail.com>'
