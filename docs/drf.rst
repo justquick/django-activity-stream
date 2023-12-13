@@ -3,7 +3,7 @@
 Django ReST Framework Integration
 =================================
 
-As of version 2.0.0, django-activity-stream now supports integration with `Django ReST Framework <https://www.django-rest-framework.org/>`_.
+As of version 2.0.1, django-activity-stream now supports integration with `Django ReST Framework <https://www.django-rest-framework.org/>`_.
 
 DRF provides a standardized way of interacting with models stored in Django. It provides standard create/update/get operations using http standard methods.
 
