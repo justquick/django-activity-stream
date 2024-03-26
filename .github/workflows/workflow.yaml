@@ -100,7 +100,7 @@ jobs:
 
       # install environment specific dependencies
       - name: Install coverage
-        run: pip install coverage>=5.3
+        run: pip install coverage>=5.3 setuptools
 
       - name: Install Django 3.2
         if: matrix.django == 3.2
