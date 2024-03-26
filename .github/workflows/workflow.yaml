@@ -33,9 +33,15 @@ jobs:
         python-version:
           - 3.8
           - 3.9
+          - 3.10
+          - 3.11
+          - 3.12
         django:
           - 3.2
           - 4.0
+          - 4.1
+          - 4.2
+          - 5.0
         database:
           - sqlite
           - mysql
@@ -102,6 +108,15 @@ jobs:
       - name: Install Django 4.0
         if: matrix.django == 4.0
         run: pip install "Django>=4.0,<4.1"
+      - name: Install Django 4.1
+        if: matrix.django == 4.1
+        run: pip install "Django>=4.1,<4.2"
+      - name: Install Django 4.2
+        if: matrix.django == 4.2
+        run: pip install "Django>=4.2,<5.0"
+      - name: Install Django 5.0
+        if: matrix.django == 5.0
+        run: pip install "Django>=5.0,<5.1"
       - name: Install MySQL libs
         if: matrix.database == 'mysql'
         run: pip install mysqlclient>=2.0.1 django-mysql>=3.9.0
