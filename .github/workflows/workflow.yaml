@@ -46,6 +46,15 @@ jobs:
           - sqlite
           - mysql
           - postgres
+        exclude:
+          - python-version: 3.8
+            django: 5.0
+          - python-version: 3.9
+            django: 5.0
+          - python-version: "3.11"
+            django: 3.2
+          - python-version: "3.12"
+            django: 3.2
 
     # additional service containers to run
     services:
