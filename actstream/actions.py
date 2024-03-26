@@ -111,8 +111,12 @@ def action_handler(verb, **kwargs):
 
     # We must store the untranslated string
     # If verb is an ugettext_lazyed string, fetch the original string
+    # _proxy____args is a valid attribute in Django <= 4.2
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
+    # _args is the new attribute in Django >= 5.0
+    if hasattr(verb, '_args'):
+        verb = verb._args[0]
 
     newaction = apps.get_model('actstream', 'action')(
         actor_content_type=ContentType.objects.get_for_model(actor),
