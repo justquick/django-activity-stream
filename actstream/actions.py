@@ -115,7 +115,7 @@ def action_handler(verb, **kwargs):
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]
     # _args is the new attribute in Django >= 5.0
-    if hasattr(verb, '_args'):
+    elif hasattr(verb, '_args'):
         verb = verb._args[0]
 
     newaction = apps.get_model('actstream', 'action')(
