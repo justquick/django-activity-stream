@@ -164,13 +164,13 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
-          COVERAGE_FILE: ".coverage-python${{ matrix.python }}-django${{ matrix.django }}-${{ matrix.database }}"
+          # COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
 
       - name: Store coverage file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: "coverage-python${{ matrix.python }}-django${{ matrix.django }}-${{ matrix.database }}"
-          path: ".coverage-python${{ matrix.python }}-django${{ matrix.django }}-${{ matrix.database }}"
+          ame: coverage
+          path: .coverage #.${{ matrix.python_version }}
 
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
