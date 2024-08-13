@@ -169,7 +169,7 @@ jobs:
       - name: Store coverage file
         uses: actions/upload-artifact@v3
         with:
-          ame: coverage
+          name: coverage
           path: .coverage #.${{ matrix.python_version }}
 
       - name: Coveralls
