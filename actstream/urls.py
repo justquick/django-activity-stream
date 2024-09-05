@@ -1,9 +1,18 @@
-from django.urls import re_path
+from django.urls import re_path, include, path
 
 from actstream import feeds, views
+from actstream.settings import USE_DRF
 
+urlpatterns = []
 
-urlpatterns = [
+if USE_DRF:
+    from actstream.drf.urls import router
+
+    urlpatterns += [
+        path('api/', include(router.urls)),
+    ]
+
+urlpatterns += [
     # User feeds
     re_path(r'^feed/$', feeds.UserActivityFeed(), name='actstream_feed'),
     re_path(r'^feed/atom/$', feeds.AtomUserActivityFeed(),

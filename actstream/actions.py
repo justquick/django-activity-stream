@@ -1,5 +1,3 @@
-
-from django.apps import apps
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 from django.contrib.contenttypes.models import ContentType
@@ -125,7 +123,7 @@ def action_handler(verb, **kwargs):
     kwargs.pop('signal', None)
     actor = kwargs.pop('sender')
 
-    # We must store the unstranslated string
+    # We must store the untranslated string
     # If verb is an ugettext_lazyed string, fetch the original string
     if hasattr(verb, '_proxy____args'):
         verb = verb._proxy____args[0]

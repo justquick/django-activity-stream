@@ -1,6 +1,6 @@
 from json import loads
 from datetime import datetime
-from inspect import getargspec
+from inspect import signature
 
 from django.apps import apps
 from django.test import TestCase
@@ -46,6 +46,9 @@ class ActivityBaseTestCase(TestCase):
         for model in self.actstream_models:
             register(model)
 
+    def assertStartsWith(self, value, start):
+        self.assert_(value.startswith(start))
+
     def assertSetEqual(self, l1, l2, msg=None, domap=True):
         if domap:
             l1 = map(str, l1)
@@ -83,10 +86,12 @@ class DataTestCase(ActivityBaseTestCase):
         self.timesince = timesince(self.testdate).encode('utf8').replace(
             b'\xc2\xa0', b' ').decode()
         self.group_ct = ContentType.objects.get_for_model(Group)
+        self.site_ct = ContentType.objects.get_for_model(Site)
         super(DataTestCase, self).setUp()
         self.group = Group.objects.create(name='CoolGroup')
         self.another_group = Group.objects.create(name='NiceGroup')
-        if 'email' in getargspec(self.User.objects.create_superuser).args:
+        superuser_sig = signature(self.User.objects.create_superuser)
+        if 'email' in superuser_sig.parameters:
             self.user1 = self.User.objects.create_superuser('admin', 'admin@example.com', 'admin')
             self.user2 = self.User.objects.create_user('Two', 'two@example.com')
             self.user3 = self.User.objects.create_user('Three', 'three@example.com')

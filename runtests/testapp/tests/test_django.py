@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest import skipUnless
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -8,12 +9,12 @@ from actstream.models import actor_stream, model_stream
 from actstream.tests.base import render, ActivityBaseTestCase
 from actstream.settings import USE_JSONFIELD, get_action_model
 
-from testapp.models import Abstract, Unregistered
+from testapp.models import MyUser, Abstract, Unregistered
 
 
 class TestAppTests(ActivityBaseTestCase):
     def setUp(self):
-        super(TestAppTests, self).setUp()
+        super().setUp()
         self.user = self.User.objects.create(username='test')
         action.send(self.user, verb='was created')
 
@@ -61,19 +62,17 @@ class TestAppTests(ActivityBaseTestCase):
         )
 
     def test_customuser(self):
-        from testapp.models import MyUser
-
         self.assertEqual(self.User, MyUser)
         self.assertEqual(self.user.get_full_name(), 'test')
 
-    if USE_JSONFIELD:
-        def test_jsonfield(self):
-            action.send(
-                self.user, verb='said', text='foobar',
-                tags=['sayings'],
-                more_data={'pk': self.user.pk}
-            )
-            newaction = get_action_model().objects.filter(verb='said')[0]
-            self.assertEqual(newaction.data['text'], 'foobar')
-            self.assertEqual(newaction.data['tags'], ['sayings'])
-            self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})
+    @skipUnless(USE_JSONFIELD, 'Django jsonfield disabled')
+    def test_jsonfield(self):
+        action.send(
+            self.user, verb='said', text='foobar',
+            tags=['sayings'],
+            more_data={'pk': self.user.pk}
+        )
+        newaction = get_action_model().objects.filter(verb='said')[0]
+        self.assertEqual(newaction.data['text'], 'foobar')
+        self.assertEqual(newaction.data['tags'], ['sayings'])
+        self.assertEqual(newaction.data['more_data'], {'pk': self.user.pk})

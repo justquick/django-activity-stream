@@ -1,1 +1,1 @@
-./docs/source/changelog.rst
+./docs/changelog.rst

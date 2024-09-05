@@ -3,6 +3,24 @@
 Changelog
 =========
 
+2.0.1
+-----
+
+  - Custom Action and Follow models support
+
+2.0.0
+-----
+
+  - Added django-rest-framework API support
+  - Follows: delete object-orphaned Follows, based on Django pre_delete signal.
+  - Fix deprecated warning
+
+1.4.2
+----------
+
+  - Django 4.1 support, dropping support for EOL versions of Django - 3.2 and older
+  - Remove JSONField compatibility, extras and autoloading
+
 1.4.0
 ------
 

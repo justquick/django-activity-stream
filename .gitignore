@@ -13,3 +13,4 @@ db.sqlite3
 runtests/static/
 .envrc
 .ropeproject/
+htmlcov/

@@ -1,6 +1,9 @@
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
+from typing import Type
 
+from django.apps import apps
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q, Model
+from django.contrib.auth import get_user_model
 
 from actstream.gfk import GFKManager
 from actstream.decorators import stream
@@ -21,7 +24,7 @@ class ActionManager(GFKManager):
         return self.filter(*args, **kwargs)
 
     @stream
-    def actor(self, obj, **kwargs):
+    def actor(self, obj: Model, **kwargs):
         """
         Stream of most recent actions where obj is the actor.
         Keyword arguments will be passed to Action.objects.filter
@@ -30,7 +33,7 @@ class ActionManager(GFKManager):
         return obj.actor_actions.public(**kwargs)
 
     @stream
-    def target(self, obj, **kwargs):
+    def target(self, obj: Model, **kwargs):
         """
         Stream of most recent actions where obj is the target.
         Keyword arguments will be passed to Action.objects.filter
@@ -39,7 +42,7 @@ class ActionManager(GFKManager):
         return obj.target_actions.public(**kwargs)
 
     @stream
-    def action_object(self, obj, **kwargs):
+    def action_object(self, obj: Model, **kwargs):
         """
         Stream of most recent actions where obj is the action_object.
         Keyword arguments will be passed to Action.objects.filter
@@ -48,7 +51,7 @@ class ActionManager(GFKManager):
         return obj.action_object_actions.public(**kwargs)
 
     @stream
-    def model_actions(self, model, **kwargs):
+    def model_actions(self, model: Type[Model], **kwargs):
         """
         Stream of most recent actions by any particular model
         """
@@ -62,7 +65,7 @@ class ActionManager(GFKManager):
         )
 
     @stream
-    def any(self, obj, **kwargs):
+    def any(self, obj: Model, **kwargs):
         """
         Stream of most recent actions where obj is the actor OR target OR action_object.
         """
@@ -81,7 +84,7 @@ class ActionManager(GFKManager):
             ), **kwargs)
 
     @stream
-    def user(self, obj, with_user_activity=False, follow_flag=None, **kwargs):
+    def user(self, obj: Model, with_user_activity=False, follow_flag=None, **kwargs):
         """Create a stream of the most recent actions by objects that the user is following."""
         q = Q()
         qs = self.public()
@@ -172,7 +175,8 @@ class FollowManager(GFKManager):
         """
         Returns a list of User objects who are following the given actor (eg my followers).
         """
-        return [follow.user for follow in self.followers_qs(actor, flag=flag)]
+        user_ids = self.followers_qs(actor, flag=flag).values_list('user', flat=True)
+        return get_user_model().objects.filter(id__in=user_ids)
 
     def following_qs(self, user, *models, **kwargs):
         """

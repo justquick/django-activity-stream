@@ -1,18 +1,17 @@
 name: Tests
 
-# define when to run the action
-
-# define when to run the action
 on:
   push:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
         - '**.yaml'
         - '**.toml'
   pull_request:
-    branches: [ 'master']
+    branches:
+      - main
     paths:
         - '**.py'
         - '**.txt'
@@ -81,7 +80,7 @@ jobs:
 
     steps:
       # check out revision to test
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # install python
       - name: Set up Python ${{ matrix.python-version }}
@@ -110,6 +109,9 @@ jobs:
         if: matrix.database == 'postgres'
         run: pip install psycopg2-binary>=2.8.6
 
+      - name: Install Django ReST framework libraries
+        run: pip install -U django-rest-framework rest-framework-generic-relations drf-spectacular
+
 
       # install our package
       - name: Install package
@@ -120,3 +122,25 @@ jobs:
         run: coverage run runtests/manage.py test -v3 --noinput actstream testapp testapp_nested
         env:
           DATABASE_ENGINE: ${{ matrix.database }}
+          # COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
+
+      - name: Store coverage file
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: .coverage #.${{ matrix.python_version }}
+
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test
+
+  coveralls_finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true

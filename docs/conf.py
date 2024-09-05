@@ -122,6 +122,7 @@ html_theme_options = {
 }
 html_static_path = ['_static']
 html_css_files = ['style.css']
+html_extra_path = ['redoc']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'DjangoActivityStreamdoc'
@@ -138,8 +139,8 @@ htmlhelp_basename = 'DjangoActivityStreamdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'DjangoActivityStream.tex', 'Django Activity Stream Documentation',
-   'Justin Quick', 'manual'),
+    ('index', 'DjangoActivityStream.tex', 'Django Activity Stream Documentation',
+     'Justin Quick', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

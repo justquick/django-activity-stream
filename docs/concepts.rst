@@ -3,7 +3,7 @@
 Activity Stream Concepts
 ========================
 
-The terminiology used in this app is based from the `Activity Streams Specification <http://activitystrea.ms/>`_.
+The terminology used in this app is based from the `Activity Streams Specification <http://activitystrea.ms/>`_.
 The app currently supports the `version 1.0 <http://activitystrea.ms/specs/atom/1.0/>`_ terminology.
 
 Introduction
