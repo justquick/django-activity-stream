@@ -60,7 +60,7 @@ Make sure to pick the version of Django and django-activity-stream that supports
 Python
 ******
 
-* **Python 3**: 3.6 to 3.12
+* **Python 3**: 3.8 to 3.12
 * **PyPy**: 3
 
 Django

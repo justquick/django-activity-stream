@@ -6,7 +6,9 @@ Changelog
 2.0.1
 -----
 
-  - Adds support for Django 5.0
+  - Added support for Django 5.0 and 5.1
+  - Added support for Python 3.10, 3.11 and 3.12
+  - Updated GitHub actions
 
 2.0.0
 -----
