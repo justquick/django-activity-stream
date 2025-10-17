@@ -12,7 +12,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
-from actstream.models import Action, Follow
+from actstream.settings import get_follow_model, get_action_model
 from actstream.registry import register, unregister
 from actstream.actions import follow
 from actstream.signals import action
@@ -66,8 +66,8 @@ class ActivityBaseTestCase(TestCase):
             model = apps.get_model(*model.split('.'))
             unregister(model)
             model.objects.all().delete()
-        Action.objects.all().delete()
-        Follow.objects.all().delete()
+        get_action_model().objects.all().delete()
+        get_follow_model().objects.all().delete()
         self.User.objects.all().delete()
 
     def capture(self, viewname, *args, query_string=''):

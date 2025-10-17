@@ -5,8 +5,7 @@ from json import loads
 from django.urls import reverse
 
 from actstream.tests.base import DataTestCase
-from actstream.settings import USE_DRF, DRF_SETTINGS
-from actstream.models import Action, Follow
+from actstream.settings import USE_DRF, DRF_SETTINGS, get_action_model, get_follow_model
 from actstream import signals
 
 
@@ -125,7 +124,7 @@ class DRFActionTestCase(BaseDRFTestCase):
         }
         post = self.auth_client.post(reverse('action-send'), body)
         assert post.status_code == 201
-        action = Action.objects.first()
+        action = get_action_model().objects.first()
         assert action.description == body['description']
         assert action.verb == body['verb']
         assert action.actor == self.user1
@@ -141,7 +140,7 @@ class DRFFollowTestCase(BaseDRFTestCase):
         }
         post = self.auth_client.post(reverse('follow-follow'), body)
         assert post.status_code == 201
-        follow = Follow.objects.order_by('-id').first()
+        follow = get_follow_model().objects.order_by('-id').first()
         assert follow.follow_object == self.comment
         assert follow.user == self.user1
         assert follow.user == self.user1

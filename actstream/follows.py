@@ -1,6 +1,6 @@
 from django.core.exceptions import ImproperlyConfigured
 
-from actstream.models import Follow
+from actstream.settings import get_follow_model
 
 
 def delete_orphaned_follows(sender, instance=None, **kwargs):
@@ -11,6 +11,6 @@ def delete_orphaned_follows(sender, instance=None, **kwargs):
         return
 
     try:
-        Follow.objects.for_object(instance).delete()
+        get_follow_model().objects.for_object(instance).delete()
     except ImproperlyConfigured:  # raised by actstream for irrelevant models
         pass

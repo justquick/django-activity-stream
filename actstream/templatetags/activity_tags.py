@@ -3,7 +3,7 @@ from django.template import Variable, Library, Node, TemplateSyntaxError
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from actstream.models import Follow, Action
+from actstream.settings import get_follow_model, get_action_model
 
 
 register = Library()
@@ -27,7 +27,7 @@ class DisplayActivityFollowUrl(Node):
         if self.flag:
             kwargs['flag'] = self.flag
 
-        if Follow.objects.is_following(context.get('user'), actor_instance, flag=self.flag):
+        if get_follow_model().objects.is_following(context.get('user'), actor_instance, flag=self.flag):
             return reverse('actstream_unfollow', kwargs=kwargs)
         if self.actor_only:
             return reverse('actstream_follow', kwargs=kwargs)
@@ -121,7 +121,7 @@ def is_following(user, actor):
             You are already following {{ another_user }}
         {% endif %}
     """
-    return Follow.objects.is_following(user, actor)
+    return get_follow_model().objects.is_following(user, actor)
 
 
 class IsFollowing(AsNode):
@@ -132,7 +132,7 @@ class IsFollowing(AsNode):
         actor = self.args[1].resolve(context)
         flag = self.args[2].resolve(context)
 
-        return Follow.objects.is_following(user, actor, flag=flag)
+        return get_follow_model().objects.is_following(user, actor, flag=flag)
 
 
 def is_following_tag(parser, token):
@@ -252,10 +252,10 @@ def activity_stream(context, stream_type, *args, **kwargs):
     """
     if stream_type == 'model':
         stream_type = 'model_actions'
-    if not hasattr(Action.objects, stream_type):
+    if not hasattr(get_action_model().objects, stream_type):
         raise TemplateSyntaxError('Action manager has no attribute: %s' % stream_type)
     ctxvar = kwargs.pop('as', 'stream')
-    context[ctxvar] = getattr(Action.objects, stream_type)(*args, **kwargs)
+    context[ctxvar] = getattr(get_action_model().objects, stream_type)(*args, **kwargs)
     return ''
 
 

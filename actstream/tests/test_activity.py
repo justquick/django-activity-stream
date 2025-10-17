@@ -5,11 +5,12 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import activate, get_language
 from django.urls import reverse
 
-from actstream.models import (Action, Follow, model_stream, user_stream,
+from actstream.models import (model_stream, user_stream,
                               actor_stream, following, followers)
 from actstream.actions import follow, unfollow
 from actstream.signals import action
 from actstream.tests.base import DataTestCase, render
+from actstream.settings import get_follow_model, get_action_model
 
 
 class ActivityTestCase(DataTestCase):
@@ -119,20 +120,20 @@ class ActivityTestCase(DataTestCase):
         f1 = follow(s, g)
         self.assertTrue(f1 is not None, "Should have received a new follow "
                                         "record")
-        self.assertTrue(isinstance(f1, Follow), "Returns a Follow object")
+        self.assertTrue(isinstance(f1, get_follow_model()), "Returns a Follow object")
 
-        follows = Follow.objects.filter(user=s, object_id=g.pk,
-                                        content_type=self.group_ct)
+        follows = get_follow_model().objects.filter(user=s, object_id=g.pk,
+                                                    content_type=self.group_ct)
         self.assertEqual(1, follows.count(),
                          "Should only have 1 follow record here")
 
         f2 = follow(s, g)
-        follows = Follow.objects.filter(user=s, object_id=g.pk,
-                                        content_type=self.group_ct)
+        follows = get_follow_model().objects.filter(user=s, object_id=g.pk,
+                                                    content_type=self.group_ct)
         self.assertEqual(1, follows.count(),
                          "Should still only have 1 follow record here")
         self.assertTrue(f2 is not None, "Should have received a Follow object")
-        self.assertTrue(isinstance(f2, Follow), "Returns a Follow object")
+        self.assertTrue(isinstance(f2, get_follow_model()), "Returns a Follow object")
         self.assertEqual(f1, f2, "Should have received the same Follow "
                                  "object that I first submitted")
 
@@ -142,12 +143,12 @@ class ActivityTestCase(DataTestCase):
                             following(self.user1, Group, self.User), domap=False)
 
     def test_y_no_orphaned_follows(self):
-        follows = Follow.objects.count()
+        follows = get_follow_model().objects.count()
         self.user2.delete()
         # 2 Follow objects are deleted:
         # * "User2 follows group" because of the on_delete=models.CASCADE
         # * "User1 follows User2" because of the pre_delete signal
-        self.assertEqual(follows - 2, Follow.objects.count())
+        self.assertEqual(follows - 2, get_follow_model().objects.count())
 
     def test_z_no_orphaned_actions(self):
         actions = self.user1.actor_actions.count()
@@ -259,7 +260,7 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(render(src, user=self.user1, group=self.another_group, verb='liking'), '')
 
     def test_none_returns_an_empty_queryset(self):
-        qs = Action.objects.none()
+        qs = get_action_model().objects.none()
         self.assertFalse(qs.exists())
         self.assertEqual(qs.count(), 0)
 
@@ -276,5 +277,5 @@ class ActivityTestCase(DataTestCase):
         self.assertEqual(verb, 'Anglais')
         action.send(self.user1, verb=verb, action_object=self.comment,
                     target=self.group, timestamp=self.testdate)
-        self.assertTrue(Action.objects.filter(verb='English').exists())
+        self.assertTrue(get_action_model().objects.filter(verb='English').exists())
         activate(lang)
